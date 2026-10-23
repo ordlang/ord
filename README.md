@@ -10,8 +10,6 @@ Launch website #project
 	budget:: 1200
 ```
 
-This repository is the specification, and the single source of truth for Ord. Implementations and the website at [ordlang.org](https://ordlang.org) build on it.
-
 ## Status
 
 Version **0.4.0-draft**. The specs are drafts: before 1.0.0, any version can change how a file is read. All files here share one version; see the [changelog](CHANGELOG.md).
