@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ordlang/ord-utils
+          path: .ord-utils
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Lint the tests in every spec
+        run: |
+          status=0
+          for f in Ord_Specification.md Test_format.md Semantics.md JSON_mapping.md CSV_mapping.md; do
+            echo "::group::$f"
+            node .ord-utils/ordtest.mjs lint "$f" || status=1
+            echo "::endgroup::"
+          done
+          exit $status
+      - name: Every spec has the same version
+        run: |
+          v=$(grep -m1 -o '^Version [^,]*' Ord_Specification.md)
+          for f in Test_format.md Semantics.md JSON_mapping.md CSV_mapping.md Grammar.md; do
+            grep -q "^$v," "$f" || { echo "$f: not $v"; exit 1; }
+          done
+          echo "$v"
