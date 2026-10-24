@@ -15,7 +15,7 @@ eol           = LF / CR LF          ; a CR right before LF belongs to eol (C1)
 line          = *line-char
 last-line     = 1*line-char         ; a file that ends with eol has no empty last line
 line-char     = %x00-09 / %x0B-10FFFF
-indent        = *WSP                ; WSP is space or tab, the only whitespace (C3)
+indent        = *WSP                ; WSP is space or tab, the only whitespace; an NBSP is read as a space (C3)
 
 ; ---- Blocks (C29) ----
 ; A block runs from an opening line to the next closing line with at least
@@ -120,7 +120,7 @@ One way to read a file that follows the reading order (C50) and takes time linea
 
 1. **Decode.** Decode the bytes with a UTF-8 decoder that gives U+FFFD for bad bytes instead of failing (C49), such as `TextDecoder` in JavaScript. For the `C49` warning, the decoder or a check of the raw bytes has to tell replaced bytes apart from a U+FFFD written in the file. Drop a BOM at the start (C2).
 2. **Count characters.** Columns and ranges count code points, not bytes or UTF-16 units. In JavaScript, an emoji is one character but two string units.
-3. **Split lines.** Split at `\n`, then remove one `\r` from the end of each line (C1). Any other `\r` stays as content (C3). A file that ends with `\n` has no empty last line.
+3. **Split lines.** Split at `\n`, then remove one `\r` from the end of each line (C1). Any other `\r` stays as content (C3). Replace each no-break space (U+00A0) with a space (C3); positions don't change. A file that ends with `\n` has no empty last line.
 4. **Blocks.** Go through the lines from the top. At a line that opens a block (C29), note its fence's length and its indent, and take lines up to the next closing line with at least that many backticks, or to the end of the file with a `C29` warning. The label is these lines, each with up to the opening indent's length of leading spaces and tabs removed, joined with `\n` (C31). The later steps skip these lines, except to place the block in the tree.
 5. **Spans.** On each other line that isn't blank, find the spans in the text after the indent, left to right (C25). A backtick opens a span that ends at the next backtick. A `"` opens one only at the start of the text, after the separator, or after an item's `;` and its spaces and tabs, and it ends at the next `"` that isn't escaped: one that follows an odd run of backslashes. To stay linear when quotes don't close, note where the next backtick and the next unescaped `"` are as you go, instead of searching again from each quote.
 6. **Separator.** Take the first `::` outside spans and brackets (C5, C51). To skip a bracket, count nested `[` and `]`, skipping backtick spans, until the count is back to zero; a `[` that never gets there is ordinary text. To stay linear, find each `[`'s matching `]` once per line, with a stack. The separator takes the spaces and tabs on both sides of it, and the key and value are the text before and after it (C6).

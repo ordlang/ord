@@ -4,6 +4,13 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, J13, M20.2, M30.1 to M30.4, M32 to M35.
 
+## Unreleased
+
+### Spec
+
+- C3, S3: a no-break space (U+00A0) is read as a space everywhere: in the indent, around `::` and `;`, and between forms, so `+tag #kind ^id` reads as forms whatever spaces a phone keyboard typed between them. A writer writes a space for it. Other whitespace characters stay content.
+- Grammar: the parsing strategy replaces no-break spaces with spaces when it splits lines.
+
 ## 0.4.0-draft (2026-10-23)
 
 The specs move to their own repository, `ordlang/ord`, as Markdown files, with one shared version.

@@ -36,7 +36,7 @@ These goals are informative. They explain the rules and decide new ones.
 
 - **S1.** Rules are plain statements, and every rule is required unless its section is marked non-normative. "May" says what is allowed: a form a file can have, or a choice an implementation has. Sentences that start with "So" spell out what the rules already imply.
 - **S2.** Every rule has an ID: a letter for where it belongs (`C` Core, `L` label syntax, `D` dump, `T` tests, `W` writing conventions, `F` files, `S` this front matter) and a number. Companion specs use their own letters, such as `J`. IDs are given in the order rules are added, so they don't follow the order of the text. An ID never changes and is never reused. A removed rule is deleted, and its ID is listed as retired in the changelog.
-- **S3.** A character is a Unicode code point. Whitespace means space or tab (C3). A letter is a Unicode letter (general category L), and a digit is 0 to 9. Positions count characters (D9).
+- **S3.** A character is a Unicode code point. Whitespace means space or tab, and a no-break space is read as a space (C3). A letter is a Unicode letter (general category L), and a digit is 0 to 9. Positions count characters (D9).
 - **S4.** Code spans show text exactly. In examples, `→` stands for a tab and `␣` for a space where one would be invisible (T3).
 - **S5.** Grammars use ABNF (RFC 5234), where a string in double quotes matches any letter case and `%s"…"` matches it exactly (RFC 7405). Where a grammar and the prose differ, the prose wins.
 - **S6.** Tests ([Test format](Test_format.md), part B) are normative, like rules. A test that disagrees with a rule is a bug in the spec, fixed by changing one of them. Other examples are informative.
@@ -84,24 +84,53 @@ Every model read from text follows C38 to C40. A writer may reject a model that 
 - **C49.** A file is UTF-8. Bytes that aren't valid UTF-8 are read as U+FFFD, the replacement character, as the WHATWG UTF-8 decoder reads them, with a warning. An edit leaves the bytes of lines it doesn't touch as they were (C41).
 - **C1.** Lines end at `\n` or `\r\n`. The last line may have no ending.
 - **C2.** A BOM at the start of the file is ignored.
-- **C3.** Only space and tab are whitespace. Any other whitespace character (NBSP, U+3000, vertical tab, form feed, a lone `\r`) is content. A warning is given when one appears at the start of a line or next to `::`.
+- **C3.** Only space and tab are whitespace. A **no-break space** (NBSP, U+00A0) is read as a space wherever it appears, so it works as one in the indent, around `::` and `;`, and between forms, and the model has a space in its place. Phone keyboards type it for a space at the end of a line. Any other whitespace character (U+202F, U+3000, vertical tab, form feed, a lone `\r`) is content. A warning is given when one appears at the start of a line or next to `::`. A writer writes a space for an NBSP that was read, so a literal one is kept only as the escape `\u00a0` in a `"` string (C22).
 
 ```example C1 C2 C3 C35 C37
 ⟨U+FEFF⟩a:: b⟨U+000D⟩
-⟨U+00A0⟩c
-d⟨U+00A0⟩:: e
+⟨U+3000⟩c
+d⟨U+3000⟩:: e
 f:: lone⟨U+000D⟩cr
 .
 root
   field "a"
     "b"
-  node "\u00a0c"
-  field "d\u00a0"
+  node "\u3000c"
+  field "d\u3000"
     "e"
   field "f"
     "lone\rcr"
 ! C3.1 2:1
 ! C3.2 3:2
+```
+
+A no-break space is read as a space: in the indent, around `::` and `;`, and in text.
+
+```example C3 C4 C5 C15
+Tasks
+⟨U+00A0⟩⟨U+00A0⟩Call⟨U+00A0⟩Anna
+a⟨U+00A0⟩::⟨U+00A0⟩x⟨U+00A0⟩;⟨U+00A0⟩y
+.
+root
+  node "Tasks"
+    node "Call Anna"
+  field "a"
+    "x"
+    "y"
+```
+
+```example labels C3 L3 L4
+Open slot +hej⟨U+00A0⟩#hej⟨U+00A0⟩^hej
+.
+root
+  node "Open slot +hej #hej ^hej"
+    label "Open slot"
+    field "tag" inline
+      "hej"
+    field "kind" inline
+      "hej"
+    field "id" inline
+      "hej"
 ```
 
 ## 3. Reading order
