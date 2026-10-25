@@ -97,16 +97,17 @@ Expansions such as `~today` are a typing aid, written out by an editor as they a
 
 This section is a draft outline. Its rules are numbered so they can be referred to, and need tests before 1.0.
 
-- **M36.** A kind definition's `fields` setting holds **field definitions** as field lines under its anonymous node (C13). A definition's key is the field it defines; its value is its `value` setting, and its child field lines are its other settings: `value`, `valid` and `target`.
+- **M36.** A kind definition's `fields` setting holds **field definitions** as field lines under its anonymous node (C13). A definition's key is the field it defines; its value is its `value` setting, and its child field lines are its other settings: `value`, `valid`, `options` and `target`.
 - **M37.** A `value` of `=expr` makes a **computed field**: its value on each node of the kind is the formula's result. A `value` of `auto expr` is an **auto value**: evaluated once, when a node has the kind and the field is empty, and written as a plain value. Any other `value` is a default shown, never written.
 - **M38.** A `label` field definition with `=expr` computes the node's label, which a writer writes into the node line, keeping the line's other forms (L4).
 - **M39.** A field with a `=expr` value on a node that isn't a kind definition is the error `M39`; the formula isn't evaluated.
-- **M40.** A `valid` setting holds `=expr`, evaluated per node with `value` bound to the field's value, a list when it has several. A result that isn't true is the warning `M40`, and the value stays.
+- **M40.** A `valid` setting holds `=expr`, evaluated per node with `value` bound to the field's value, a list when it has several. A result that isn't true is the error `M40`, and the value stays.
 - **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, plus `label`, `id`, `kind`, `parent` and `children`. A reference field's value is the node it refers to, and a field with field children (C13) is an object of them.
 - **M42.** The function library adds `$node(text)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text)`, `$first(x)` and `$last(x)`. Dates are ISO text. Their exact definitions are to be written here.
 - **M43.** Formulas are pure, except `$today()`, `$now()` and `$date()` with a date name such as `"tomorrow"`, whose results follow the clock. Auto expressions may also use `$seq(n)`, `$uuid()`, `$id()` and `$sid()`.
 - **M44.** Dependencies are per node and field. Fields in a cycle are empty, with the error `M44.1` naming the whole path; fields that depend on a cycle are empty, with the error `M44.2`. An evaluation error leaves the field empty, with the error `M44.3`.
 - **M45.** A **slug** is the text in lowercase, accents removed, each run of characters other than letters and digits turned into one `-`, with leading digits and `-` and trailing `-` removed.
+- **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. A value written for the field on a node of the kind, other than a formula, that equals none of the options of the node's kinds, ignoring letter case, is the warning `M46`, and the value stays. Options say how a field is meant to be used, not its type, and tools offer them first when a value is typed.
 
 ## 10. Queries
 
@@ -144,10 +145,11 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M28.1` | warning | A custom state uses a built-in marker | the `state` setting |
 | `M28.2` | warning | A marker belongs to a custom state already | the `state` setting |
 | `M39` | error | A formula on a node that isn't a kind definition | the value |
-| `M40` | warning | A `valid` formula isn't true | the field |
+| `M40` | error | A `valid` formula isn't true | the value |
 | `M44.1` | error | A computed field is in a cycle | the field's definition |
 | `M44.2` | error | A computed field depends on a cycle | the field's definition |
 | `M44.3` | error | A formula fails to evaluate | the field's definition |
+| `M46` | warning | A value is none of the field's `options` | the value |
 
 ---
 
