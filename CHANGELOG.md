@@ -11,6 +11,11 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 - C3, S3: a no-break space (U+00A0) is read as a space everywhere: in the indent, around `::` and `;`, and between forms, so `+tag #kind ^id` reads as forms whatever spaces a phone keyboard typed between them. A writer writes a space for it. Other whitespace characters stay content.
 - Grammar: the parsing strategy replaces no-break spaces with spaces when it splits lines.
 
+### Semantics
+
+- M36, M46: a field definition's `options` setting lists the values the field is meant to hold. A value that is none of them, ignoring letter case, is the warning `M46` and stays. Options are about intended use, not type.
+- M40: a value that fails its `valid` check is now an error, not a warning.
+
 ## 0.4.0-draft (2026-10-23)
 
 The specs move to their own repository, `ordlang/ord`, as Markdown files, with one shared version.
