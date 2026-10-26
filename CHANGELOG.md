@@ -15,6 +15,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 - M36, M46: a field definition's `options` setting lists the values the field is meant to hold. A value that is none of them, ignoring letter case, is the warning `M46` and stays. Options are about intended use, not type.
 - M40: a value that fails its `valid` check is now an error, not a warning.
+- M36, M47: a field definition's `claims` setting takes tags for the field: on a node of the kind, `+bug` is the field's value `bug`, not a tag. A light way to write a value, beside sigils.
 - M19: a kind's `color` can name a field, as in `color:: project`: a node's kind then shows in the color of its value there, so the strongest visual cue is about the content.
 
 ## 0.4.0-draft (2026-10-23)
