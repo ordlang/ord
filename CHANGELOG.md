@@ -8,7 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
-- M47: claims match only what is written. `claims:: target` claims a node by its ID alone, no longer by its label as a slug: `#ord-notes` refers to `Ord Notes +project ^ord-notes`, not to `Ord Notes +project`. `claims:: options` claims an option only when the option is written as a tag name, `tech-debt`, no longer `Tech Debt` by its slug.
+- M47: claims match only what is written, never a slug. `claims:: target` claims a node by its label as written, then by its label without tags and sigils, then by its ID: `#ord-notes` refers to `Ord-notes +project` or to a node with the ID `ord-notes`, `#ord` to `Ord #new +project`, and no tag to `Ord Notes +project` without an ID. `claims:: options` claims an option only when the option is written as a tag name, `tech-debt`, no longer `Tech Debt` by its slug.
 
 ## 0.5.0-draft (2026-10-27)
 
