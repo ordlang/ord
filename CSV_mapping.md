@@ -1,10 +1,10 @@
 # Ord CSV mapping
 
-Version 0.4.0-draft, 2026-10-23. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here, and rule IDs that start with `C`, `L`, `D` or `T` refer to the Spec and the [Test format](Test_format.md).
+Version 0.5.0-draft, 2026-10-27. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here, and rule IDs that start with `C`, `L`, `D` or `T` refer to the Spec and the [Test format](Test_format.md).
 
 ## 1. Scope
 
-- **V1.** This spec maps CSV files to the Core data model (Spec, section 1) and back. A row is a node and a column is a field. The mapping is syntactic: columns such as `kind`, `id`, `parent` and `children` are ordinary fields, which the index reads as it reads them in text files ([Semantics](Semantics.md)).
+- **V1.** This spec maps CSV files to the Core data model (Spec, section 1) and back. A row is a node and a column is a field. The mapping is syntactic: columns such as `type`, `id`, `parent` and `children` are ordinary fields, which the index reads as it reads them in text files ([Semantics](Semantics.md)).
 - **V2.** A **CSV mapper** reads and writes CSV as this spec says, and passes the tests with the `from-csv` and `to-csv` options (T4).
 
 ## 2. Reserved columns
@@ -21,24 +21,24 @@ Version 0.4.0-draft, 2026-10-23. A companion spec to [Ord specification](Ord_Spe
 - **V6.** The first record is the **header**. Its cells, taken as written, are the column names.
 - **V7.** The file is the root node (C14). Each record after the header is a node, a child of the root, in file order.
 - **V8.** The first `label` column gives each node its label, as written. The label is quoted (Spec, section 1) only where it has to be, so that a cell's text never gains a meaning:
-  - when Part 2, reading it as a node's label, would find a form or an escape in it (L1 to L20), such as `#task`, `[x] `, `- `, `[[x]]`, a URL or `\#`
+  - when Part 2, reading it as a node's label, would find a form or an escape in it (L1 to L20), such as `+task`, `#tag`, `[x] `, `- `, `[[x]]`, a URL or `\#`
   - when a writer would quote it (C26), or drop spaces or tabs at its end (C34)
 
-  So `Send draft #task` is quoted and `#task` stays text, while `Short row` isn't quoted. An empty cell, or no `label` column, gives an empty label that is quoted, so a writer writes it `""` (Spec C42).
+  So `Send draft +task` is quoted and `+task` stays text, while `Short row` isn't quoted. An empty cell, or no `label` column, gives an empty label that is quoted, so a writer writes it `""` (Spec C42).
 - **V9.** Every other column gives each node a field, in column order, whose key is the column name. Its value is the cell, read as a field's value in a text file (Spec, section 9): split into items at `;`, with spans and quotes as there. So an empty cell gives a field without items (C16).
 - **V10.** In a node read from CSV, Part 2 reads only value forms (L21 to L27). Label syntax and value triggers are never read in cells, so `@anna`, `[[Ruukki AB]]`, `https://example.com` and `=sum(x)` are text.
 - **V11.** A record with fewer cells than the header gets empty cells for the rest. Cells after the last column are left out. A second `label` column is an ordinary field, and a column whose name is empty is left out. Each of these gives a warning.
 
 ```example from-csv labels V3 V4 V6 V7 V8 V9 V10
-id,kind,label,state,due,attendees
-t9x1,task,Send draft #task,new,2026-10-10,@anna; erik
+id,type,label,state,due,attendees
+t9x1,task,Send draft +task,new,2026-10-10,@anna; erik
 ,task,"Book room, big",new,,
 .
 root
-  node quoted "Send draft #task"
+  node quoted "Send draft +task"
     field "id"
       "t9x1"
-    field "kind"
+    field "type"
       "task"
     field "state"
       "new"
@@ -49,7 +49,7 @@ root
       "erik"
   node "Book room, big"
     field "id"
-    field "kind"
+    field "type"
       "task"
     field "state"
       "new"
@@ -61,7 +61,7 @@ root
 label
 Plain
 Anna's notes
-Send draft #task
+Send draft +task
 - [x] Done
 Meet ~today
 See https://example.com
@@ -73,7 +73,7 @@ Ends with colons::
 root
   node "Plain"
   node "Anna's notes"
-  node quoted "Send draft #task"
+  node quoted "Send draft +task"
   node quoted "- [x] Done"
   node "Meet ~today"
   node quoted "See https://example.com"
@@ -111,8 +111,8 @@ root
 - **V15.** A cell that holds `,`, `"`, `\r` or `\n` is written in `"` quotes, with each `"` doubled. Every record ends with `\n`, and a new file has no BOM. An edit keeps the file's line ending and BOM, as C45 says for text.
 
 ```example to-csv V3 V12 V13 V14 V15
-Send draft #task
-→kind:: task
+Send draft +task
+→type:: task
 →due:: 2026-10-10
 →attendees:: anna; erik
 "Book room, big"
@@ -121,8 +121,8 @@ Send draft #task
 Plain
 →note:: "x; y"
 .
-label,kind,due,attendees,tags,note
-Send draft #task,task,2026-10-10,anna; erik,,
+label,type,due,attendees,tags,note
+Send draft +task,task,2026-10-10,anna; erik,,
 "Book room, big",,,,a,
 Plain,,,,,`x; y`
 ```
@@ -133,7 +133,7 @@ Plain,,,,,`x; y`
 - Every row has every column, so a field that a node doesn't have comes back as a field without items.
 - Fields with the same key on one node come back as one field (V14).
 - A node's fields come back in column order.
-- A label that Part 2 reads in a text file, such as `Send draft #task`, keeps its text but is no longer read. Converting moves such forms into columns first.
+- A label that Part 2 reads in a text file, such as `Send draft +task`, keeps its text but is no longer read. Converting moves such forms into columns first.
 - Value triggers in cells are text (V10).
 - A label keeps its quotes only where they're needed (V8): `"Plain"` in a text file comes back as `Plain`, and an empty label comes back quoted, so `::` in a text file comes back as `""`.
 - A field named `label` doesn't round-trip.

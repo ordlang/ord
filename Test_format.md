@@ -1,6 +1,6 @@
 # Ord test format
 
-Version 0.4.0-draft, 2026-10-23. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here. Its rules start with `D` (the dump) and `T` (tests), and other rule IDs refer to the Spec.
+Version 0.5.0-draft, 2026-10-27. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here. Its rules start with `D` (the dump) and `T` (tests), and other rule IDs refer to the Spec.
 
 Part A defines the **dump**, the text form of the data model that tests compare against. Part B says how tests are written in the specs and how a runner runs them.
 
@@ -36,7 +36,7 @@ The **dump** is a text form of the data model (Spec, section 1). Read tests comp
 
   The node's other children follow (D3).
 - **D13.** A text item of a field line or an `inline` field that is exactly one value trigger (L20) is followed by the name of the field it stands for, e.g. `"https://example.com" url`. One that is exactly a value form (L21) is followed by the form's name, e.g. `"2026-10-15" date`. Items of `embedded` fields have no name, since the field already says what they are. Any other text item gets the fields read from it as `embedded` field children, as in D12.
-- **D14.** A field read from a form that L19 removes from the label, an inline field or a `state`, `kind`, `tag` or `id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula or sigil, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`, and a sigil gives the name, as in `"anna"`.
+- **D14.** A field read from a form that L19 removes from the label, an inline field or a `state`, `type` or `id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula, tag or sigil, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`, and a sigil gives the name, as in `"anna"`.
 
 ### A5. Grammar
 
@@ -98,17 +98,17 @@ root
 ```
 
 ```example ranges labels L10 L11 L19 L20
-- [x] Send draft to [[Anna]] #task [due:: 2026-10-10]
+- [x] Send draft to [[Anna]] +task [due:: 2026-10-10]
 site:: https://example.com
 .
 root
-  node "- [x] Send draft to [[Anna]] #task [due:: 2026-10-10]" @1:1-1:54
+  node "- [x] Send draft to [[Anna]] +task [due:: 2026-10-10]" @1:1-1:54
     label "Send draft to [[Anna]]"
     field "state" inline @1:3-1:6
       "done" @1:4-1:5
     field "link" embedded @1:21-1:29
       "[[Anna]]" @1:21-1:29
-    field "kind" inline @1:30-1:35
+    field "type" inline @1:30-1:35
       "task" @1:31-1:35
     field "due" inline @1:36-1:54
       "2026-10-10" date @1:43-1:53

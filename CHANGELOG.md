@@ -4,19 +4,33 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, J13, M20.2, M30.1 to M30.4, M32 to M35.
 
-## Unreleased
+## 0.5.0-draft (2026-10-27)
+
+### Type replaces kind, `+` marks a type and `#` a tag
+
+Two renames in one version, with one migration (`ord migrate` in Ordlang rewrites a workspace). There is no transition period: the old forms stop working at once.
+
+- The concept **kind** is now **type**, the word Anytype and Capacities use. The reserved field `kind::` is `type::` (M11), so a workspace's own `type::` fields need another name; the migration renames them. In JSON and CSV the `kind` field and column are `type`, in the graph dump (M72) the `kind` lines are `type`, and in formulas (M41) a node's member `kind` is `type`. "Field types" are now "value types" (M3). Rule IDs stay as they are.
+- L7, L13: the `type` trigger is `+` and a name, `+task`; the `tag` trigger is `#` and a name, `#urgent`, as hashtags are everywhere else. `+` reads as "is a": `call #anna to decide on budget #projectX +task`.
+- L13: a tag is `#` and a name, with `/` between names for a nested tag (`#project/apollo`). It ends after its last name, so trailing punctuation is text: `#projectX.` is the tag `projectX`. Before, a tag took every character up to the next space. `#` and a space, a digit or another `#` is not a tag, nor is `C#`.
+- L4, L19, D14: a tag stays in the label where it is written, like a link, and is an `embedded` field in the dump. So `Call #anna about it +task` has the label `Call #anna about it`, and references, slugs and CSV labels keep the `#`. A `+type` is still taken out of the label, and the writer moves it after the inline fields, before the ID. An inline `[tag:: x]` is no longer written as a trigger, since that would change the label.
+- L18: the escapes are `\+` for a type and `\#` for a tag.
+- M38: a computed label keeps the tags written on the line, after the computed text.
+- M23: a label matches a node by its label or by its label without tags, so `[[Buy milk]]` still finds `Buy milk #urgent`; a sigil matches labels that are one word without their tags.
+- M62: `#project` in a query matches nested tags too, such as `#project/apollo`.
+- M17, M19: in the workspace file, a line that is only `+name` defines a type, and `#urgent [color:: red]` sets a tag's color. M47: `claims:: #bug #feature`. M61 to M63: queries are `+task`, `#urgent`, `!#done`, and archived nodes match only queries that name `#archived`.
 
 ### Spec
 
-- C3, S3: a no-break space (U+00A0) is read as a space everywhere: in the indent, around `::` and `;`, and between forms, so `+tag #kind ^id` reads as forms whatever spaces a phone keyboard typed between them. A writer writes a space for it. Other whitespace characters stay content.
+- C3, S3: a no-break space (U+00A0) is read as a space everywhere: in the indent, around `::` and `;`, and between forms, so `#tag +type ^id` reads as forms whatever spaces a phone keyboard typed between them. A writer writes a space for it. Other whitespace characters stay content.
 - Grammar: the parsing strategy replaces no-break spaces with spaces when it splits lines.
 
 ### Semantics
 
-- M36, M46: a field definition's `options` setting lists the values the field is meant to hold. A value that is none of them, ignoring letter case, is the warning `M46` and stays. Options are about intended use, not type.
+- M36, M46: a field definition's `options` setting lists the values the field is meant to hold. A value that is none of them, ignoring letter case, is the warning `M46` and stays. Options are about intended use, not value type.
 - M40: a value that fails its `valid` check is now an error, not a warning.
-- M36, M47: a field definition's `claims` setting takes tags for the field: on a node of the kind, `+bug` is the field's value `bug`, not a tag. A light way to write a value, beside sigils. `claims:: options` claims the field's options, and `claims:: target` its target kinds' nodes, by slug or ID.
-- M19: a kind's `color` can name a field, as in `color:: project`: a node's kind then shows in the color of its value there, so the strongest visual cue is about the content.
+- M36, M47: a field definition's `claims` setting takes tags for the field: on a node of the type, `#bug` is the field's value `bug`, not a tag. A light way to write a value, beside sigils. `claims:: options` claims the field's options, and `claims:: target` its target types' nodes, by slug or ID.
+- M19: a type's `color` can name a field, as in `color:: project`: a node's type then shows in the color of its value there, so the strongest visual cue is about the content.
 
 ## 0.4.0-draft (2026-10-23)
 
