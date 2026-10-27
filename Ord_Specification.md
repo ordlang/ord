@@ -590,6 +590,30 @@ Plan [tag:: x] +task
 
 - **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is a name, or a quoted string (C21) for any other key, as in `["field name":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
 
+- **L29.** `[#text]` is short for the inline field `[tag:: text]`: a bracket (C51) that holds `#`, a letter, and any text up to the bracket's closing `]`, read as the value of L5, so it can hold spaces and `;` splits it into items. It is a way to write a tag that is more than a name (L13), such as `[#Ord notes]`. Like any inline field it can start anywhere and is not part of the label (L19), and a writer keeps it as written. `[#` followed by anything other than a letter is not one, so `[#1]` and `[#]` are text, and `[#text](target)` is a Markdown link (L14).
+
+```example labels L29
+Plan [#Ord notes] now +task
+Also [#a; b c]
+[#x](https://example.com) and [#1]
+.
+root
+  node "Plan [#Ord notes] now +task"
+    label "Plan now"
+    field "tag" inline
+      "Ord notes"
+    field "type" inline
+      "task"
+  node "Also [#a; b c]"
+    label "Also"
+    field "tag" inline
+      "a"
+      "b c"
+  node "[#x](https://example.com) and [#1]"
+    field "url" embedded
+      "https://example.com"
+```
+
 - **L28.** A label that starts with `??` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the inline field `[search:: …]` holding the rest of the label, with the spaces and tabs after `??` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `??` without a space or tab after it, as in `??x`, is text, as is `??` followed only by spaces and tabs, and `??` later in a line. `\??` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
 
 ```example labels L28
@@ -623,7 +647,7 @@ root
 | `link` | `[[Node label]]`, `[[anna-47xu]]`, `[[Node label^anna-47xu]]` | `[link:: [[Node label]]]`, `[link:: [[anna-47xu]]]` | a node's label or ID, or both |
 | `state` | `[ ]`, `[x]` | `[state:: new]`, `[state:: done]` | a state name |
 | `formula` | `=sum(x)`, `=(a + b)` | `[formula:: =sum(x)]`, `[formula:: =(a + b)]` | an expression |
-| `tag` | `#blue`, `#project/apollo` | `[tag:: blue]`, `[tag:: project/apollo]` | ordinary text |
+| `tag` | `#blue`, `#project/apollo`, `[#Ord notes]` (L29) | `[tag:: blue]`, `[tag:: project/apollo]`, `[tag:: Ord notes]` | ordinary text |
 | `url` | `https://example.com`, `./spec.pdf` | `[url:: https://example.com]`, `[url:: ./spec.pdf]` | a URL or a path |
 
 - **L7.** `type`: `+` followed by a name. `+46`, `C++` and a list marker `+ ` (L16) are not types.
@@ -657,7 +681,7 @@ Plan the launch
 ## 17. Literal text
 
 - **L17.** Spans are literal (C25): no form starts inside one. An unmatched quote is plain text.
-- **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`. Part 2 reads the text without the backslash; Core keeps it.
+- **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`, `\[#x]`. Part 2 reads the text without the backslash; Core keeps it.
 
 ## 18. Label and items
 

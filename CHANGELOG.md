@@ -6,9 +6,13 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ## Unreleased
 
+### Spec
+
+- L29: `[#Ord notes]` is short for the inline field `[tag:: Ord notes]`, for a tag that is more than a name. `[#1]` stays text, and `[#x](target)` is a Markdown link.
+
 ### Semantics
 
-- M47: claims match only what is written, never a slug. `claims:: target` claims a node by its label as written, then by its label without tags and sigils, then by its ID: `#ord-notes` refers to `Ord-notes +project` or to a node with the ID `ord-notes`, `#ord` to `Ord #new +project`, and no tag to `Ord Notes +project` without an ID. `claims:: options` claims an option only when the option is written as a tag name, `tech-debt`, no longer `Tech Debt` by its slug.
+- M47: claims match only what is written, never a slug. `claims:: target` claims a node by its label as written, then by its label without tags and sigils, then by its ID: `#ord-notes` refers to `Ord-notes +project` or to a node with the ID `ord-notes`, `#ord` to `Ord #new +project`, and `[#Ord Notes]` to `Ord Notes +project`, which `#ord-notes` no longer claims. `claims:: options` claims each option as written: `#tech-debt` claims `tech-debt`, and `Tech Debt` needs `[#Tech Debt]`.
 
 ## 0.5.0-draft (2026-10-27)
 
