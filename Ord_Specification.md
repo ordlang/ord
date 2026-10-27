@@ -660,7 +660,7 @@ root
   In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label. In an inline field, a quoted value stays text (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
 - **L11.** `state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
 - **L12.** `formula`: `=` followed by a letter, `!` or `(`. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. A path or function call, such as `=node("i42").total`, ends before the next space or tab outside parentheses and quoted strings; its parentheses must balance. A formula with an `(` that is never closed is text, with a warning. `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 9.
-- **L13.** `tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a Markdown heading), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
+- **L13.** `tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
 ## 15. Sigils
@@ -676,7 +676,24 @@ Plan the launch
 
 ## 16. Start of a label
 
-- **L16.** A list marker at the start of a label is decoration: `-`, `*` or `+`, or digits followed by `.`, then a space or tab. It is set aside before the rest of this part applies. Writers keep it.
+- **L16.** A list marker at the start of a label is decoration: `-`, `*`, `+` or `#`, or digits followed by `.`, then a space or tab. It is set aside before the rest of this part applies. Writers keep it. Only one is read, so in `- # x` the `#` is part of the label. Editors may draw a `#` line as a heading; it is a list marker like the others, and the node's place in the tree comes from its indent alone.
+
+```example labels L16
+# Heading +task
+- # Not a second marker
+#tag starts the label
+.
+root
+  node "# Heading +task"
+    label "Heading"
+    field "type" inline
+      "task"
+  node "- # Not a second marker"
+    label "# Not a second marker"
+  node "#tag starts the label"
+    field "tag" embedded
+      "tag"
+```
 
 ## 17. Literal text
 
