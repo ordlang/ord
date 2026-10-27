@@ -60,10 +60,10 @@ non-ws        = %x00-08 / %x0B-1F / %x21-10FFFF             ; not space, tab or 
 
 list-marker   = ( "-" / "*" / %x2022 / "+" / 1*DIGIT "." ) WSP ; L16, at the start of a label
 state         = "[" line-char "]"   ; L11, first after any list marker, then WSP or the end
-kind          = "#" name            ; L7
+type          = "+" name            ; L7
 id            = "^" name            ; L8
-tag           = "+" letter *non-ws  ; L13
-sigil-ref     = non-ws name         ; L15, where the first character is a sigil a kind binds
+tag           = "#" name *( "/" name ) ; L13, ends after its last name
+sigil-ref     = non-ws name         ; L15, where the first character is a sigil a type binds
 
 inline-field  = "[" ( name / quoted-string ) *WSP "::" *WSP inline-value *WSP "]"  ; L5, a bracket
 inline-value  = 1*( bt-string / bracket / bracket-char ) ; not empty, split into items

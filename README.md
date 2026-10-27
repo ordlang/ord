@@ -3,9 +3,9 @@
 Ord is a plain-text markup language for note-taking and structured information. One line is one node, indentation makes the tree, and `key:: value` lines make the outline structured data. Files are UTF-8 text, readable in any editor, and the same files work for people and for LLMs.
 
 ```
-Launch website #project
-	[x] Write the intro page [due:: 2026-10-20] #task +docs
-	[-] Pick a domain #task +urgent
+Launch website +project
+	[x] Write the intro page for #docs [due:: 2026-10-20] +task
+	[-] Pick a domain #urgent +task
 		Ask Johan about the DNS
 	budget:: 1200
 ```
@@ -20,7 +20,7 @@ Version **0.4.0-draft**. The specs are drafts: before 1.0.0, any version can cha
 |---|---|---|
 | [Ord_Specification.md](Ord_Specification.md) | normative | The syntax and data model (Part 1), label syntax: inline fields, triggers and value forms (Part 2), and which files are Ord (Part 3). Start here. |
 | [Test_format.md](Test_format.md) | normative | The AST dump that tests compare against, and how tests are written and run. |
-| [Semantics.md](Semantics.md) | normative | What a workspace means: ownership, kinds, IDs, references, states, formulas and queries. |
+| [Semantics.md](Semantics.md) | normative | What a workspace means: ownership, types, IDs, references, states, formulas and queries. |
 | [JSON_mapping.md](JSON_mapping.md) | normative | How JSON maps to and from the data model. |
 | [CSV_mapping.md](CSV_mapping.md) | normative | How CSV files map to and from the data model, a row per node. |
 | [Grammar.md](Grammar.md) | informative | An ABNF grammar and a parsing strategy. |

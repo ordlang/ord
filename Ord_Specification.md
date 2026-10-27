@@ -9,13 +9,13 @@ Ord is a plain-text outline format. Each line is a node or a field, indentation 
 The spec has three parts:
 
 - **Part 1, Core Ord.** The syntax and the data model: everything a parser and a writer need.
-- **Part 2, Label syntax.** Inline fields and triggers, the shortform for predefined fields such as `#kind`, `^id` and `[x]`, read out of labels and items, and value forms such as numbers and dates. Core doesn't depend on it.
+- **Part 2, Label syntax.** Inline fields and triggers, the shortform for predefined fields such as `+type`, `#tag`, `^id` and `[x]`, read out of labels and items, and value forms such as numbers and dates. Core doesn't depend on it.
 - **Part 3, Files.** Which files are Ord: workspaces, `.txt` and `.ord`, and their types.
 
 Companion documents build on it:
 
 - **[Test format](Test_format.md).** The AST dump that tests compare against, and how the examples in the specs are written, so a script can extract and run them.
-- **[Semantics](Semantics.md).** What fields mean across a workspace (kinds, references, states, single-valued fields), formulas and queries.
+- **[Semantics](Semantics.md).** What fields mean across a workspace (types, references, states, single-valued fields), formulas and queries.
 - **[JSON mapping](JSON_mapping.md)** and **[CSV mapping](CSV_mapping.md).** Mappings to other formats, built on the data model.
 - **[Grammar](Grammar.md).** ABNF for the pieces a line is made of, and one way to read a file in linear time (non-normative).
 - **[Changelog](CHANGELOG.md).** What changed in each version.
@@ -27,7 +27,7 @@ These goals are informative. They explain the rules and decide new ones.
 - **Plain text first.** A file is readable and editable in any editor. Tools add power but are never needed to read it.
 - **Every file reads.** There are no syntax errors. Every file is read into a tree, and anything doubtful is a diagnostic (C35).
 - **Punctuation decides.** Whether a line is a field or a node, and where its key, value and items are, is decided by `::`, `;`, quotes and indentation, never by words or letter case.
-- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block. Nothing in Core depends on other files or an index. Part 2 takes the few facts it needs from kinds, sigil bindings and status markers, as options.
+- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block. Nothing in Core depends on other files or an index. Part 2 takes the few facts it needs from types, sigil bindings and status markers, as options.
 - **Quoting turns syntax off.** Any text can be written literally by quoting it, with `"` or `` ` ``.
 - **Writing is stable.** Writing twice changes nothing (C33), and an edit leaves the lines it doesn't touch as they were (C41).
 - **Light syntax.** Single symbols and rules that let prose stay prose, instead of heavy delimiters.
@@ -120,14 +120,14 @@ root
 ```
 
 ```example labels C3 L3 L4
-Open slot +hej⟨U+00A0⟩#hej⟨U+00A0⟩^hej
+Open slot #hej⟨U+00A0⟩+hej⟨U+00A0⟩^hej
 .
 root
-  node "Open slot +hej #hej ^hej"
-    label "Open slot"
-    field "tag" inline
+  node "Open slot #hej +hej ^hej"
+    label "Open slot #hej"
+    field "tag" embedded
       "hej"
-    field "kind" inline
+    field "type" inline
       "hej"
     field "id" inline
       "hej"
@@ -485,7 +485,7 @@ root
 a  ::   x ;y;;  z
 b::;
 c :: "plain"
-Send→draft→#task␣␣
+Send→draft→+task␣␣
 ␣␣
 f::
   g:: "tab→here"
@@ -494,7 +494,7 @@ f::
 a:: x; y; z
 b::
 c:: "plain"
-Send→draft→#task
+Send→draft→+task
 
 f::
 →g:: "tab\there"
@@ -565,24 +565,24 @@ These are recommendations for writers and editors. A file that doesn't follow th
 
 # Part 2: Label syntax
 
-A field can be written in three ways: as a field line (`key:: value`, Part 1), as an inline field in a label (`[key:: value]`), or as a **trigger**, a shortform for an inline field. Part 2 reads inline fields and triggers out of labels and items, and value forms, such as numbers and dates, out of items. It doesn't change Core: labels and items stay strings there, and Part 2 can be applied to them at any time. What the fields mean (single-valued fields, merging, kinds, references) is in [Semantics](Semantics.md).
+A field can be written in three ways: as a field line (`key:: value`, Part 1), as an inline field in a label (`[key:: value]`), or as a **trigger**, a shortform for an inline field. Part 2 reads inline fields and triggers out of labels and items, and value forms, such as numbers and dates, out of items. It doesn't change Core: labels and items stay strings there, and Part 2 can be applied to them at any time. What the fields mean (single-valued fields, merging, types, references) is in [Semantics](Semantics.md).
 
 ## 12. Scope
 
 - **L1.** Part 2 reads unquoted node labels and unquoted text items of fields. Quoted labels and items (C21), blocks (C29) and keys are never read.
-- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `link`, `url`, `formula` and sigils, and value forms (L21). Inline fields and the `kind`, `id`, `state` and `tag` triggers belong to nodes.
+- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `link`, `url`, `formula` and sigils, and value forms (L21). Inline fields and the `type`, `id`, `state` and `tag` triggers belong to nodes.
 - **L3.** Unless a rule says otherwise, a form starts at the beginning of the text or right after a space or tab, and ends before the next space or tab or at the end of the text. A **name** is a letter followed by letters, digits, `_` and `-`. Letters are any Unicode letters.
-- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `state` trigger, the label (L19), then inline fields, `kind` triggers, `tag` triggers and the `id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `kind`, `tag`, `id` or `state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and sigils stay where they are written. The `state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
+- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `state` trigger, the label (L19), then inline fields, `type` triggers and the `id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `type`, `id` or `state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas, tags and sigils stay where they are written, as they are part of the label. An inline `tag` field stays an inline field, since writing it as a tag would put it in the label. The `state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
 
 ```example fmt labels L4
-#task Send draft [due:: 2026-10-20] +urgent [x] ^s1
++task Send draft [due:: 2026-10-20] #urgent [x] ^s1
 - [x] Done +b #a
-Plan [kind:: task] [tag:: x]
+Plan [type:: task] [tag:: x]
 Ship [state:: done]
 .
-Send draft [x] [due:: 2026-10-20] #task +urgent ^s1
+Send draft #urgent [x] [due:: 2026-10-20] +task ^s1
 - [x] Done #a +b
-Plan #task +x
+Plan [tag:: x] +task
 [x] Ship
 ```
 
@@ -590,23 +590,23 @@ Plan #task +x
 
 - **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is a name, or a quoted string (C21) for any other key, as in `["field name":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
 
-- **L28.** A label that starts with `??` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the inline field `[search:: …]` holding the rest of the label, with the spaces and tabs after `??` removed. Nothing in the rest is read as a form, so `#task` in it doesn't give the node a kind, and the label (L19) is empty. `??` without a space or tab after it, as in `??x`, is text, as is `??` followed only by spaces and tabs, and `??` later in a line. `\??` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
+- **L28.** A label that starts with `??` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the inline field `[search:: …]` holding the rest of the label, with the spaces and tabs after `??` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `??` without a space or tab after it, as in `??x`, is text, as is `??` followed only by spaces and tabs, and `??` later in a line. `\??` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
 
 ```example labels L28
-?? [ ] #task @anna
-- ?? +urgent
+?? [ ] +task @anna
+- ?? #urgent
 ??x and ?? alone
 \?? not a search
 .
 root
-  node "?? [ ] #task @anna"
+  node "?? [ ] +task @anna"
     label ""
     field "search" inline
-      "[ ] #task @anna"
-  node "- ?? +urgent"
+      "[ ] +task @anna"
+  node "- ?? #urgent"
     label ""
     field "search" inline
-      "+urgent"
+      "#urgent"
   node "??x and ?? alone"
   node "\\?? not a search"
     label "?? not a search"
@@ -614,19 +614,19 @@ root
 
 ## 14. Triggers
 
-- **L6.** A trigger is shortform for an inline field. Triggers exist only for the predefined fields below and for sigils that kinds bind (L15). Each predefined field holds one type of value, except `tag`, whose value is ordinary text.
+- **L6.** A trigger is shortform for an inline field. Triggers exist only for the predefined fields below and for sigils that types bind (L15). Each predefined field holds one form of value, except `tag`, whose value is ordinary text.
 
 | Field | Trigger | Read as | Value |
 |---|---|---|---|
-| `kind` | `#task` | `[kind:: task]` | a kind name |
+| `type` | `+task` | `[type:: task]` | a type name |
 | `id` | `^t9x1` | `[id:: t9x1]` | an ID |
 | `link` | `[[Node label]]`, `[[anna-47xu]]`, `[[Node label^anna-47xu]]` | `[link:: [[Node label]]]`, `[link:: [[anna-47xu]]]` | a node's label or ID, or both |
 | `state` | `[ ]`, `[x]` | `[state:: new]`, `[state:: done]` | a state name |
 | `formula` | `=sum(x)`, `=(a + b)` | `[formula:: =sum(x)]`, `[formula:: =(a + b)]` | an expression |
-| `tag` | `+blue` | `[tag:: blue]` | ordinary text |
+| `tag` | `#blue`, `#project/apollo` | `[tag:: blue]`, `[tag:: project/apollo]` | ordinary text |
 | `url` | `https://example.com`, `./spec.pdf` | `[url:: https://example.com]`, `[url:: ./spec.pdf]` | a URL or a path |
 
-- **L7.** `kind`: `#` followed by a name. `#` followed by a space is not a kind, so a Markdown heading is plain text.
+- **L7.** `type`: `+` followed by a name. `+46`, `C++` and a list marker `+ ` (L16) are not types.
 - **L8.** `id`: `^` followed by a name. IDs match case-insensitively. More than one on a label is an error.
 - **L10.** `link`: `[[`, a reference, and a closing `]]`, which is required: without it, the `[[` is text, with a warning. It can start anywhere and ends at the first `]]`. The reference is one of:
   - `[[Node label]]` or `[[anna-47xu]]`: a label or an ID. It refers to the node with that ID, or else to the node with that label.
@@ -634,21 +634,21 @@ root
   - `[[^anna-47xu]]`, `[["Node label"]]` and `[["Node label"^anna-47xu]]` are allowed but usually redundant: `^` says the rest is an ID, and quotes (C21) say the text is a label. They settle the case where an ID and a label match different nodes.
 
   In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label. In an inline field, a quoted value stays text (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
-- **L11.** `state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a kind's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no kind defines is a diagnostic.
+- **L11.** `state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
 - **L12.** `formula`: `=` followed by a letter, `!` or `(`. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. A path or function call, such as `=node("i42").total`, ends before the next space or tab outside parentheses and quoted strings; its parentheses must balance. A formula with an `(` that is never closed is text, with a warning. `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 9.
-- **L13.** `tag`: `+` followed by a letter, then any characters up to the next space or tab. `+46`, `C++` and a list marker `+ ` are not tags.
+- **L13.** `tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a Markdown heading), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
 ## 15. Sigils
 
-- **L15.** A kind can bind a **sigil**, a single character, with the `sigil` setting on its definition ([Semantics](Semantics.md) M19). The sigil followed by a name is shortform for a field named after the kind, holding a reference to a node of that kind: the node whose ID is the name, or else the node whose label is that one word, ignoring case. With `%` bound to the kind `project`, `Plan the launch %apollo` reads as:
+- **L15.** A type can bind a **sigil**, a single character, with the `sigil` setting on its definition ([Semantics](Semantics.md) M19). The sigil followed by a name is shortform for a field named after the type, holding a reference to a node of that type: the node whose ID is the name, or else the node whose label is that one word, ignoring case. With `%` bound to the type `project`, `Plan the launch %apollo` reads as:
 
 ```
 Plan the launch
 	project:: apollo
 ```
 
-  A node with a longer label is referenced through its ID, or with a link (L10). A character that no kind binds is plain text. No sigil is bound unless a kind binds it. A reader without kind definitions takes the bindings as an option, by default none, and leaves resolving the name to the index. `team%apollo` is not a reference, since the sigil doesn't follow whitespace.
+  A node with a longer label is referenced through its ID, or with a link (L10). A character that no type binds is plain text. No sigil is bound unless a type binds it. A reader without type definitions takes the bindings as an option, by default none, and leaves resolving the name to the index. `team%apollo` is not a reference, since the sigil doesn't follow whitespace.
 
 ## 16. Start of a label
 
@@ -657,16 +657,16 @@ Plan the launch
 ## 17. Literal text
 
 - **L17.** Spans are literal (C25): no form starts inside one. An unmatched quote is plain text.
-- **L18.** A backslash before the first character of a form makes it plain text: `\#task`, `\^id`, `\+tag`, `\[[x]]`, `\=x`, `\[due:: x]`. Part 2 reads the text without the backslash; Core keeps it.
+- **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`. Part 2 reads the text without the backslash; Core keeps it.
 
 ## 18. Label and items
 
-- **L19.** A node's **label** is its line without the list marker, the `state` trigger, inline fields, and the `kind`, `tag` and `id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send #task draft` and `#task Send draft` both have the label `Send draft`. The system field `label` holds it. Links, URLs, formulas and sigils are part of it, where they were written (L4). Editors may render them differently.
+- **L19.** A node's **label** is its line without the list marker, the `state` trigger, inline fields, and the `type` and `id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `label` holds it. Links, URLs, formulas, tags and sigils are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it with its tags. Editors may render them differently.
 - **L20.** A field item that is exactly one value trigger (L2) is that value. Any other item is text, and the triggers in it are read as in a label.
 
 ```example labels C36 L3 L6 L7 L8 L11 L13 L16 L19
-- [-] Buy milk #errand +urgent ^m1lk
-#task Call Anna
+- [-] Buy milk +errand #urgent ^m1lk
++task Call Anna
 1. Price +46, C++, C#, #5 and # heading
 Two ids ^a1 ^b2
 [ ] Call back
@@ -674,19 +674,19 @@ Two ids ^a1 ^b2
 + [x] Read the spec
 .
 root
-  node "- [-] Buy milk #errand +urgent ^m1lk"
-    label "Buy milk"
+  node "- [-] Buy milk +errand #urgent ^m1lk"
+    label "Buy milk #urgent"
     field "state" inline
       "in-progress"
-    field "kind" inline
+    field "type" inline
       "errand"
-    field "tag" inline
+    field "tag" embedded
       "urgent"
     field "id" inline
       "m1lk"
-  node "#task Call Anna"
+  node "+task Call Anna"
     label "Call Anna"
-    field "kind" inline
+    field "type" inline
       "task"
   node "1. Price +46, C++, C#, #5 and # heading"
     label "Price +46, C++, C#, #5 and # heading"
@@ -711,11 +711,36 @@ root
 ! L8 4:13
 ```
 
+```example labels L7 L13 L18 L19
+Call #anna to decide on budget #projectX. +task
+Nested #project/apollo, #a/ and #b-2/c
+Not tags: #123 # C# ##x \#y and #
+.
+root
+  node "Call #anna to decide on budget #projectX. +task"
+    label "Call #anna to decide on budget #projectX."
+    field "tag" embedded
+      "anna"
+    field "tag" embedded
+      "projectX"
+    field "type" inline
+      "task"
+  node "Nested #project/apollo, #a/ and #b-2/c"
+    field "tag" embedded
+      "project/apollo"
+    field "tag" embedded
+      "a"
+    field "tag" embedded
+      "b-2/c"
+  node "Not tags: #123 # C# ##x \\#y and #"
+    label "Not tags: #123 # C# ##x #y and #"
+```
+
 ```example labels L1 L2 L5 L10 L12 L14 L17 L18 L20
 Plan [due:: 2026-10-20] ["Project lead":: anna] [parts:: a;b] [note:: "two words"] [memo:: two words]
 \#literal and \[due:: x] and `#code` here
-"Quoted #task label"
-#key:: #task +x
+"Quoted +task label"
+#key:: +task #x
 who:: [[Anna]]
 See https://example.com/a. and ./spec.pdf, not //x
 Total =(a + b) then =sum(x
@@ -737,9 +762,9 @@ root
       "two words"
   node "\\#literal and \\[due:: x] and `#code` here"
     label "#literal and [due:: x] and `#code` here"
-  node quoted "Quoted #task label"
+  node quoted "Quoted +task label"
   field "#key"
-    "#task +x"
+    "+task #x"
   field "who"
     "[[Anna]]" link
   node "See https://example.com/a. and ./spec.pdf, not //x"
@@ -756,16 +781,16 @@ root
 ```
 
 ```example labels L6 L10 L20 D12 D13 D14
-Call Anna about [[Ruukki AB]] #task [client:: [[Ruukki AB]]] [due:: 2026-10-20]
+Call Anna about [[Ruukki AB]] +task [client:: [[Ruukki AB]]] [due:: 2026-10-20]
 See [[anna-47xu]], [[Anna Smith^anna-47xu]] and [[^x1]]
 client:: [[Ruukki AB]]; see [[Acme]] now
 .
 root
-  node "Call Anna about [[Ruukki AB]] #task [client:: [[Ruukki AB]]] [due:: 2026-10-20]"
+  node "Call Anna about [[Ruukki AB]] +task [client:: [[Ruukki AB]]] [due:: 2026-10-20]"
     label "Call Anna about [[Ruukki AB]]"
     field "link" embedded
       "[[Ruukki AB]]"
-    field "kind" inline
+    field "type" inline
       "task"
     field "client" inline
       "[[Ruukki AB]]" link
@@ -849,11 +874,11 @@ Codes, severities and positions work as in section 11.
 |---|---|---|---|
 | `L8` | error | A label has more than one `id` trigger | each `id` trigger after the first |
 | `L10` | warning | A `[[` has no closing `]]` | the `[[` |
-| `L11` | warning | A `state` marker that no kind defines | the `[` |
+| `L11` | warning | A `state` marker that no type defines | the `[` |
 | `L12` | warning | A formula has an `(` that is never closed | the `=` |
 | `L26` | warning | Text has the digits and separators of a date, datetime, week or month, but a part out of range | the text's first character |
 
-`L11` needs the kinds' custom markers ([Semantics](Semantics.md) M27). A reader without kind definitions takes them as an option, like sigil bindings (L15).
+`L11` needs the types' custom markers ([Semantics](Semantics.md) M27). A reader without type definitions takes them as an option, like sigil bindings (L15).
 
 ---
 
