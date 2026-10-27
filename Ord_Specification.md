@@ -1,6 +1,6 @@
 # Ord specification
 
-Version 0.4.0-draft, 2026-10-23.
+Version 0.5.0-draft, 2026-10-27.
 
 ## Introduction
 

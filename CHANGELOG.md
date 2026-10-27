@@ -4,7 +4,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, J13, M20.2, M30.1 to M30.4, M32 to M35.
 
-## Unreleased
+## 0.5.0-draft (2026-10-27)
 
 ### Type replaces kind, `+` marks a type and `#` a tag
 
@@ -16,6 +16,8 @@ Two renames in one version, with one migration (`ord migrate` in Ordlang rewrite
 - L4, L19, D14: a tag stays in the label where it is written, like a link, and is an `embedded` field in the dump. So `Call #anna about it +task` has the label `Call #anna about it`, and references, slugs and CSV labels keep the `#`. A `+type` is still taken out of the label, and the writer moves it after the inline fields, before the ID. An inline `[tag:: x]` is no longer written as a trigger, since that would change the label.
 - L18: the escapes are `\+` for a type and `\#` for a tag.
 - M38: a computed label keeps the tags written on the line, after the computed text.
+- M23: a label matches a node by its label or by its label without tags, so `[[Buy milk]]` still finds `Buy milk #urgent`; a sigil matches labels that are one word without their tags.
+- M62: `#project` in a query matches nested tags too, such as `#project/apollo`.
 - M17, M19: in the workspace file, a line that is only `+name` defines a type, and `#urgent [color:: red]` sets a tag's color. M47: `claims:: #bug #feature`. M61 to M63: queries are `+task`, `#urgent`, `!#done`, and archived nodes match only queries that name `#archived`.
 
 ### Spec

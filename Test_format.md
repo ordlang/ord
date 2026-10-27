@@ -1,6 +1,6 @@
 # Ord test format
 
-Version 0.4.0-draft, 2026-10-23. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here. Its rules start with `D` (the dump) and `T` (tests), and other rule IDs refer to the Spec.
+Version 0.5.0-draft, 2026-10-27. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here. Its rules start with `D` (the dump) and `T` (tests), and other rule IDs refer to the Spec.
 
 Part A defines the **dump**, the text form of the data model that tests compare against. Part B says how tests are written in the specs and how a runner runs them.
 

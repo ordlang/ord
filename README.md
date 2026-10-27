@@ -12,7 +12,7 @@ Launch website +project
 
 ## Status
 
-Version **0.4.0-draft**. The specs are drafts: before 1.0.0, any version can change how a file is read. All files here share one version; see the [changelog](CHANGELOG.md).
+Version **0.5.0-draft**. The specs are drafts: before 1.0.0, any version can change how a file is read. All files here share one version; see the [changelog](CHANGELOG.md).
 
 ## Files
 

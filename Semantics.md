@@ -1,6 +1,6 @@
 # Ord semantics
 
-Version 0.4.0-draft, 2026-10-23. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here, and rule IDs that start with `C`, `L`, `D`, `T` or `F` refer to the Spec. This spec's rules start with `M`.
+Version 0.5.0-draft, 2026-10-27. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here, and rule IDs that start with `C`, `L`, `D`, `T` or `F` refer to the Spec. This spec's rules start with `M`.
 
 The Spec says how text becomes a tree of nodes and fields. This spec says what that tree means across a workspace: which node a reference points to, what types and states a node has, who owns whom, and what formulas and queries written in files stand for.
 
@@ -76,7 +76,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   - by ID alone (`^x1`, or ID and label): the node with that ID. If none has it, the error `M22.1`. The label is never a fallback; when it no longer matches the node, the warning `M22.2`.
   - by label alone (`"Anna Smith"`, or a quoted link): the node with that label, as in M23.
   - by text that could be either (`[[anna]]`, `client:: ruukki`): the node with that ID, or else the node with that label. When it is one node's ID and another node's label, the ID wins, with the warning `M22.3`.
-- **M23.** A label matches a node whose label is equal to it ignoring spaces and tabs at either end and letter case. Letter case is compared by mapping both to lowercase with Unicode's default case mapping (not locale-specific); there is no other normalization, so `é` written as one character or as `e` and a combining accent are different labels. In a reference field with target types (M24), and for a sigil, only nodes of those types match, and a sigil matches only one-word labels. No match is the warning `M23.1`; several matches is the warning `M23.2`, and the reference doesn't resolve.
+- **M23.** A label matches a node whose label is equal to it, or whose label without its tags (L13) is, ignoring spaces and tabs at either end and letter case: `[[Buy milk]]` matches `Buy milk #urgent`, as does `[[Buy milk #urgent]]`. A label without tags is the label with each tag and the spaces and tabs before it removed. Letter case is compared by mapping both to lowercase with Unicode's default case mapping (not locale-specific); there is no other normalization, so `é` written as one character or as `e` and a combining accent are different labels. In a reference field with target types (M24), and for a sigil, only nodes of those types match, and a sigil matches only labels that are one word without their tags. No match is the warning `M23.1`; several matches is the warning `M23.2`, and the reference doesn't resolve.
 - **M24.** A field is a **reference field** when a type's field definition gives it a `target` setting naming one or more types. A plain value of a reference field is then a reference to a node of those types. A field named after a type that a sigil is bound to (M19) is a reference field to that type without a setting, so `person:: anna` means what `@anna` does. Any other field's plain values are text, even when they name a node; a tool may suggest adding `target`, but doesn't resolve them.
 - **M25.** References may form cycles. They are links, not ownership or dependencies.
 
@@ -116,7 +116,7 @@ This section is a draft outline, like section 9.
 
 - **M60.** A node with a `search` field is a **search node**, whether the field comes from a field line, an inline field or an inline search `?? query` ([Ord specification](Ord_Specification.md) L28). Its query is the value of `search`, or, written as `search::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `search` field, such as `??` and a `search::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
 - **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a sigil reference, a link, a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
-- **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag, `[x]` and the other triggers when its state or its base is that state, a sigil or link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
+- **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), `[x]` and the other triggers when its state or its base is that state, a sigil or link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
 - **M64.** The view settings (`view`, `columns`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. What `computed` writes into a file is still to be specified here.
 
@@ -293,4 +293,23 @@ file "lines.csv"
 ! M20.1 a.ord:3:6
 ! M15 lines.csv:3:1
 ! M15 lines.csv:4:1
+```
+
+```example graph M23
+--- a.ord
+Person [defines:: person]
+	sigil:: @
+Buy milk #urgent
+Anna #friend +person
+See [[Buy milk]], [[buy milk #urgent]] and @anna
+.
+file "a.ord"
+  node "Person" @1
+  node "Buy milk #urgent" @3
+  node "Anna #friend" @4
+    type "person"
+  node "See [[Buy milk]], [[buy milk #urgent]] and @anna" @5
+    ref "link" -> a.ord:3
+    ref "link" -> a.ord:3
+    ref "person" -> a.ord:4
 ```

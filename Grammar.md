@@ -1,6 +1,6 @@
 # Ord grammar
 
-Version 0.4.0-draft, 2026-10-23. An informative (non-normative) companion to [Ord specification](Ord_Specification.md), of the same version: an ABNF grammar and one way to read a file. The prose of the Spec is what conforms.
+Version 0.5.0-draft, 2026-10-27. An informative (non-normative) companion to [Ord specification](Ord_Specification.md), of the same version: an ABNF grammar and one way to read a file. The prose of the Spec is what conforms.
 
 ## 1. Grammar
 
