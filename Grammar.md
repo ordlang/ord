@@ -58,7 +58,7 @@ name          = letter *( letter / DIGIT / "_" / "-" )      ; L3
 letter        = ALPHA / %x80-10FFFF ; a Unicode letter (S3), not every character in this range
 non-ws        = %x00-08 / %x0B-1F / %x21-10FFFF             ; not space, tab or LF
 
-list-marker   = ( "-" / "*" / %x2022 / "+" / 1*DIGIT "." ) WSP ; L16, at the start of a label
+list-marker   = ( "-" / "*" / %x2022 / "+" / "#" / 1*DIGIT "." ) WSP ; L16, at the start of a label
 state         = "[" line-char "]"   ; L11, first after any list marker, then WSP or the end
 type          = "+" name            ; L7
 id            = "^" name            ; L8
