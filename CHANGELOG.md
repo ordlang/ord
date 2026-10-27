@@ -4,6 +4,12 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, J13, M20.2, M30.1 to M30.4, M32 to M35.
 
+## Unreleased
+
+### Semantics
+
+- M47: claims match only what is written, never a slug. `claims:: target` claims a node by its label as written, then by its label without tags and sigils, then by its ID: `#ord-notes` refers to `Ord-notes +project` or to a node with the ID `ord-notes`, `#ord` to `Ord #new +project`, and no tag to `Ord Notes +project` without an ID. `claims:: options` claims an option only when the option is written as a tag name, `tech-debt`, no longer `Tech Debt` by its slug.
+
 ## 0.5.0-draft (2026-10-27)
 
 ### Type replaces kind, `+` marks a type and `#` a tag
