@@ -68,6 +68,7 @@ sigil-ref     = non-ws name         ; L15, where the first character is a sigil 
 inline-field  = "[" ( name / quoted-string ) *WSP "::" *WSP inline-value *WSP "]"  ; L5, a bracket
 inline-value  = 1*( bt-string / bracket / bracket-char ) ; not empty, split into items
 inline-search = "??" 1*WSP non-ws *line-char                 ; L28, first after any list marker
+bracket-tag   = "[#" letter *( bt-string / bracket / bracket-char ) "]" ; L29, short for [tag:: …], not before "("
 
 link          = "[[" link-ref "]]"  ; L10, can start anywhere, ends at the first "]]"
 link-ref      = link-label [ "^" name ] / "^" name
