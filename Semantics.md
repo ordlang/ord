@@ -6,12 +6,11 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 
 ## 1. Scope and the line
 
-- **M1.** This spec covers what files mean. Two tools that conform to it give a workspace the same graph: the same nodes, owners, types, IDs, states, field values and references, and the same diagnostics from section 11.
+- **M1.** This spec covers what files mean. Two tools that conform to it give a workspace the same graph: the same nodes, owners, types, IDs, states, field values and references, and the same diagnostics from section 10.
 - **M2.** A rule belongs here when it is about something written in a file that a tool interprets, or something a tool writes into a file. Anything that exists only in a tool, such as an index, a view, completion or a heuristic whose result isn't written, is implementation and outside this spec.
 - **M3.** These are explicitly implementation-defined, so tools may differ:
   - how value types are inferred, and outlier warnings; only value forms (L21 to L27) are normative
-  - typing aids such as expansions (`~today`), which an editor writes out as you type
-  - diagnostics beyond section 11, which use codes outside this spec's letters, e.g. `ord/outlier`
+  - diagnostics beyond section 10, which use codes outside this spec's letters, e.g. `ord/outlier`
   - how and when a graph is stored, cached or rebuilt
   - completion, hover, inlay hints, views, CodeLens and results documents
   - fold state and other view state, which is never written into the files: a tool keeps it apart, finding a folded node again by its ID or its place in the tree, and a node it can't find stays open
@@ -32,7 +31,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 - **M8.** A node's fields come from every form a field can take: its field lines (C11), the fields Part 2 reads from its label (D12, `inline` and `embedded` alike), and its CSV cells. Each form adds its values under its key, in the order: label forms first, as written, then field lines in file order.
 - **M9.** A sigil (L15) adds a value under the key of its type: with `%` bound to `project`, `%apollo` adds `project:: apollo`.
 - **M10.** `label`, `id` and `state` are **single-valued**: a node has at most one value for each, from any form. A second one is the error `M10`. Every other field holds every value it is given, from every form.
-- **M11.** The **reserved fields** are `label`, `type`, `id`, `state`, `tag`, `link`, `formula`, `url`, `parent` and `children`. Their meaning is fixed by this spec. A type can't redefine them, except that a type may compute `label` and give `id` an auto rule (section 9).
+- **M11.** The **reserved fields** are `label`, `type`, `id`, `state`, `tag`, `link`, `formula`, `url`, `parent` and `children`. Their meaning is fixed by this spec. A type can't redefine them, except that a type may compute `label` and give `id` an auto rule (section 8).
 - **M12.** The fields of a **type definition** (M17) and of a **search node** (M60) that this spec names as settings configure it; they are not data, and their child lines aren't graph data either.
 
 ## 4. Ownership
@@ -90,11 +89,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 - **M30.** A node's **base** is its state's base. A built-in state is its own base. A custom state without a base, and a state that is the warning `M26`, give the node no base.
 - **M31.** `done` is true for a node exactly when its base is `done`.
 
-## 8. Expansions
-
-Expansions such as `~today` are a typing aid, written out by an editor as they are typed. To a reader they are plain text, so this section has no rules.
-
-## 9. Field definitions and formulas
+## 8. Field definitions and formulas
 
 This section is a draft outline. Its rules are numbered so they can be referred to, and need tests before 1.0.
 
@@ -111,9 +106,9 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 - **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. An item `+name` names a type instead, whose nodes the field refers to (M24); it is not an option. A value written for the field on a node of the type, other than a formula, that equals none of the options of the node's types, ignoring letter case, is the warning `M46`, and the value stays. On a reference field such a value is a reference instead, and not the warning. Options say how a field is meant to be used, not its value type, and tools offer them first when a value is typed.
 - **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node of the type, a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its label without its tags and sigils, and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the first type's field has it. The text stays as written.
 
-## 10. Queries
+## 9. Queries
 
-This section is a draft outline, like section 9.
+This section is a draft outline, like section 8.
 
 - **M60.** A node with a `search` field is a **search node**, whether the field comes from a field line, an inline field or an inline search `?? query` ([Ord specification](Ord_Specification.md) L28). Its query is the value of `search`, or, written as `search::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `search` field, such as `??` and a `search::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
 - **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a sigil reference, a link, a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
@@ -121,7 +116,7 @@ This section is a draft outline, like section 9.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
 - **M64.** The view settings (`view`, `columns`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. What `computed` writes into a file is still to be specified here.
 
-## 11. Diagnostics
+## 10. Diagnostics
 
 Codes, severities and positions work as in the Spec (C35 to C37). Positions are in the file the diagnostic is about.
 
