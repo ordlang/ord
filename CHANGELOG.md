@@ -8,7 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
-- W2, W3: recommendations for editors: cycling a state goes `[ ]`, `[-]`, `[?]`, `[x]`, and a label is shown by its state's base: done in gray, waiting in a light pink-orange, new and in progress as other text.
+- W2, W3: recommendations for editors: cycling a state goes `[ ]`, `[-]`, `[?]`, `[x]`, and a label is shown by its state's base: in progress in a light blue, waiting in a light pink-orange, done in gray, new as other text.
 - L16: `#` and a space is a list marker too, as `-`, `*` and `+` are, so `# Heading` has the label `Heading`. Editors may draw it as a heading.
 - L29: `[#Ord notes]` is short for the inline field `[tag:: Ord notes]`, for a tag that is more than a name. `[#1]` stays text, and `[#x](target)` is a Markdown link.
 
