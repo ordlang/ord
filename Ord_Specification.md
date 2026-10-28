@@ -546,6 +546,8 @@ c:: d⟨U+000D⟩
 These are recommendations for writers and editors. A file that doesn't follow them is still valid.
 
 - **W1.** Write a node's fields before its child nodes. Readers accept them in any order (C12).
+- **W2.** An editor that cycles a node's state with one command or tap goes `[ ]`, `[-]`, `[?]`, `[x]` and back to `[ ]` (or to no state), by the state's base ([Semantics](Semantics.md) M27): new, in progress, waiting, done.
+- **W3.** An editor shows a node's label by its state's base: a new or in-progress node's label as other text, a done node's in gray, and a waiting node's in a light pink-orange. Types, tags and other marks keep their own colors.
 
 ## 11. Diagnostics
 
