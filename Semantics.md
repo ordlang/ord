@@ -14,6 +14,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   - diagnostics beyond section 11, which use codes outside this spec's letters, e.g. `ord/outlier`
   - how and when a graph is stored, cached or rebuilt
   - completion, hover, inlay hints, views, CodeLens and results documents
+  - fold state and other view state, which is never written into the files: a tool keeps it apart, finding a folded node again by its ID or its place in the tree, and a node it can't find stays open
   - merging and sync
 - **M4.** A **graph builder** reads a workspace (Spec F4) with label syntax (Spec Part 2) and builds the graph as this spec says, and passes the tests with the `graph` option (Appendix A).
 

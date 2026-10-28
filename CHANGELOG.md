@@ -13,6 +13,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M3: fold state is view state, implementation-defined and never written into the files.
 - M24, M36, M46: `options:: +name` replaces `target`. An `options` item `+name` names a type, and a field whose options name types is a reference field to their nodes: `target:: person` is now `options:: +person`. Its other options stay text, and a value that is none of them is a reference instead of the warning `M46`. The `target` setting is gone.
 - M36, M47: `tags:: true` replaces `claims`. A field with `tags:: true` takes its options as tags, and on a reference field the nodes of its types too: with `options:: bug; feature`, `Crash +issue #bug` has `issue type:: bug`. The `claims` setting is gone, with its list of tags and its words `options` and `target`; a tag the field should take is one of its options.
 - M19: a type definition's `checkbox:: true` gives the type's nodes a checkbox: an editor that gives a node line the type adds `[ ]` when the node has no state.
