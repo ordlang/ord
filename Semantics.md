@@ -30,7 +30,6 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 ## 3. Fields
 
 - **M8.** A node's fields come from every form a field can take: its field lines (C11), the fields Part 2 reads from its label (D12, `inline` and `embedded` alike), and its CSV cells. Each form adds its values under its key, in the order: label forms first, as written, then field lines in file order.
-- **M9.** A sigil (L15) adds a value under the key of its type: with `%` bound to `project`, `%apollo` adds `project:: apollo`.
 - **M10.** `label`, `id` and `state` are **single-valued**: a node has at most one value for each, from any form. A second one is the error `M10`. Every other field holds every value it is given, from every form.
 - **M11.** The **reserved fields** are `label`, `type`, `id`, `state`, `tag`, `link`, `formula`, `url`, `parent` and `children`. Their meaning is fixed by this spec. A type can't redefine them, except that a type may compute `label` and give `id` an auto rule (section 9).
 - **M12.** The fields of a **type definition** (M17) and of a **search node** (M60) that this spec names as settings configure it; they are not data, and their child lines aren't graph data either.
@@ -46,7 +45,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 
 - **M17.** A node with a `defines` field is a **type definition**. Its value is the type's name, a name (L3). In the workspace file (Spec F5), a node whose line is only a `type` trigger, `+name`, is short for `[defines:: name]`: a type definition with an empty label, not a node of that type. Elsewhere such a line is a node of that type, as usual. A value that isn't a name is the error `M17.1`, and two definitions of one name are the error `M17.2`.
 - **M18.** A node's **types** are its `type` values, in order, without repeats. A type without a definition is allowed.
-- **M19.** A type definition's settings are its field lines `sigil`, `fields`, `state`, `color` and `checkbox`. `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name. In the workspace file, a node whose line is only `tag` triggers, with inline fields or field lines, sets those tags, as in `#urgent [color:: red]`; it isn't tagged itself, and its only setting is `color`. `sigil` binds one character (L15); it can't be whitespace, a letter, a digit or a fixed symbol (`# ^ ~ [ ] + = ! ; " ' ``), with the error `M19.1`, and a character bound twice is the error `M19.2`. No sigil is bound unless a definition binds it. `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
+- **M19.** A type definition's settings are its field lines `fields`, `state`, `color` and `checkbox`. `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name. In the workspace file, a node whose line is only `tag` triggers, with inline fields or field lines, sets those tags, as in `#urgent [color:: red]`; it isn't tagged itself, and its only setting is `color`. `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
 - **M20.** A node's **ID** is its `id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
 
 ### Built-in types (informative)
@@ -69,7 +68,6 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 - **M21.** A **reference** points from a field value to a graph node. These values are references:
   - a link (L10), in any field
-  - a sigil (L15), to a node of its type
   - a plain text value of the `link` field
   - a plain text value of a reference field (M24), as written in a field line, quoted or not, and as written in an inline field when unquoted (L10)
   - a `parent` or `children` cell (M14)
@@ -77,8 +75,8 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   - by ID alone (`^x1`, or ID and label): the node with that ID. If none has it, the error `M22.1`. The label is never a fallback; when it no longer matches the node, the warning `M22.2`.
   - by label alone (`"Anna Smith"`, or a quoted link): the node with that label, as in M23.
   - by text that could be either (`[[anna]]`, `client:: ruukki`): the node with that ID, or else the node with that label. When it is one node's ID and another node's label, the ID wins, with the warning `M22.3`.
-- **M23.** A label matches a node whose label is equal to it, or whose label without its tags (L13) is, ignoring spaces and tabs at either end and letter case: `[[Buy milk]]` matches `Buy milk #urgent`, as does `[[Buy milk #urgent]]`. A label without tags is the label with each tag and the spaces and tabs before it removed. Letter case is compared by mapping both to lowercase with Unicode's default case mapping (not locale-specific); there is no other normalization, so `é` written as one character or as `e` and a combining accent are different labels. In a reference field (M24), and for a sigil, only nodes of those types match, and a sigil matches only labels that are one word without their tags. No match is the warning `M23.1`; several matches is the warning `M23.2`, and the reference doesn't resolve.
-- **M24.** A field is a **reference field** when a type's field definition has an `options` setting (M46) that names one or more types, each as an item `+name`, as in `options:: +person` or `options:: +person; +company`. A plain value of a reference field is then a reference to a node of those types, unless it equals one of the setting's other options, ignoring letter case, which stays text: with `options:: nobody; +person`, `owner:: nobody` is text and `owner:: Anna` a reference. A field named after a type that a sigil is bound to (M19) is a reference field to that type without a setting, so `person:: anna` means what `@anna` does. Any other field's plain values are text, even when they name a node; a tool may suggest adding `options:: +name`, but doesn't resolve them.
+- **M23.** A label matches a node whose label is equal to it, or whose label without its tags (L13) is, ignoring spaces and tabs at either end and letter case: `[[Buy milk]]` matches `Buy milk #urgent`, as does `[[Buy milk #urgent]]`. A label without tags is the label with each tag and the spaces and tabs before it removed. Letter case is compared by mapping both to lowercase with Unicode's default case mapping (not locale-specific); there is no other normalization, so `é` written as one character or as `e` and a combining accent are different labels. In a reference field (M24), only nodes of its types match. No match is the warning `M23.1`; several matches is the warning `M23.2`, and the reference doesn't resolve.
+- **M24.** A field is a **reference field** when a type's field definition has an `options` setting (M46) that names one or more types, each as an item `+name`, as in `options:: +person` or `options:: +person; +company`. A plain value of a reference field is then a reference to a node of those types, unless it equals one of the setting's other options, ignoring letter case, which stays text: with `options:: nobody; +person`, `owner:: nobody` is text and `owner:: Anna` a reference. Any other field's plain values are text, even when they name a node; a tool may suggest adding `options:: +name`, but doesn't resolve them.
 - **M25.** References may form cycles. They are links, not ownership or dependencies.
 
 ## 7. States
@@ -86,7 +84,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 - **M26.** A node's **state** is its single `state` value (M10), from its trigger (L11) or a field. It is a **built-in state**, `new`, `in-progress`, `waiting` or `done`, or a custom state (M27): one that a custom marker stands for (M29), or else the first in type order (M18) of the node's types that defines it. A value that is none of these is the warning `M26`, and the node keeps it as its state, with no base.
 - **M27.** A type's `state` setting defines its **custom states**: `|`-separated parts, each a name (L3), an optional marker in brackets, and an optional `>` and **base**, a built-in state, as in `triage [t] > new | review [r] > in-progress | shipped > done | someday`. Spaces and tabs around the parts don't count. A part in another form, with a base that isn't a built-in state, or with the name of a built-in state or of a custom state the type already has, is the warning `M27.1`, and the part is left out.
 - **M28.** A custom state's marker is one character. It can't be a built-in marker (` `, `-`, `?`, `x`), with the warning `M28.1`, and a marker can belong to only one custom state across all types, with the warning `M28.2` on each later one. Such a custom state has no marker.
-- **M29.** A custom marker stands for the custom state it belongs to, on any node: `[r] Fix login` has the state `review`. A marker no custom state has is the warning `L11` (Spec section 20), and the node has no state.
+- **M29.** A custom marker stands for the custom state it belongs to, on any node: `[r] Fix login` has the state `review`. A marker no custom state has is the warning `L11` (Spec section 19), and the node has no state.
 - **M30.** A node's **base** is its state's base. A built-in state is its own base. A custom state without a base, and a state that is the warning `M26`, give the node no base.
 - **M31.** `done` is true for a node exactly when its base is `done`.
 
@@ -109,15 +107,15 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 - **M44.** Dependencies are per node and field. Fields in a cycle are empty, with the error `M44.1` naming the whole path; fields that depend on a cycle are empty, with the error `M44.2`. An evaluation error leaves the field empty, with the error `M44.3`.
 - **M45.** A **slug** is the text in lowercase, accents removed, each run of characters other than letters and digits turned into one `-`, with leading digits and `-` and trailing `-` removed.
 - **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. An item `+name` names a type instead, whose nodes the field refers to (M24); it is not an option. A value written for the field on a node of the type, other than a formula, that equals none of the options of the node's types, ignoring letter case, is the warning `M46`, and the value stays. On a reference field such a value is a reference instead, and not the warning. Options say how a field is meant to be used, not its value type, and tools offer them first when a value is typed.
-- **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node of the type, a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its label without its tags and sigils, and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the first type's field has it. The text stays as written.
+- **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node of the type, a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its label without its tags, and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the first type's field has it. The text stays as written.
 
 ## 10. Queries
 
 This section is a draft outline, like section 9.
 
 - **M60.** A node with a `search` field is a **search node**, whether the field comes from a field line, an inline field or an inline search `?? query` ([Ord specification](Ord_Specification.md) L28). Its query is the value of `search`, or, written as `search::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `search` field, such as `??` and a `search::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
-- **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a sigil reference, a link, a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
-- **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), `[x]` and the other triggers when its state or its base is that state, a sigil or link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
+- **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
+- **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
 - **M64.** The view settings (`view`, `columns`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. What `computed` writes into a file is still to be specified here.
 
@@ -133,8 +131,6 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M15` | error | A node is in an ownership loop | the node |
 | `M17.1` | error | A `defines` value isn't a name | the value |
 | `M17.2` | error | A type is defined twice | the second `defines` value |
-| `M19.1` | error | A `sigil` value can't be a sigil | the value |
-| `M19.2` | error | A sigil is bound twice | the second `sigil` value |
 | `M20.1` | error | Two nodes have one ID | each ID after the first, in file order (M5) |
 | `M20.3` | error | An ID isn't a name | the ID |
 | `M22.1` | error | A reference's ID matches no node | the reference |
@@ -298,19 +294,15 @@ file "lines.csv"
 
 ```example graph M23
 --- a.ord
-Person [defines:: person]
-	sigil:: @
 Buy milk #urgent
-Anna #friend +person
-See [[Buy milk]], [[buy milk #urgent]] and @anna
+Anna #friend
+See [[Buy milk]], [[buy milk #urgent]] and [[anna]]
 .
 file "a.ord"
-  node "Person" @1
-  node "Buy milk #urgent" @3
-  node "Anna #friend" @4
-    type "person"
-  node "See [[Buy milk]], [[buy milk #urgent]] and @anna" @5
-    ref "link" -> a.ord:3
-    ref "link" -> a.ord:3
-    ref "person" -> a.ord:4
+  node "Buy milk #urgent" @1
+  node "Anna #friend" @2
+  node "See [[Buy milk]], [[buy milk #urgent]] and [[anna]]" @3
+    ref "link" -> a.ord:1
+    ref "link" -> a.ord:1
+    ref "link" -> a.ord:2
 ```
