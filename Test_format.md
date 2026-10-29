@@ -29,14 +29,14 @@ The **dump** is a text form of the data model (Spec, section 1). Read tests comp
 
 ### A4. Label syntax
 
-- **D11.** With the labels option, Part 2 is applied and adds lines. Core lines are unchanged. Sigil bindings and custom markers are part of the option, by default none (L11, L15).
+- **D11.** With the labels option, Part 2 is applied and adds lines. Core lines are unchanged. Custom markers are part of the option, by default none (L11).
 - **D12.** Under a node that Part 2 reads (L1), the first children are:
   - `label` and the node's label (L19) as a string, when it differs from the Core label
   - the fields read from the label, in the order written, as `field` lines marked `inline` or `embedded` (D14), with their items as in L5 and L6
 
   The node's other children follow (D3).
 - **D13.** A text item of a field line or an `inline` field that is exactly one value trigger (L20) is followed by the name of the field it stands for, e.g. `"https://example.com" url`. One that is exactly a value form (L21) is followed by the form's name, e.g. `"2026-10-15" date`. Items of `embedded` fields have no name, since the field already says what they are. Any other text item gets the fields read from it as `embedded` field children, as in D12.
-- **D14.** A field read from a form that L19 removes from the label, an inline field or a `state`, `type` or `id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula, tag or sigil, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`, and a sigil gives the name, as in `"anna"`.
+- **D14.** A field read from a form that L19 removes from the label, an inline field or a `state`, `type` or `id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula or tag, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`.
 
 ### A5. Grammar
 

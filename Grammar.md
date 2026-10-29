@@ -63,7 +63,6 @@ state         = "[" line-char "]"   ; L11, first after any list marker, then WSP
 type          = "+" name            ; L7
 id            = "^" name            ; L8
 tag           = "#" name *( "/" name ) ; L13, ends after its last name
-sigil-ref     = non-ws name         ; L15, where the first character is a sigil a type binds
 
 inline-field  = "[" ( name / quoted-string ) *WSP "::" *WSP inline-value *WSP "]"  ; L5, a bracket
 inline-value  = 1*( bt-string / bracket / bracket-char ) ; not empty, split into items

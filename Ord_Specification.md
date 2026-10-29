@@ -27,7 +27,7 @@ These goals are informative. They explain the rules and decide new ones.
 - **Plain text first.** A file is readable and editable in any editor. Tools add power but are never needed to read it.
 - **Every file reads.** There are no syntax errors. Every file is read into a tree, and anything doubtful is a diagnostic (C35).
 - **Punctuation decides.** Whether a line is a field or a node, and where its key, value and items are, is decided by `::`, `;`, quotes and indentation, never by words or letter case.
-- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block. Nothing in Core depends on other files or an index. Part 2 takes the few facts it needs from types, sigil bindings and status markers, as options.
+- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block. Nothing in Core depends on other files or an index. Part 2 takes the one fact it needs from types, their custom state markers, as an option.
 - **Quoting turns syntax off.** Any text can be written literally by quoting it, with `"` or `` ` ``.
 - **Writing is stable.** Writing twice changes nothing (C33), and an edit leaves the lines it doesn't touch as they were (C41).
 - **Light syntax.** Single symbols and rules that let prose stay prose, instead of heavy delimiters.
@@ -47,7 +47,7 @@ These goals are informative. They explain the rules and decide new ones.
 - **S7.** There are three conformance classes:
   - A **reader** reads any file into the data model as Part 1 says, with source ranges ([Test format](Test_format.md) A3), and reports every diagnostic in section 11.
   - A **writer** is a reader that also writes, edits and formats files as section 10 says.
-  - A **label reader** is a reader that also applies Part 2 and reports every diagnostic in section 20.
+  - A **label reader** is a reader that also applies Part 2 and reports every diagnostic in section 19.
 - **S8.** An implementation conforms to a class, in a version of the spec, when it passes that class's tests in that version and follows its rules where no test covers them. Reader tests have neither the `fmt` nor the `labels` option. Writer tests have `fmt`, and every input is also checked for stable writing (T5). Label reader tests have `labels`.
 - **S9.** Companion specs define their own classes, such as a JSON mapper and a CSV mapper.
 
@@ -572,9 +572,9 @@ A field can be written in three ways: as a field line (`key:: value`, Part 1), a
 ## 12. Scope
 
 - **L1.** Part 2 reads unquoted node labels and unquoted text items of fields. Quoted labels and items (C21), blocks (C29) and keys are never read.
-- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `link`, `url`, `formula` and sigils, and value forms (L21). Inline fields and the `type`, `id`, `state` and `tag` triggers belong to nodes.
+- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `link`, `url` and `formula`, and value forms (L21). Inline fields and the `type`, `id`, `state` and `tag` triggers belong to nodes.
 - **L3.** Unless a rule says otherwise, a form starts at the beginning of the text or right after a space or tab, and ends before the next space or tab or at the end of the text. A **name** is a letter followed by letters, digits, `_` and `-`. Letters are any Unicode letters.
-- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `state` trigger, the label (L19), then inline fields, `type` triggers and the `id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `type`, `id` or `state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas, tags and sigils stay where they are written, as they are part of the label. An inline `tag` field stays an inline field, since writing it as a tag would put it in the label. The `state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
+- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `state` trigger, the label (L19), then inline fields, `type` triggers and the `id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `type`, `id` or `state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `tag` field stays an inline field, since writing it as a tag would put it in the label. The `state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
 
 ```example fmt labels L4
 +task Send draft [due:: 2026-10-20] #urgent [x] ^s1
@@ -640,7 +640,7 @@ root
 
 ## 14. Triggers
 
-- **L6.** A trigger is shortform for an inline field. Triggers exist only for the predefined fields below and for sigils that types bind (L15). Each predefined field holds one form of value, except `tag`, whose value is ordinary text.
+- **L6.** A trigger is shortform for an inline field. Triggers exist only for the predefined fields below. Each predefined field holds one form of value, except `tag`, whose value is ordinary text.
 
 | Field | Trigger | Read as | Value |
 |---|---|---|---|
@@ -665,18 +665,7 @@ root
 - **L13.** `tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
-## 15. Sigils
-
-- **L15.** A type can bind a **sigil**, a single character, with the `sigil` setting on its definition ([Semantics](Semantics.md) M19). The sigil followed by a name is shortform for a field named after the type, holding a reference to a node of that type: the node whose ID is the name, or else the node whose label is that one word, ignoring case. With `%` bound to the type `project`, `Plan the launch %apollo` reads as:
-
-```
-Plan the launch
-	project:: apollo
-```
-
-  A node with a longer label is referenced through its ID, or with a link (L10). A character that no type binds is plain text. No sigil is bound unless a type binds it. A reader without type definitions takes the bindings as an option, by default none, and leaves resolving the name to the index. `team%apollo` is not a reference, since the sigil doesn't follow whitespace.
-
-## 16. Start of a label
+## 15. Start of a label
 
 - **L16.** A list marker at the start of a label is decoration: `-`, `*`, `+` or `#`, or digits followed by `.`, then a space or tab. It is set aside before the rest of this part applies. Writers keep it. Only one is read, so in `- # x` the `#` is part of the label. Editors may draw a `#` line as a heading; it is a list marker like the others, and the node's place in the tree comes from its indent alone.
 
@@ -697,14 +686,14 @@ root
       "tag"
 ```
 
-## 17. Literal text
+## 16. Literal text
 
 - **L17.** Spans are literal (C25): no form starts inside one. An unmatched quote is plain text.
 - **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`, `\[#x]`. Part 2 reads the text without the backslash; Core keeps it.
 
-## 18. Label and items
+## 17. Label and items
 
-- **L19.** A node's **label** is its line without the list marker, the `state` trigger, inline fields, and the `type` and `id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `label` holds it. Links, URLs, formulas, tags and sigils are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it with its tags. Editors may render them differently.
+- **L19.** A node's **label** is its line without the list marker, the `state` trigger, inline fields, and the `type` and `id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it with its tags. Editors may render them differently.
 - **L20.** A field item that is exactly one value trigger (L2) is that value. Any other item is text, and the triggers in it are read as in a label.
 
 ```example labels C36 L3 L6 L7 L8 L11 L13 L16 L19
@@ -853,7 +842,7 @@ root
         "[[Acme]]"
 ```
 
-## 19. Value forms
+## 18. Value forms
 
 - **L21.** A text item, of a field or an inline field (L5), that is exactly one of the forms below is a value of that form. Value forms are read only there: never in labels, keys or quoted text (L1). The text stays as written; a form is only how it reads. There are no other forms.
 - **L22.** `number`: an optional `-`, then `0` or a digit from 1 to 9 followed by any digits, then optionally `.` and one or more digits. So `-12`, `0` and `9.5` are numbers, and `007`, `+46`, `1e3`, `1.`, `.5` and `1 000` are text. A year such as `2026` is a number.
@@ -909,7 +898,7 @@ root
 ! L26 5:19
 ```
 
-## 20. Diagnostics
+## 19. Diagnostics
 
 Codes, severities and positions work as in section 11.
 
@@ -921,13 +910,13 @@ Codes, severities and positions work as in section 11.
 | `L12` | warning | A formula has an `(` that is never closed | the `=` |
 | `L26` | warning | Text has the digits and separators of a date, datetime, week or month, but a part out of range | the text's first character |
 
-`L11` needs the types' custom markers ([Semantics](Semantics.md) M27). A reader without type definitions takes them as an option, like sigil bindings (L15).
+`L11` needs the types' custom markers ([Semantics](Semantics.md) M27). A reader without type definitions takes them as an option.
 
 ---
 
 # Part 3: Files
 
-## 21. Files
+## 20. Files
 
 These rules are for tools that find files, such as editors, the index and the language server. A reader is given a file and reads it as Ord.
 

@@ -2,24 +2,26 @@
 
 From 0.4.0-draft, the specs in this repository share one version: the [Ord specification](Ord_Specification.md), [Test format](Test_format.md), [Semantics](Semantics.md), [JSON mapping](JSON_mapping.md), [CSV mapping](CSV_mapping.md) and the informative [Grammar](Grammar.md). Before that, each spec had its own version, listed under its name below.
 
-**Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, J13, M20.2, M30.1 to M30.4, M32 to M35.
+**Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35.
 
 ## Unreleased
 
 ### Spec
 
+- Sigils are gone. L15 and its section are removed, so sections 16 to 21 are now 15 to 20; L2, L4, L6, L19, D11 and D14 no longer mention sigils, and the grammar has no `sigil-ref`. `@anna` and `%apollo` are text. Refer to a node with a link, `[[Anna]]`, or a field whose options name its type. This frees `@` for mirrors, a line `@Label^id` that shows another node in its place, still a draft.
 - W2, W3: recommendations for editors: cycling a state goes `[ ]`, `[-]`, `[?]`, `[x]`, and a label is shown by its state's base: in progress in a light blue, waiting in a light pink-orange, done in gray, new as other text.
 - L16: `#` and a space is a list marker too, as `-`, `*` and `+` are, so `# Heading` has the label `Heading`. Editors may draw it as a heading.
 - L29: `[#Ord notes]` is short for the inline field `[tag:: Ord notes]`, for a tag that is more than a name. `[#1]` stays text, and `[#x](target)` is a Markdown link.
 
 ### Semantics
 
+- M9, M19, M21, M23, M24, M47, M61, M62: sigils are gone. A type definition has no `sigil` setting, so the errors `M19.1` and `M19.2` are gone too; a sigil is no longer a reference, a query term or a way to match a one-word label; and a field named after a type is a reference field only when its options name the type (`options:: +person`).
 - Section 8, Expansions, is removed, with its mention in M3; expansions left the spec in 0.4.0-draft. Sections 9 to 11 are now 8 to 10.
 - M3: fold state is view state, implementation-defined and never written into the files.
 - M24, M36, M46: `options:: +name` replaces `target`. An `options` item `+name` names a type, and a field whose options name types is a reference field to their nodes: `target:: person` is now `options:: +person`. Its other options stay text, and a value that is none of them is a reference instead of the warning `M46`. The `target` setting is gone.
 - M36, M47: `tags:: true` replaces `claims`. A field with `tags:: true` takes its options as tags, and on a reference field the nodes of its types too: with `options:: bug; feature`, `Crash +issue #bug` has `issue type:: bug`. The `claims` setting is gone, with its list of tags and its words `options` and `target`; a tag the field should take is one of its options.
 - M19: a type definition's `checkbox:: true` gives the type's nodes a checkbox: an editor that gives a node line the type adds `[ ]` when the node has no state.
-- M47: tags match only what is written, never a slug. A field with `tags:: true` and types among its options takes a node by its label as written, then by its label without tags and sigils, then by its ID: `#ord-notes` refers to `Ord-notes +project` or to a node with the ID `ord-notes`, `#ord` to `Ord #new +project`, and `[#Ord Notes]` to `Ord Notes +project`, which `#ord-notes` no longer names. Each option is taken as written: `#tech-debt` takes `tech-debt`, and `Tech Debt` needs `[#Tech Debt]`.
+- M47: tags match only what is written, never a slug. A field with `tags:: true` and types among its options takes a node by its label as written, then by its label without its tags, then by its ID: `#ord-notes` refers to `Ord-notes +project` or to a node with the ID `ord-notes`, `#ord` to `Ord #new +project`, and `[#Ord Notes]` to `Ord Notes +project`, which `#ord-notes` no longer names. Each option is taken as written: `#tech-debt` takes `tech-debt`, and `Tech Debt` needs `[#Tech Debt]`.
 
 ## 0.5.0-draft (2026-10-27)
 
