@@ -572,9 +572,9 @@ A field can be written in three ways: as a field line (`key:: value`, Part 1), a
 ## 12. Scope
 
 - **L1.** Part 2 reads unquoted node labels and unquoted text items of fields. Quoted labels and items (C21), blocks (C29) and keys are never read.
-- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `link`, `url` and `formula`, and value forms (L21). Inline fields and the `type`, `id`, `state` and `tag` triggers belong to nodes.
+- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `link`, `url` and `formula`, mirror values (L31), and value forms (L21). Inline fields and the `type`, `id`, `state` and `tag` triggers belong to nodes.
 - **L3.** Unless a rule says otherwise, a form starts at the beginning of the text or right after a space or tab, and ends before the next space or tab or at the end of the text. A **name** is a letter followed by letters, digits, `_` and `-`. Letters are any Unicode letters.
-- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `state` trigger, the label (L19), then inline fields, `type` triggers and the `id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `type`, `id` or `state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `tag` field stays an inline field, since writing it as a tag would put it in the label. The `state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
+- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `state` trigger, the label (L19), then inline fields, `type` triggers and the `id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `type`, `id` or `state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `tag` field stays an inline field, since writing it as a tag would put it in the label. The `state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved. A mirror (L30) is written as its list marker, if any, `@`, one space and its reference.
 
 ```example fmt labels L4
 +task Send draft [due:: 2026-10-20] #urgent [x] ^s1
@@ -638,6 +638,66 @@ root
     label "?? not a search"
 ```
 
+- **L30.** A label that starts with `@`, after any list marker (L16), is a **mirror**: short for the inline field `[mirror:: …]` holding the rest of the label, with the spaces and tabs after `@` removed, as one item. The item is a reference as written inside `[[` and `]]` (L10): a label, an ID, `Label^id`, `^id` or a quoted label. Nothing in it is read as a form and `;` doesn't split it, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `@` followed only by spaces and tabs is text, as is `@` later in a line, such as after a `state` trigger. `\@` is text (L18). A writer writes a mirror with one space after `@` (L4). What a mirror means is in [Semantics](Semantics.md) M48.
+
+```example labels L18 L30
+@ Send mapping draft^t9x1
+- @Apollo +project
+@→
+[x] @ not a mirror
+\@ Erik
+.
+root
+  node "@ Send mapping draft^t9x1"
+    label ""
+    field "mirror" inline
+      "Send mapping draft^t9x1"
+  node "- @Apollo +project"
+    label ""
+    field "mirror" inline
+      "Apollo +project"
+  node "@\t"
+    label "@"
+  node "[x] @ not a mirror"
+    label "@ not a mirror"
+    field "state" inline
+      "done"
+  node "\\@ Erik"
+    label "@ Erik"
+```
+
+- **L31.** An unquoted text item of a field line or an inline field that starts with `@`, followed by text other than spaces and tabs, is a **mirror value**: a reference to a node, as a link is. The reference is the rest of the item without the spaces and tabs after `@`, read as inside `[[` and `]]` (L10), and nothing in it is read as a form. The item is split from its neighbours at `;` first (C15), so a label with `;` is written as a link. A quoted item such as `"@psu"` is text, as is `@` later in an item. A writer writes a mirror value with no space after `@`, as in `attendees:: @Anna Smith; @Erik`. What it means is in [Semantics](Semantics.md) M21 and M49.
+
+```example labels L20 L31 D13
+attendees:: @Anna Smith; @ Erik; "@quoted"
+see:: [[Anna]] and @Erik
+- Meet [with:: @Anna]
+.
+root
+  field "attendees"
+    "@Anna Smith" mirror
+    "@ Erik" mirror
+    quoted "@quoted"
+  field "see"
+    "[[Anna]] and @Erik"
+      field "link" embedded
+        "[[Anna]]"
+  node "- Meet [with:: @Anna]"
+    label "Meet"
+    field "with" inline
+      "@Anna" mirror
+```
+
+```example fmt labels L4 L30 L31
+@Apollo
+- @→Erik Berg
+meeting:: @ Anna Smith; @Erik
+.
+@ Apollo
+- @ Erik Berg
+meeting:: @Anna Smith; @Erik
+```
+
 ## 14. Triggers
 
 - **L6.** A trigger is shortform for an inline field. Triggers exist only for the predefined fields below. Each predefined field holds one form of value, except `tag`, whose value is ordinary text.
@@ -689,12 +749,12 @@ root
 ## 16. Literal text
 
 - **L17.** Spans are literal (C25): no form starts inside one. An unmatched quote is plain text.
-- **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`, `\[#x]`. Part 2 reads the text without the backslash; Core keeps it.
+- **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`, `\[#x]`, `\@ x`. Part 2 reads the text without the backslash; Core keeps it.
 
 ## 17. Label and items
 
 - **L19.** A node's **label** is its line without the list marker, the `state` trigger, inline fields, and the `type` and `id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it with its tags. Editors may render them differently.
-- **L20.** A field item that is exactly one value trigger (L2) is that value. Any other item is text, and the triggers in it are read as in a label.
+- **L20.** A field item that is exactly one value trigger (L2), or a mirror value (L31), is that value. Any other item is text, and the triggers in it are read as in a label.
 
 ```example labels C36 L3 L6 L7 L8 L11 L13 L16 L19
 - [-] Buy milk +errand #urgent ^m1lk

@@ -8,6 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
+- L30, L31: mirrors. A line `@ Label^id`, after any list marker, is a mirror: short for `[mirror:: Label^id]`, a reference as written inside `[[` and `]]`, with nothing in it read as a form and an empty label. A field item `@Label` is a mirror value, a reference as a link is, dumped as `"@Label" mirror` (D13). `\@` is text. A writer writes `@ Label` on a line and `@Label` in a value (L4).
 - Sigils are gone. L15 and its section are removed, so sections 16 to 21 are now 15 to 20; L2, L4, L6, L19, D11 and D14 no longer mention sigils, and the grammar has no `sigil-ref`. `@anna` and `%apollo` are text. Refer to a node with a link, `[[Anna]]`, or a field whose options name its type. This frees `@` for mirrors, a line `@Label^id` that shows another node in its place, still a draft.
 - W2, W3: recommendations for editors: cycling a state goes `[ ]`, `[-]`, `[?]`, `[x]`, and a label is shown by its state's base: in progress in a light blue, waiting in a light pink-orange, done in gray, new as other text.
 - L16: `#` and a space is a list marker too, as `-`, `*` and `+` are, so `# Heading` has the label `Heading`. Editors may draw it as a heading.
@@ -15,6 +16,8 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M10, M11, M21, M48 to M50: mirrors. `mirror` is a reserved, single-valued field whose value is a reference. A node with one is a mirror of the node it names, its source, which keeps its one owner. A mirror stands for its source: as a field's node item it is a reference from the field's node, and as a child it is its source in `children` and formulas, once per owner. A mirror under its own source is the warning `M50.1`, and lines under a mirror the warning `M50.2`.
+- M61, M65: a query matches a node in its own place, never a mirror. The term `@` and a reference matches the node it names; in a scoped query, when it or one of its mirrors is in the scope.
 - M9, M19, M21, M23, M24, M47, M61, M62: sigils are gone. A type definition has no `sigil` setting, so the errors `M19.1` and `M19.2` are gone too; a sigil is no longer a reference, a query term or a way to match a one-word label; and a field named after a type is a reference field only when its options name the type (`options:: +person`).
 - Section 8, Expansions, is removed, with its mention in M3; expansions left the spec in 0.4.0-draft. Sections 9 to 11 are now 8 to 10.
 - M3: fold state is view state, implementation-defined and never written into the files.

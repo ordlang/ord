@@ -29,8 +29,8 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 ## 3. Fields
 
 - **M8.** A node's fields come from every form a field can take: its field lines (C11), the fields Part 2 reads from its label (D12, `inline` and `embedded` alike), and its CSV cells. Each form adds its values under its key, in the order: label forms first, as written, then field lines in file order.
-- **M10.** `label`, `id` and `state` are **single-valued**: a node has at most one value for each, from any form. A second one is the error `M10`. Every other field holds every value it is given, from every form.
-- **M11.** The **reserved fields** are `label`, `type`, `id`, `state`, `tag`, `link`, `formula`, `url`, `parent` and `children`. Their meaning is fixed by this spec. A type can't redefine them, except that a type may compute `label` and give `id` an auto rule (section 8).
+- **M10.** `label`, `id`, `state` and `mirror` are **single-valued**: a node has at most one value for each, from any form. A second one is the error `M10`. Every other field holds every value it is given, from every form.
+- **M11.** The **reserved fields** are `label`, `type`, `id`, `state`, `tag`, `link`, `mirror`, `formula`, `url`, `parent` and `children`. Their meaning is fixed by this spec. A type can't redefine them, except that a type may compute `label` and give `id` an auto rule (section 8).
 - **M12.** The fields of a **type definition** (M17) and of a **search node** (M60) that this spec names as settings configure it; they are not data, and their child lines aren't graph data either.
 
 ## 4. Ownership
@@ -68,6 +68,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 - **M21.** A **reference** points from a field value to a graph node. These values are references:
   - a link (L10), in any field
   - a plain text value of the `link` field
+  - a plain text value of the `mirror` field, read as inside `[[` and `]]` (L10), and a mirror value (L31)
   - a plain text value of a reference field (M24), as written in a field line, quoted or not, and as written in an inline field when unquoted (L10)
   - a `parent` or `children` cell (M14)
 - **M22.** A reference names a node by ID, by label, or both, as in L10. It resolves:
@@ -77,6 +78,12 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 - **M23.** A label matches a node whose label is equal to it, or whose label without its tags (L13) is, ignoring spaces and tabs at either end and letter case: `[[Buy milk]]` matches `Buy milk #urgent`, as does `[[Buy milk #urgent]]`. A label without tags is the label with each tag and the spaces and tabs before it removed. Letter case is compared by mapping both to lowercase with Unicode's default case mapping (not locale-specific); there is no other normalization, so `é` written as one character or as `e` and a combining accent are different labels. In a reference field (M24), only nodes of its types match. No match is the warning `M23.1`; several matches is the warning `M23.2`, and the reference doesn't resolve.
 - **M24.** A field is a **reference field** when a type's field definition has an `options` setting (M46) that names one or more types, each as an item `+name`, as in `options:: +person` or `options:: +person; +company`. A plain value of a reference field is then a reference to a node of those types, unless it equals one of the setting's other options, ignoring letter case, which stays text: with `options:: nobody; +person`, `owner:: nobody` is text and `owner:: Anna` a reference. Any other field's plain values are text, even when they name a node; a tool may suggest adding `options:: +name`, but doesn't resolve them.
 - **M25.** References may form cycles. They are links, not ownership or dependencies.
+
+## 6a. Mirrors
+
+- **M48.** A node with a `mirror` field, from a mirror line `@ Label` ([Ord specification](Ord_Specification.md) L30), an inline field or a field line, is a **mirror** of the node its reference resolves to (M22), its **source**. A mirror adds nothing to its source: the source keeps its one owner (M13), its fields and its children. The mirror is a graph node of its own, owned where it is written, with an empty label. A mirror whose reference doesn't resolve has that reference's diagnostic and no source. A mirror can't itself be a source, since it has no label or ID to be named by.
+- **M49.** **A mirror stands for its source.** A mirror that is a field's node item (C13) is a reference (M21) from the field's node to the source, so `attendees::` with `@ Anna Smith` under it means what `attendees:: @Anna Smith` and `attendees:: [[Anna Smith]]` do, and a reference field's options (M24, M46) check the source. A mirror that is a child stands for its source in its owner's `children` (M16), in formulas (M41) too: a project's `$sum(children.hours)` counts the tasks it mirrors. A source mirrored more than once under one owner is one child, at its first place.
+- **M50.** A mirror under its own source, at any depth, is the warning `M50.1`. It stands for nothing in `children`, and an editor shows the source's line but doesn't unfold it. Lines under a mirror are the warning `M50.2`, since a mirror's children are its source's. They are kept as the mirror's own, and an editor may offer to move them into the source.
 
 ## 7. States
 
@@ -109,10 +116,11 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 This section is a draft outline, like section 8.
 
 - **M60.** A node with a `search` field is a **search node**, whether the field comes from a field line, an inline field or an inline search `?? query` ([Ord specification](Ord_Specification.md) L28). Its query is the value of `search`, or, written as `search::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `search` field, such as `??` and a `search::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
-- **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
+- **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
 - **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
 - **M64.** The view settings (`view`, `columns`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. What `computed` writes into a file is still to be specified here.
+- **M65.** A query matches a node in its own place, never a mirror (M48), so a node mirrored in three places is one result. The term `@` and a reference, written as in a mirror line (L30) but with no space after `@`, matches the node the reference resolves to. In a query scoped to a file or to a node's children, that node matches when it or one of its mirrors is in the scope. Scopes are still to be specified.
 
 ## 10. Diagnostics
 
@@ -143,6 +151,8 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M44.2` | error | A computed field depends on a cycle | the field's definition |
 | `M44.3` | error | A formula fails to evaluate | the field's definition |
 | `M46` | warning | A value is none of the field's `options` | the value |
+| `M50.1` | warning | A mirror is under its own source | the mirror's `mirror` value |
+| `M50.2` | warning | A line is under a mirror | the line |
 
 ---
 
@@ -300,4 +310,65 @@ file "a.ord"
     ref "link" -> a.ord:1
     ref "link" -> a.ord:1
     ref "link" -> a.ord:2
+```
+
+```example graph M21 M48 M49
+--- a.ord
+Monday ^journal
+	Standup
+	@ Send mapping draft^t9x1
+Kickoff
+	attendees::
+		@ Anna Smith
+	with:: @Anna Smith; @Nobody
+Anna Smith +person
+Apollo +project
+	[-] Send mapping draft +task ^t9x1
+		Ask Erik
+	@ ^gone
+.
+file "a.ord"
+  node "Monday" @1
+    id "journal"
+    node "Standup" @2
+    node "" @3
+      ref "mirror" -> a.ord:10
+  node "Kickoff" @4
+    ref "attendees" -> a.ord:8
+    ref "with" -> a.ord:8
+    node "" @6 in "attendees"
+      ref "mirror" -> a.ord:8
+  node "Anna Smith" @8
+    type "person"
+  node "Apollo" @9
+    type "project"
+    node "Send mapping draft" @10
+      id "t9x1"
+      type "task"
+      state "in-progress"
+      node "Ask Erik" @11
+    node "" @12
+! M23.1 a.ord:7:22
+! M22.1 a.ord:12:2
+```
+
+```example graph M48 M50
+--- a.ord
+Apollo +project
+	Tasks
+		@ Apollo
+	@ Tasks
+		Stray note
+.
+file "a.ord"
+  node "Apollo" @1
+    type "project"
+    node "Tasks" @2
+      node "" @3
+        ref "mirror" -> a.ord:1
+    node "" @4
+      ref "mirror" -> a.ord:2
+      node "Stray note" @5
+! M50.1 a.ord:3:3
+! M50.2 a.ord:5:3
 ```
