@@ -16,6 +16,8 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M19, M51: a type definition's `nodes` setting is a content template: its node children are copied under each node created with the type, without their IDs. A reader never adds them.
+- M19, M52: a type definition's `icon` (an emoji) and `description` (text) settings are informative: editors may show them, and the spec gives them no meaning.
 - M17, M19: the workspace file has no syntax of its own. `defines` is renamed `defines-type`: `Task [defines-type:: task]`. A line that is only `+name` is a node of that type in the workspace file too, not a type definition. A tag's color is set by a **tag definition**, a node with a `defines-tag` field, in any file: `Urgent [defines-tag:: urgent] [color:: red]`; a line `#urgent [color:: red]` is an ordinary tagged node.
 - M10, M11, M21, M48 to M50: mirrors. `mirror` is a reserved, single-valued field whose value is a reference. A node with one is a mirror of the node it names, its source, which keeps its one owner. A mirror stands for its source: as a field's node item it is a reference from the field's node, and as a child it is its source in `children` and formulas, once per owner. A mirror under its own source is the warning `M50.1`, and lines under a mirror the warning `M50.2`.
 - M61, M65: a query matches a node in its own place, never a mirror. The term `@` and a reference matches the node it names; in a scoped query, when it or one of its mirrors is in the scope.
