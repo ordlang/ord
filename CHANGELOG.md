@@ -8,6 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
+- L28: an inline search is written `? query`, with one `?`: `?? query` is now text. `\?` is text.
 - L30, L31: mirrors. A line `@ Label^id`, after any list marker, is a mirror: short for `[mirror:: Label^id]`, a reference as written inside `[[` and `]]`, with nothing in it read as a form and an empty label. A field item `@Label` is a mirror value, a reference as a link is, dumped as `"@Label" mirror` (D13). `\@` is text. A writer writes `@ Label` on a line and `@Label` in a value (L4).
 - Sigils are gone. L15 and its section are removed, so sections 16 to 21 are now 15 to 20; L2, L4, L6, L19, D11 and D14 no longer mention sigils, and the grammar has no `sigil-ref`. `@anna` and `%apollo` are text. Refer to a node with a link, `[[Anna]]`, or a field whose options name its type. This frees `@` for mirrors, a line `@Label^id` that shows another node in its place, still a draft.
 - W2, W3: recommendations for editors: cycling a state goes `[ ]`, `[-]`, `[?]`, `[x]`, and a label is shown by its state's base: in progress in a light blue, waiting in a light pink-orange, done in gray, new as other text.
@@ -16,6 +17,8 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M62: `#tag` also matches a node whose field with `tags:: true` has the value the tag would give it: with `tags:: true` on `project`, `#LU` matches `[project:: LU]`.
+- M60: an inline search is `? query`.
 - M17, M19: the workspace file has no syntax of its own. `defines` is renamed `defines-type`: `Task [defines-type:: task]`. A line that is only `+name` is a node of that type in the workspace file too, not a type definition. A tag's color is set by a **tag definition**, a node with a `defines-tag` field, in any file: `Urgent [defines-tag:: urgent] [color:: red]`; a line `#urgent [color:: red]` is an ordinary tagged node.
 - M10, M11, M21, M48 to M50: mirrors. `mirror` is a reserved, single-valued field whose value is a reference. A node with one is a mirror of the node it names, its source, which keeps its one owner. A mirror stands for its source: as a field's node item it is a reference from the field's node, and as a child it is its source in `children` and formulas, once per owner. A mirror under its own source is the warning `M50.1`, and lines under a mirror the warning `M50.2`.
 - M61, M65: a query matches a node in its own place, never a mirror. The term `@` and a reference matches the node it names; in a scoped query, when it or one of its mirrors is in the scope.

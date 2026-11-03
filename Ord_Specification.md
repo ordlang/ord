@@ -616,26 +616,26 @@ root
       "https://example.com"
 ```
 
-- **L28.** A label that starts with `??` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the inline field `[search:: …]` holding the rest of the label, with the spaces and tabs after `??` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `??` without a space or tab after it, as in `??x`, is text, as is `??` followed only by spaces and tabs, and `??` later in a line. `\??` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
+- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the inline field `[search:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
 
 ```example labels L28
-?? [ ] +task @anna
-- ?? #urgent
-??x and ?? alone
-\?? not a search
+? [ ] +task @anna
+- ? #urgent
+?x and ? alone
+\? not a search
 .
 root
-  node "?? [ ] +task @anna"
+  node "? [ ] +task @anna"
     label ""
     field "search" inline
       "[ ] +task @anna"
-  node "- ?? #urgent"
+  node "- ? #urgent"
     label ""
     field "search" inline
       "#urgent"
-  node "??x and ?? alone"
-  node "\\?? not a search"
-    label "?? not a search"
+  node "?x and ? alone"
+  node "\\? not a search"
+    label "? not a search"
 ```
 
 - **L30.** A label that starts with `@`, after any list marker (L16), is a **mirror**: short for the inline field `[mirror:: …]` holding the rest of the label, with the spaces and tabs after `@` removed, as one item. The item is a reference as written inside `[[` and `]]` (L10): a label, an ID, `Label^id`, `^id` or a quoted label. Nothing in it is read as a form and `;` doesn't split it, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `@` followed only by spaces and tabs is text, as is `@` later in a line, such as after a `state` trigger. `\@` is text (L18). A writer writes a mirror with one space after `@` (L4). What a mirror means is in [Semantics](Semantics.md) M48.
