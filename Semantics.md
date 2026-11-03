@@ -67,7 +67,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 - **M52.** The `icon` setting of a type, a tag definition or a field definition (M56) is an emoji, as in `icon:: 📅`, and its `description` setting is text about the type, tag or field, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type, tag or field, and the description where it is chosen.
 - **M20.** A node's **ID** is its `_id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
 
-- **M53.** `type-def`, `tag-def`, `field-def` and `search-def` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), so `name::`, `color::` and the other keys are free on every other node. The system field definitions (M11) are built in the same way.
+- **M53.** `type-def`, `tag-def`, `field-def` and `search` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), so `name::`, `color::` and the other keys are free on every other node. The system field definitions (M11) are built in the same way.
 
   ```
   Type definition +type-def
@@ -123,7 +123,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   		description::
   			description:: Text about it.
   Search definition +type-def
-  	name:: search-def
+  	name:: search
   	color:: white
   	fields::
   		query::
@@ -279,7 +279,7 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 
 This section is a draft outline, like section 8.
 
-- **M60.** A node with the type `search-def` (M53) is a **search node**, whether written as `+search-def` or as an inline search `? query` ([Ord specification](Ord_Specification.md) L28). Its settings are `query` and the view settings (M64). Its query is the value of `query`, or, written as `query::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `query` field, such as `?` and a `query::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
+- **M60.** A node with the type `search` (M53) is a **search node**, whether written as `+search` or as an inline search `? query` ([Ord specification](Ord_Specification.md) L28). Its settings are `query` and the view settings (M64). Its query is the value of `query`, or, written as `query::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `query` field, such as `?` and a `query::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
 - **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
 - **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), or, when a field of one of its types with `tags:: true` (M47) would take the tag, when that field's value is what the tag would give it (with `tags:: true` and `options:: +project` on `project`, `#LU` matches a task with `project:: LU` as well as one written `#LU`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
