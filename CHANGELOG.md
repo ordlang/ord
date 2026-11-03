@@ -4,7 +4,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35, J1.1.
 
-## Unreleased
+## 0.6.0-draft (2026-11-03)
 
 ### Spec
 

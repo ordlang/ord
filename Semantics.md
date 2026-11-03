@@ -1,6 +1,6 @@
 # Ord semantics
 
-Version 0.5.0-draft, 2026-10-27. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here, and rule IDs that start with `C`, `L`, `D`, `T` or `F` refer to the Spec. This spec's rules start with `M`.
+Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Specification.md), of the same version. The Spec's conventions (S1 to S6) and versioning (S10) apply here, and rule IDs that start with `C`, `L`, `D`, `T` or `F` refer to the Spec. This spec's rules start with `M`.
 
 The Spec says how text becomes a tree of nodes and fields. This spec says what that tree means across a workspace: which node a reference points to, what types and states a node has, who owns whom, and what formulas and queries written in files stand for.
 
