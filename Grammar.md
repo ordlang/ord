@@ -64,7 +64,8 @@ type          = "+" name            ; L7
 id            = "^" name            ; L8
 tag           = "#" name *( "/" name ) ; L13, ends after its last name
 
-inline-field  = "[" ( name / quoted-string ) *WSP "::" *WSP inline-value *WSP "]"  ; L5, a bracket
+inline-field  = "[" ( inline-key / quoted-string ) *WSP "::" *WSP inline-value *WSP "]"  ; L5, a bracket
+inline-key    = [ "_" ] name *( SP name )                    ; L5, names separated by single spaces
 inline-value  = 1*( bt-string / bracket / bracket-char ) ; not empty, split into items
 inline-search = "?" 1*WSP non-ws *line-char                 ; L28, first after any list marker
 mirror        = "@" *WSP non-ws *line-char                   ; L30, first after any list marker

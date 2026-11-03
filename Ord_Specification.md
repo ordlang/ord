@@ -590,7 +590,23 @@ Plan [_tag:: x] +task
 
 ## 13. Inline fields
 
-- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is a name, or a quoted string (C21) for any other key, as in `["field name":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
+- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_type:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
+
+```example labels L5
+Meet [due date:: 2026-10-21] [_type:: task] [Project lead:: anna]
+Not fields: [two  spaces:: x] and [1 day:: y]
+.
+root
+  node "Meet [due date:: 2026-10-21] [_type:: task] [Project lead:: anna]"
+    label "Meet"
+    field "due date" inline
+      "2026-10-21" date
+    field "_type" inline
+      "task"
+    field "Project lead" inline
+      "anna"
+  node "Not fields: [two  spaces:: x] and [1 day:: y]"
+```
 
 - **L29.** `[#text]` is short for the inline field `[_tag:: text]`: a bracket (C51) that holds `#`, a letter, and any text up to the bracket's closing `]`, read as the value of L5, so it can hold spaces and `;` splits it into items. It is a way to write a tag that is more than a name (L13), such as `[#Ord notes]`. Like any inline field it can start anywhere and is not part of the label (L19), and a writer keeps it as written. `[#` followed by anything other than a letter is not one, so `[#1]` and `[#]` are text, and `[#text](target)` is a Markdown link (L14).
 
