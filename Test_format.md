@@ -25,7 +25,7 @@ The **dump** is a text form of the data model (Spec, section 1). Read tests comp
 ### A3. Ranges
 
 - **D9.** With the ranges option, each element that comes from the source ends with `@start-end`. A position is `line:column`. Lines and columns start at 1, a column counts characters, and a tab counts as 1 (C9). The end is the position just after the element's last character.
-- **D10.** The range of a node or field is its line after the indent, up to the line ending. A block's range runs from its opening line through its closing line, or through the last line of the file. A text item's range is its text, quotes included, without the `;` and whitespace touching it. A field read from a label (D12) covers the form as written, and its items cover their value text, or the marker for `state`. The root, anonymous nodes and `label` lines have no range.
+- **D10.** The range of a node or field is its line after the indent, up to the line ending. A block's range runs from its opening line through its closing line, or through the last line of the file. A text item's range is its text, quotes included, without the `;` and whitespace touching it. A field read from a label (D12) covers the form as written, and its items cover their value text, or the marker for `_state`. The root, anonymous nodes and `label` lines have no range.
 
 ### A4. Label syntax
 
@@ -35,8 +35,8 @@ The **dump** is a text form of the data model (Spec, section 1). Read tests comp
   - the fields read from the label, in the order written, as `field` lines marked `inline` or `embedded` (D14), with their items as in L5 and L6
 
   The node's other children follow (D3).
-- **D13.** A text item of a field line or an `inline` field that is exactly one value trigger (L20) is followed by the name of the field it stands for, e.g. `"https://example.com" url`, and a mirror value (L31) by `mirror`, e.g. `"@Anna" mirror`. One that is exactly a value form (L21) is followed by the form's name, e.g. `"2026-10-15" date`. Items of `embedded` fields have no name, since the field already says what they are. Any other text item gets the fields read from it as `embedded` field children, as in D12.
-- **D14.** A field read from a form that L19 removes from the label, an inline field or a `state`, `type` or `id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula or tag, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`.
+- **D13.** A text item of a field line or an `inline` field that is exactly one value trigger (L20) is followed by the name of the field it stands for, e.g. `"https://example.com" _url`, and a mirror value (L31) by `_mirror`, e.g. `"@Anna" _mirror`. One that is exactly a value form (L21) is followed by the form's name, e.g. `"2026-10-15" date`. Items of `embedded` fields have no name, since the field already says what they are. Any other text item gets the fields read from it as `embedded` field children, as in D12.
+- **D14.** A field read from a form that L19 removes from the label, an inline field or a `_state`, `_type` or `_id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula or tag, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`.
 
 ### A5. Grammar
 
@@ -104,16 +104,16 @@ site:: https://example.com
 root
   node "- [x] Send draft to [[Anna]] +task [due:: 2026-10-10]" @1:1-1:54
     label "Send draft to [[Anna]]"
-    field "state" inline @1:3-1:6
+    field "_state" inline @1:3-1:6
       "done" @1:4-1:5
-    field "link" embedded @1:21-1:29
+    field "_link" embedded @1:21-1:29
       "[[Anna]]" @1:21-1:29
-    field "type" inline @1:30-1:35
+    field "_type" inline @1:30-1:35
       "task" @1:31-1:35
     field "due" inline @1:36-1:54
       "2026-10-10" date @1:43-1:53
   field "site" @2:1-2:27
-    "https://example.com" url @2:8-2:27
+    "https://example.com" _url @2:8-2:27
 ```
 
 ## B. Tests
