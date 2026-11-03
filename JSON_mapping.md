@@ -10,7 +10,7 @@ Version 0.5.0-draft, 2026-10-27. A companion spec to [Ord specification](Ord_Spe
 
 ## 2. System keys
 
-- **J1.** Two JSON keys are read as the system fields they are named after ([Semantics](Semantics.md) M11), never as user keys. Every other key is an ordinary field, also one that starts with `_`.
+- **J1.** Two JSON keys hold a node's Core label and child nodes, never user fields. They are named like the system fields `_label` and `_children` ([Semantics](Semantics.md) M11), though the mapping, being syntactic (J1a), doesn't read them as such. Every other key is an ordinary field, also one that starts with `_`.
   - `_label` holds a node's label.
   - `_children` holds a node's child nodes.
   - A `_label` that isn't a string, or a `_children` that isn't an array, gives a warning and is kept as an ordinary field.

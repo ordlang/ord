@@ -30,8 +30,8 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 
 - **M8.** A node's fields come from every form a field can take: its field lines (C11), the fields Part 2 reads from its label (D12, `inline` and `embedded` alike), and its CSV cells. Each form adds its values under its key, in the order: label forms first, as written, then field lines in file order.
 - **M10.** `_label`, `_id`, `_state` and `_mirror` are **single-valued**: a node has at most one value for each, from any form. A second one is the error `M10`. Every other field holds every value it is given, from every form.
-- **M11.** The **system fields** are `_label`, `_type`, `_id`, `_state`, `_tag`, `_link`, `_mirror`, `_formula`, `_url`, `_parent` and `_children`. They are defined by **system field definitions**, field definition nodes (M55) built into every workspace (M53), and their meaning is fixed by this spec. They can't be defined again: a field definition node for one of them is the error `M55.2`, and so is a type's local definition of one, except that a type may compute `_label` and give `_id` an auto rule (section 8). Other keys that start with `_` are free, and a workspace may define fields with them.
-- **M12.** The fields of a **type definition** (M17), a **tag definition** (M19), a **field definition node** (M55) and a **search node** (M60) that this spec names as settings configure it; they are not data, and their child lines aren't graph data either, except a field definition node written under a `fields` setting (M58).
+- **M11.** The **system fields** are `_label`, `_type`, `_id`, `_state`, `_tag`, `_link`, `_mirror`, `_formula`, `_url`, `_parent` and `_children`. They are defined by **system field definitions**, field definition nodes (M55) built into every workspace (M53), and their meaning is fixed by this spec. They can't be defined again: a field definition node for one of them is the error `M55.2`. A type lists them as it lists any field definition node (M58). Other keys that start with `_` are free, and a workspace may define fields with them.
+- **M12.** The settings of a node of a system type (M53), a type definition, tag definition, field definition node or search node, configure it; they are not data, and their child lines aren't graph data either, except a field definition node written under a `fields` setting (M58).
 
 ## 4. Ownership
 
@@ -49,9 +49,12 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   	name:: task
   ```
 
-  `name` is a setting only on a node of a system type; on any other node it is an ordinary field, and a node with `name::` but without `+type-def` defines nothing. A type definition without a `name` is the warning `M17.3` and defines nothing. A value that isn't a name is the error `M17.1`, and two definitions of one name are the error `M17.2`.
+  A type definition without a `name` is the warning `M17.3` and defines nothing. A value that isn't a name is the error `M17.1`, and two definitions of one name are the error `M17.2`.
 - **M18.** A node's **types** are its `_type` values, in order, without repeats. A type without a definition is allowed.
-- **M19.** A type definition's settings are its field lines `fields`, `state`, `color`, `checkbox`, `nodes`, `icon` and `description`. `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name. A node with the type `tag-def` (M53) is a **tag definition** for the tags its `name` values name, without `#`, ignoring letter case, as `Urgent +tag-def` with the field lines `name:: urgent` and `color:: red` under it. Its settings are `color`, which a tag's color is in, and `icon` and `description` (M52). `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
+- **M20.** A node's **ID** is its `_id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
+- **M19.** A type definition's settings are those of `type-def` (M53). `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name.
+- **M59.** A node with the type `tag-def` (M53) is a **tag definition** for the tags its `name` values name, without `#`, ignoring letter case, as `Urgent +tag-def` with the field lines `name:: urgent` and `color:: red` under it. Each value is a tag as L13 or L29 reads it: it starts with a letter and holds no `]`. A value that isn't is the error `M17.1`, and two tag definitions for one tag are the error `M17.2`. Its settings are those of `tag-def`: `color`, a color name or `#rrggbb` that the tag is shown in, and `icon` and `description` (M52).
+- **M66.** `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
 - **M51.** A type's `nodes` setting is a **content template**: its node children (C13), with their child lines. When an editor or a tool gives a node the type, on a new node or an existing one, it writes a copy of them under the node, in order, after its other children, with their `_id` fields left out, so each node gets its own content. When a node is given several types at once, their templates follow each other in type order (M18). Field lines under `nodes::` aren't part of the template; a field's default is its `value` setting (M37). Only adding the type writes the template: a reader never adds it, and a node that already has the type doesn't get it again.
 
   ```
@@ -64,10 +67,24 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   ```
 
   Creating `Weekly sync +meeting`, or adding `+meeting` to an existing `Weekly sync`, writes `Agenda`, `Notes` and `Action items` under it.
-- **M52.** The `icon` setting of a type, a tag definition or a field definition (M56) is an emoji, as in `icon:: 📅`, and its `description` setting is text about the type, tag or field, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type, tag or field, and the description where it is chosen.
-- **M20.** A node's **ID** is its `_id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
+- **M52.** The `icon` setting of a type, a tag definition, a field definition (M56) or a search node (M60) is an emoji, as in `icon:: 📅`, and its `description` setting is text about it, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type, tag, field or search, and the description where it is chosen.
 
-- **M53.** `type-def`, `tag-def`, `field-def` and `search` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), so `name::`, `color::` and the other keys are free on every other node. The system field definitions (M11) are built in the same way.
+### Built-in types (informative)
+
+A workspace usually starts with this definition in its workspace file. It is an ordinary type definition, so its fields and settings can be changed like on any type.
+
+```
+Task +type-def
+	name:: task
+	fields::
+		due::
+```
+
+Journal nodes, where tools put things for a date, are ordinary nodes found by their ID: `journal-` and the date, such as `Monday 12, 2026 ^journal-2026-10-12` and `October, 2026 ^journal-2026-10`. They have no type. Tools create them when something goes to a date.
+
+## 5a. System types and fields
+
+- **M53.** `type-def`, `tag-def`, `field-def` and `search` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), and are settings only on their own nodes: on any other node, `name::`, `key::`, `color::` and the others are ordinary fields, and a node that has them without the system type defines nothing. The system field definitions (M11) are built in the same way.
 
   ```
   Type definition +type-def
@@ -122,7 +139,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   			description:: An emoji shown with it.
   		description::
   			description:: Text about it.
-  Search definition +type-def
+  Search +type-def
   	name:: search
   	color:: white
   	fields::
@@ -173,29 +190,11 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   	description:: A URL or a path.
   Parent +field-def
   	key:: _parent
-  	description:: In CSV, the node that owns the row.
+  	description:: The node's owner: the node it is indented under, or the node a CSV cell names.
   Children +field-def
   	key:: _children
-  	description:: In CSV, the rows that the node owns, in order.
+  	description:: The nodes it owns, in order: by indentation, then by CSV cells.
   ```
-
-### Built-in types (informative)
-
-A workspace usually starts with these definitions in its workspace file. They are ordinary type definitions, so fields and settings can be changed like on any type.
-
-```
-Person +type-def
-	name:: person
-	fields::
-		_id:: auto $slug(_label)
-		email::
-Task +type-def
-	name:: task
-	fields::
-		due::
-```
-
-Journal nodes, where tools put things for a date, are ordinary nodes found by their ID: `journal-` and the date, such as `Monday 12, 2026 ^journal-2026-10-12` and `October, 2026 ^journal-2026-10`. They have no type. Tools create them when something goes to a date.
 
 ## 6. References
 
@@ -203,7 +202,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   - a link (L10), in any field
   - a plain text value of the `_link` field
   - a plain text value of the `_mirror` field, read as inside `[[` and `]]` (L10), and a mirror value (L31)
-  - a plain text value of a reference field (M24), as written in a field line, quoted or not, and as written in an inline field when unquoted (L10)
+  - a plain text value of a reference field (M24), quoted or not in a field line, and unquoted in an inline field (L5)
   - a `_parent` or `_children` cell (M14)
 - **M22.** A reference names a node by ID, by label, or both, as in L10. It resolves:
   - by ID alone (`^x1`, or ID and label): the node with that ID. If none has it, the error `M22.1`. The label is never a fallback; when it no longer matches the node, the warning `M22.2`.
@@ -216,7 +215,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 ## 6a. Mirrors
 
 - **M48.** A node with a `_mirror` field, from a mirror line `@ Label` ([Ord specification](Ord_Specification.md) L30), an inline field or a field line, is a **mirror** of the node its reference resolves to (M22), its **source**. A mirror adds nothing to its source: the source keeps its one owner (M13), its fields and its children. The mirror is a graph node of its own, owned where it is written, with an empty label. A mirror whose reference doesn't resolve has that reference's diagnostic and no source. A mirror can't itself be a source, since it has no label or ID to be named by.
-- **M49.** **A mirror stands for its source.** A mirror that is a field's node item (C13) is a reference (M21) from the field's node to the source, so `attendees::` with `@ Anna Smith` under it means what `attendees:: @Anna Smith` and `attendees:: [[Anna Smith]]` do, and a reference field's options (M24, M46) check the source. A mirror that is a child stands for its source in its owner's `_children` (M16), in formulas (M41) too: a project's `$sum(children.hours)` counts the tasks it mirrors. A source mirrored more than once under one owner is one child, at its first place.
+- **M49.** **A mirror stands for its source.** A mirror that is a field's node item (C13) is a reference (M21) from the field's node to the source, so `attendees::` with `@ Anna Smith` under it means what `attendees:: @Anna Smith` and `attendees:: [[Anna Smith]]` do, and a reference field's options (M24, M46) check the source. A mirror that is a child stands for its source in its owner's `_children` (M16), in formulas (M41) too: a project's `$sum(_children.hours)` counts the tasks it mirrors. A source mirrored more than once under one owner is one child, at its first place.
 - **M50.** A mirror under its own source, at any depth, is the warning `M50.1`. It stands for nothing in `_children`, and an editor shows the source's line but doesn't unfold it. Lines under a mirror are the warning `M50.2`, since a mirror's children are its source's. They are kept as the mirror's own, and an editor may offer to move them into the source.
 
 ## 7. States
@@ -224,7 +223,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 - **M26.** A node's **state** is its single `_state` value (M10), from its trigger (L11) or a field. It is a **built-in state**, `new`, `in-progress`, `waiting` or `done`, or a custom state (M27): one that a custom marker stands for (M29), or else the first in type order (M18) of the node's types that defines it. A value that is none of these is the warning `M26`, and the node keeps it as its state, with no base.
 - **M27.** A type's `state` setting defines its **custom states**: `|`-separated parts, each a name (L3), an optional marker in brackets, and an optional `>` and **base**, a built-in state, as in `triage [t] > new | review [r] > in-progress | shipped > done | someday`. Spaces and tabs around the parts don't count. A part in another form, with a base that isn't a built-in state, or with the name of a built-in state or of a custom state the type already has, is the warning `M27.1`, and the part is left out.
 - **M28.** A custom state's marker is one character. It can't be a built-in marker (` `, `-`, `?`, `x`), with the warning `M28.1`, and a marker can belong to only one custom state across all types, with the warning `M28.2` on each later one. Such a custom state has no marker.
-- **M29.** A custom marker stands for the custom state it belongs to, on any node: `[r] Fix login` has the state `review`. A marker no custom state has is the warning `L11` (Spec section 19), and the node has no state.
+- **M29.** A custom marker stands for the custom state it belongs to, on any node: `[r] Fix login` has the state `review`. A marker no custom state has (L11) gives the node no state.
 - **M30.** A node's **base** is its state's base. A built-in state is its own base. A custom state without a base, and a state that is the warning `M26`, give the node no base.
 - **M31.** `done` is true for a node exactly when its base is `done`.
 
@@ -242,11 +241,11 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   	tags:: true
   ```
 
-  `key` is a setting only on a field definition node; on any other node it is an ordinary field, and a node with `key::` but without `+field-def` defines nothing. A field definition node without a `key` is the warning `M55.3` and defines nothing. Where this spec matches a field to its definition, keys match ignoring letter case, as labels do (M23); the Core keeps keys as written, so `Due` and `due` on one node are still two fields. Two field definition nodes for one key are the error `M55.1`, and one for a system field (M11) the error `M55.2`.
+  A field definition node without a `key` is the warning `M55.3` and defines nothing. Where this spec matches a field to its definition, keys match ignoring letter case, as labels do (M23); the Core keeps keys as written, so `Due` and `due` on one node are still two fields. Two field definition nodes for one key are the error `M55.1`, and one for a system field (M11) the error `M55.2`.
 - **M56.** A field definition's settings, local or a node, are `value`, `valid`, `options` and `tags`, as in M37 to M47, and `icon` and `description`, as in M52. A field definition node has them as field lines, besides its `key`.
-- **M57.** A field definition node applies to its key on every node in the workspace. Its `options`, `valid` and `tags` work on every node as a local field definition works on its type's nodes (M24, M40, M46, M47), so with the definition above, `Crash #high` has `priority:: high` whatever its types. Its `value` (M37) works on the nodes of the types that list it (M58), since only they are meant to have the field.
+- **M57.** A field definition node applies on every node (M36), so with the definition above, `Crash #high` has `priority:: high` whatever its types. Only its `value` (M37) is limited, to the nodes of the types that list it (M58), since only they are meant to have the field.
 - **M58.** A type lists a field definition node in its `fields` setting in either of two ways:
-  - a field line with its key and no value or child lines. A value or child lines there are the error `M58.1` and are left out, since a type can't change a field definition node.
+  - a field line with its key and no value or child lines. A value or child lines there are the error `M58.1` and are left out, since a type can't change a field definition node. The exceptions are a `=expr` value for `_label` (M38) and an `auto expr` value for `_id` (M37).
   - the field definition node itself, written under `fields::` as a node item (C13). It is read there although it is under a setting (M12), and defines its field for the whole workspace, as it would anywhere else.
 
   For a key that no field definition node defines, a type defines its own field (M36).
@@ -267,13 +266,13 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 - **M38.** A `_label` field definition with `=expr` computes the node's label, which a writer writes into the node line, keeping the line's other forms (L4). Tags written on the line stay, after the computed text, so they are part of the label (L19) without making it differ from the computed one.
 - **M39.** A field with a `=expr` value on a node that isn't a type definition or a field definition node is the error `M39`; the formula isn't evaluated.
 - **M40.** A `valid` setting holds `=expr`, evaluated per node with `value` bound to the field's value, a list when it has several. A result that isn't true is the error `M40`, and the value stays.
-- **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, plus `_label`, `_id`, `_type`, `_parent` and `_children`. A reference field's value is the node it refers to, and a field with field children (C13) is an object of them.
+- **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, system fields included: `_parent` is its owner (M13) and `_children` the nodes it owns (M16). A reference field's value is the node it refers to, and a field with field children (C13) is an object of them.
 - **M42.** The function library adds `$node(text)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text)`, `$first(x)` and `$last(x)`. Dates are ISO text. Their exact definitions are to be written here.
 - **M43.** Formulas are pure, except `$today()`, `$now()` and `$date()` with a date name such as `"tomorrow"`, whose results follow the clock. Auto expressions may also use `$seq(n)`, `$uuid()`, `$id()` and `$sid()`.
 - **M44.** Dependencies are per node and field. Fields in a cycle are empty, with the error `M44.1` naming the whole path; fields that depend on a cycle are empty, with the error `M44.2`. An evaluation error leaves the field empty, with the error `M44.3`.
 - **M45.** A **slug** is the text in lowercase, accents removed, each run of characters other than letters and digits turned into one `-`, with leading digits and `-` and trailing `-` removed.
-- **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. An item `+name` names a type instead, whose nodes the field refers to (M24); it is not an option. A value written for the field on a node of the type, other than a formula, that equals none of the options of the node's types, ignoring letter case, is the warning `M46`, and the value stays. On a reference field such a value is a reference instead, and not the warning. Options say how a field is meant to be used, not its value type, and tools offer them first when a value is typed.
-- **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node of the type, a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue _type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its label without its tags, and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the first type's field has it. The text stays as written.
+- **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. An item `+name` names a type instead, whose nodes the field refers to (M24); it is not an option. A value written for the field, other than a formula, on a node the definition applies to (M36), that equals none of the options of the definitions that apply, ignoring letter case, is the warning `M46`, and the value stays. On a reference field such a value is a reference instead, and not the warning. Options say how a field is meant to be used, not its value type, and tools offer them first when a value is typed.
+- **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node the definition applies to (M36), a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its label without its tags, and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the first type's field has it. The text stays as written.
 
 ## 9. Queries
 
@@ -292,12 +291,12 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 
 | Code | Severity | Given when | Position |
 |---|---|---|---|
-| `M10` | error | A node has a second `_label`, `_id` or `_state` value | the second value |
+| `M10` | error | A node has a second `_label`, `_id`, `_state` or `_mirror` value | the second value |
 | `M14.1` | warning | A `_parent` or `_children` cell names a node owned by indentation | the cell |
 | `M14.2` | warning | `_parent` and `_children` cells give a node different owners | the later cell |
 | `M15` | error | A node is in an ownership loop | the node |
-| `M17.1` | error | A type definition's `name` isn't a name | the value |
-| `M17.2` | error | A type is defined twice, or a system type in a file | the second `name` field |
+| `M17.1` | error | A type definition's `name` isn't a name, or a tag definition's isn't a tag | the value |
+| `M17.2` | error | A type or a tag is defined twice, or a system type in a file | the second `name` field |
 | `M17.3` | warning | A type definition has no `name` | the `+type-def` trigger |
 | `M20.1` | error | Two nodes have one ID | each ID after the first, in file order (M5) |
 | `M20.3` | error | An ID isn't a name | the ID |
@@ -310,7 +309,7 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M27.1` | warning | A custom state isn't `name [m] > base` with a built-in base and a new name | the `state` setting |
 | `M28.1` | warning | A custom state uses a built-in marker | the `state` setting |
 | `M28.2` | warning | A marker belongs to a custom state already | the `state` setting |
-| `M39` | error | A formula on a node that isn't a type definition | the value |
+| `M39` | error | A formula on a node that isn't a type definition or a field definition node | the value |
 | `M40` | error | A `valid` formula isn't true | the value |
 | `M44.1` | error | A computed field is in a cycle | the field's definition |
 | `M44.2` | error | A computed field depends on a cycle | the field's definition |
@@ -319,7 +318,7 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M50.1` | warning | A mirror is under its own source | the mirror's `_mirror` value |
 | `M50.2` | warning | A line is under a mirror | the line |
 | `M55.1` | error | A field is defined by two field definition nodes | the second `key` field |
-| `M55.2` | error | A system field (M11) is defined again | the `key` value, or the type's field line |
+| `M55.2` | error | A system field (M11) is defined again | the `key` value |
 | `M55.3` | warning | A field definition node has no `key` | the `+field-def` trigger |
 | `M58.1` | error | A type gives a field definition node's key a value or child lines | the field line |
 

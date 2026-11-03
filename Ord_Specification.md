@@ -125,11 +125,11 @@ Open slot #hej⟨U+00A0⟩+hej⟨U+00A0⟩^hej
 root
   node "Open slot #hej +hej ^hej"
     label "Open slot #hej"
-    field "tag" embedded
+    field "_tag" embedded
       "hej"
-    field "type" inline
+    field "_type" inline
       "hej"
-    field "id" inline
+    field "_id" inline
       "hej"
 ```
 
@@ -574,7 +574,7 @@ A field can be written in three ways: as a field line (`key:: value`, Part 1), a
 - **L1.** Part 2 reads unquoted node labels and unquoted text items of fields. Quoted labels and items (C21), blocks (C29) and keys are never read.
 - **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `_link`, `_url` and `_formula`, mirror values (L31), and value forms (L21). Inline fields and the `_type`, `_id`, `_state` and `_tag` triggers belong to nodes.
 - **L3.** Unless a rule says otherwise, a form starts at the beginning of the text or right after a space or tab, and ends before the next space or tab or at the end of the text. A **name** is a letter followed by letters, digits, `_` and `-`. Letters are any Unicode letters.
-- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `_state` trigger, the label (L19), then inline fields, `_type` triggers and the `_id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `_type`, `_id` or `_state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `_tag` field stays an inline field, since writing it as a tag would put it in the label. The `_state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved. A mirror (L30) is written as its list marker, if any, `@`, one space and its reference.
+- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `_state` trigger, the label (L19), then inline fields, `_type` triggers and the `_id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `_type`, `_id` or `_state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `_tag` field stays an inline field, since writing it as a tag would put it in the label. The `_state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
 
 ```example fmt labels L4
 +task Send draft [due:: 2026-10-20] #urgent [x] ^s1
@@ -616,7 +616,7 @@ root
       "https://example.com"
 ```
 
-- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the `_type` trigger `+search` and the inline field `[query:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
+- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the `_type` trigger `+search` and the inline field `[query:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node the type `task`, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
 
 ```example labels L28
 ? [ ] +task @anna
@@ -642,7 +642,7 @@ root
     label "? not a search"
 ```
 
-- **L30.** A label that starts with `@`, after any list marker (L16), is a **mirror**: short for the inline field `[_mirror:: …]` holding the rest of the label, with the spaces and tabs after `@` removed, as one item. The item is a reference as written inside `[[` and `]]` (L10): a label, an ID, `Label^id`, `^id` or a quoted label. Nothing in it is read as a form and `;` doesn't split it, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `@` followed only by spaces and tabs is text, as is `@` later in a line, such as after a `_state` trigger. `\@` is text (L18). A writer writes a mirror with one space after `@` (L4). What a mirror means is in [Semantics](Semantics.md) M48.
+- **L30.** A label that starts with `@`, after any list marker (L16), is a **mirror**: short for the inline field `[_mirror:: …]` holding the rest of the label, with the spaces and tabs after `@` removed, as one item. The item is a reference as written inside `[[` and `]]` (L10): a label, an ID, `Label^id`, `^id` or a quoted label. Nothing in it is read as a form and `;` doesn't split it, so `+task` in it doesn't give the node a type, and the label (L19) is empty. `@` followed only by spaces and tabs is text, as is `@` later in a line, such as after a `_state` trigger. `\@` is text (L18). A writer writes a mirror as its list marker, if any, `@`, one space and its reference. What a mirror means is in [Semantics](Semantics.md) M48.
 
 ```example labels L18 L30
 @ Send mapping draft^t9x1
@@ -717,13 +717,13 @@ meeting:: @Anna Smith; @Erik
 | `_url` | `https://example.com`, `./spec.pdf` | `[_url:: https://example.com]`, `[_url:: ./spec.pdf]` | a URL or a path |
 
 - **L7.** `_type`: `+` followed by a name. `+46`, `C++` and a list marker `+ ` (L16) are not types.
-- **L8.** `_id`: `^` followed by a name. IDs match case-insensitively. More than one on a label is an error.
+- **L8.** `_id`: `^` followed by a name. More than one on a label is an error.
 - **L10.** `_link`: `[[`, a reference, and a closing `]]`, which is required: without it, the `[[` is text, with a warning. It can start anywhere and ends at the first `]]`. The reference is one of:
   - `[[Node label]]` or `[[anna-47xu]]`: a label or an ID. It refers to the node with that ID, or else to the node with that label.
   - `[[Node label^anna-47xu]]`: a label and an ID. The text ends with `^` directly followed by a name, with no space before the ID, the form Tana Paste uses.
   - `[[^anna-47xu]]`, `[["Node label"]]` and `[["Node label"^anna-47xu]]` are allowed but usually redundant: `^` says the rest is an ID, and quotes (C21) say the text is a label. They settle the case where an ID and a label match different nodes.
 
-  In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label. In an inline field, a quoted value stays text (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
+  In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label, but not in an inline field (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
 - **L11.** `_state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
 - **L12.** `_formula`: `=` followed by a letter, `!` or `(`. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. A path or function call, such as `=node("i42").total`, ends before the next space or tab outside parentheses and quoted strings; its parentheses must balance. A formula with an `(` that is never closed is text, with a warning. `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
 - **L13.** `_tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
@@ -970,7 +970,7 @@ Codes, severities and positions work as in section 11.
 |---|---|---|---|
 | `L8` | error | A label has more than one `_id` trigger | each `_id` trigger after the first |
 | `L10` | warning | A `[[` has no closing `]]` | the `[[` |
-| `L11` | warning | A `_state` marker that no type defines | the `[` |
+| `L11` | warning | A state marker that no type defines | the `[` |
 | `L12` | warning | A formula has an `(` that is never closed | the `=` |
 | `L26` | warning | Text has the digits and separators of a date, datetime, week or month, but a part out of range | the text's first character |
 
@@ -988,4 +988,4 @@ These rules are for tools that find files, such as editors, the index and the la
 - **F2.** Its media type is `text/plain; charset=utf-8`, since no media type is registered for Ord. On Apple platforms, `.ord` is the uniform type `com.pensiveworks.ord`, which conforms to `public.plain-text`, so apps that don't know Ord open it as text.
 - **F3.** In a workspace, `.txt` files, files without an extension and `.ord` files are read as Ord, so `.ord.txt` is too. Outside a workspace, only `.ord` files are, so a tool never claims `.txt` or extensionless files in general. Editors switch a file to Ord only when they would otherwise open it as plain text, so a `Makefile` keeps its own language.
 - **F4.** A **workspace** is a folder that holds a workspace file, with everything under it. A file belongs to the nearest workspace above it, its own folder included.
-- **F5.** A **workspace file** is named `Ord.workspace`, in any letter case, such as `ord.workspace`. It is an Ord file, though its name doesn't end in `.ord`; its first line can name the workspace, and what else it holds is in [Semantics](Semantics.md). Other names, such as `workspace.ord`, are ordinary files.
+- **F5.** A **workspace file** is named `Ord.workspace`, in any letter case, such as `ord.workspace`. It is an Ord file, though its name doesn't end in `.ord`. What it holds is a convention, not a requirement. Other names, such as `workspace.ord`, are ordinary files.
