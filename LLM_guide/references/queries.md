@@ -60,7 +60,7 @@ View settings are implementation-defined. Common ones:
 | `columns` | one child field line per column (below) |
 | `sort` | a field and `asc` or `desc`: `sort:: due asc` |
 | `group` | a field to group by: `group:: project` |
-| `footer` | `=expr` over the visible rows: `footer:: =($sum(hours))` |
+| `footer` | `=expr` over the visible rows, such as `=($sum(hours))`. Ordlang reports it as M39 on a search node for now; leave it out until the spec settles it |
 | `computed` | what a tool writes from the results, such as a read-only CSV block |
 
 ### Columns
@@ -77,7 +77,6 @@ Hours this month +search
 		hours::
 		daysago:: =($days(date, $today()))
 			header:: Days ago
-	footer:: =($sum(hours))
 ```
 
 - `key::` shows a field. `key:: =expr` is a template column, computed per row, output only.

@@ -97,6 +97,8 @@ Call the venue +task
 Monday
 	@ Send mapping draft^t9x1
 	? +task [ ] #urgent
+Apollo +project
+	[ ] Send mapping draft #urgent +task ^t9x1
 ```
 
 ## Value forms
