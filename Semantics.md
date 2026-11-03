@@ -64,10 +64,10 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   ```
 
   Creating `Weekly sync +meeting`, or adding `+meeting` to an existing `Weekly sync`, writes `Agenda`, `Notes` and `Action items` under it.
-- **M52.** A type's or a tag definition's `icon` setting is an emoji, as in `icon:: 📅`, and its `description` setting is text about the type, tag or field, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type and the description where the type is chosen.
+- **M52.** The `icon` setting of a type, a tag definition or a field definition (M56) is an emoji, as in `icon:: 📅`, and its `description` setting is text about the type, tag or field, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type, tag or field, and the description where it is chosen.
 - **M20.** A node's **ID** is its `id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
 
-- **M53.** `type-def`, `tag-def` and `field-def` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are defined by **system field definitions**, field definition nodes (M55) built in the same way, which their definitions list by key (M58).
+- **M53.** `type-def`, `tag-def` and `field-def` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), so `name::`, `color::` and the other keys are free on every other node.
 
   ```
   Type definition +type-def
@@ -75,76 +75,54 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   	color:: white
   	fields::
   		name::
+  			description:: The name of the type it defines.
   		fields::
+  			description:: The fields of the type's nodes, as field lines or field definition nodes.
   		state::
+  			description:: The type's custom states, each a name with an optional marker and base.
   		color::
+  			description:: A color name, a hex color, or the name of a field whose value gives the color.
   		checkbox::
+  			options:: true; false
+  			description:: Whether the type's nodes get a checkbox.
   		nodes::
+  			description:: Nodes copied under a node when it is given the type.
   		icon::
+  			description:: An emoji shown with it.
   		description::
+  			description:: Text about it.
   Tag definition +type-def
   	name:: tag-def
   	color:: white
   	fields::
   		name::
+  			description:: The names of the tags it defines.
   		color::
+  			description:: A color name or a hex color.
   		icon::
+  			description:: An emoji shown with it.
   		description::
+  			description:: Text about it.
   Field definition +type-def
   	name:: field-def
   	color:: white
   	fields::
   		key::
+  			description:: The key of the field it defines.
   		value::
+  			description:: A default, a computed value or an auto value.
   		valid::
+  			description:: A formula that each value of the field must make true.
   		options::
+  			description:: The values the field is meant to hold, and the types of the nodes it refers to.
   		tags::
+  			options:: true; false
+  			description:: Whether the field's options can be written as tags.
   		icon::
+  			description:: An emoji shown with it.
   		description::
-  Name +field-def
-  	key:: name
-  	description:: The name of the type that a type definition defines, or the names of the tags that a tag definition defines.
-  Fields +field-def
-  	key:: fields
-  	description:: The fields of the type's nodes, as field lines or field definition nodes.
-  State +field-def
-  	key:: state
-  	description:: The type's custom states, each a name with an optional marker and base.
-  Color +field-def
-  	key:: color
-  	description:: A color name, a hex color, or the name of a field whose value gives the color.
-  Checkbox +field-def
-  	key:: checkbox
-  	options:: true; false
-  	description:: Whether the type's nodes get a checkbox.
-  Nodes +field-def
-  	key:: nodes
-  	description:: Nodes copied under a node when it is given the type.
-  Icon +field-def
-  	key:: icon
-  	description:: An emoji shown with the type, tag or field.
-  Description +field-def
-  	key:: description
-  	description:: Text about the type, tag or field.
-  Key +field-def
-  	key:: key
-  	description:: The key of the field that a field definition defines.
-  Value +field-def
-  	key:: value
-  	description:: A default, a computed value or an auto value.
-  Valid +field-def
-  	key:: valid
-  	description:: A formula that each value of the field must make true.
-  Options +field-def
-  	key:: options
-  	description:: The values the field is meant to hold, and the types of the nodes it refers to.
-  Tags +field-def
-  	key:: tags
-  	options:: true; false
-  	description:: Whether the field's options can be written as tags.
+  			description:: Text about it.
   ```
-
-  A system field definition applies only on nodes of the system types, where its field is a setting. On every other node its key is free: `name::` on a person is data, and a workspace may define its own field with the same key (M55), which applies everywhere but on nodes of the system types. The two are not the error `M55.1`.
 
 ### Built-in types (informative)
 
@@ -199,7 +177,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 This section is a draft outline. Its rules are numbered so they can be referred to, and need tests before 1.0.
 
-- **M36.** A type definition's `fields` setting holds **field definitions** as field lines under its anonymous node (C13). A definition's key is the field it defines; its value is its `value` setting, and its child field lines are its other settings: `value`, `valid`, `options` and `tags`. A type's `fields` setting can also list field definition nodes (M58).
+- **M36.** A type definition's `fields` setting holds **field definitions**: **local field definitions**, its field lines under its anonymous node (C13), and field definition nodes (M55, M58). The two are one thing written two ways, with the same settings (M56), and differ only in scope: a local definition applies on the type's nodes, a field definition node on every node (M57). A local definition's key is the field it defines; its value is its `value` setting, and its child field lines are its other settings.
 - **M55.** A node with the type `field-def` (M53) is a **field definition node**. It defines the field whose key is its `key` value, for the whole workspace:
 
   ```
@@ -210,8 +188,8 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   ```
 
   `key` is a setting only on a field definition node; on any other node it is an ordinary field, and a node with `key::` but without `+field-def` defines nothing. A field definition node without a `key` is the warning `M55.3` and defines nothing. Where this spec matches a field to its definition, keys match ignoring letter case, as labels do (M23); the Core keeps keys as written, so `Due` and `due` on one node are still two fields. Two field definition nodes for one key are the error `M55.1`, and one for a reserved field (M11) the error `M55.2`.
-- **M56.** A field definition node's settings are its field lines `value`, `valid`, `options` and `tags`, as in M37 to M47, and `icon` and `description`, as in M52.
-- **M57.** A field definition node applies to its key on every node in the workspace. Its `options`, `valid` and `tags` work on every node as a type's field definition works on the type's nodes (M24, M40, M46, M47), so with the definition above, `Crash #high` has `priority:: high` whatever its types. Its `value` (M37) works on the nodes of the types that list it (M58), since only they are meant to have the field.
+- **M56.** A field definition's settings, local or a node, are `value`, `valid`, `options` and `tags`, as in M37 to M47, and `icon` and `description`, as in M52. A field definition node has them as field lines, besides its `key`.
+- **M57.** A field definition node applies to its key on every node in the workspace. Its `options`, `valid` and `tags` work on every node as a local field definition works on its type's nodes (M24, M40, M46, M47), so with the definition above, `Crash #high` has `priority:: high` whatever its types. Its `value` (M37) works on the nodes of the types that list it (M58), since only they are meant to have the field.
 - **M58.** A type lists a field definition node in its `fields` setting in either of two ways:
   - a field line with its key and no value or child lines. A value or child lines there are the error `M58.1` and are left out, since a type can't change a field definition node.
   - the field definition node itself, written under `fields::` as a node item (C13). It is read there although it is under a setting (M12), and defines its field for the whole workspace, as it would anywhere else.
