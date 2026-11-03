@@ -389,9 +389,9 @@ file "work.ord"
   node "Unknown" @8
   node "Odd" @9
     state "shipped"
-! M10 work.ord:7:10
+! M10 work.ord:7:11
 ! L11 work.ord:8:1
-! M26 work.ord:10:10
+! M26 work.ord:10:11
 ```
 
 ```example graph M5 M17 M18 M53
