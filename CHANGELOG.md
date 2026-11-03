@@ -9,6 +9,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 ### LLM guide
 
 - New: [LLM_guide](LLM_guide/GUIDE.md), an informative guide for language models that read and write Ord, with references for formulas, queries, CSV, diagnostics and recipes. It shares the specs' version, and CI checks its version line. It was the Claude `ord` skill, moved here and updated to 0.6.0-draft, so that a spec change and the guide change land together.
+- [Ord in brief](LLM_guide/brief.md) moves here from the ordlang.org repo, which now builds its `/brief.md` from this folder. The guide no longer repeats the brief's syntax and builds on it.
 
 ### Spec
 

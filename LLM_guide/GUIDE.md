@@ -4,7 +4,9 @@ Version 0.6.0-draft, 2026-11-03.
 
 This guide is informative. It tells a language model, or a tool that writes for one, how to read and write Ord so that its edits look like something a careful person typed. It follows the specs of the same version: [Ord specification](../Ord_Specification.md) (rules C, L, F), [Semantics](../Semantics.md) (rules M), [CSV mapping](../CSV_mapping.md) (rules V) and [JSON mapping](../JSON_mapping.md). Rule IDs are given so you can look them up. Where this guide and a spec disagree, the spec wins, and the guide has a bug.
 
-It is released with the specs: a change to a spec that changes how Ord is written changes this guide in the same commit. Tools that copy it, such as a Claude skill, pin it by version and check that their copy is unchanged.
+It is released with the specs: a change to a spec that changes how Ord is written changes this guide and the brief in the same commit. The brief is also published at https://ordlang.org/brief.md, built from this folder. Tools that copy it, such as a Claude skill, pin it by version and check that their copy is unchanged.
+
+Read [Ord in brief](brief.md) first: the syntax on one page, with the basic rules for writing and right and wrong examples. This guide builds on it, and doesn't repeat it: what a workspace means, how to edit files well, formulas, queries and the mistakes models make.
 
 More detail, loaded when needed:
 - [references/formulas.md](references/formulas.md): the formula data model, every function, dates in formulas, examples.
@@ -12,78 +14,6 @@ More detail, loaded when needed:
 - [references/csv.md](references/csv.md): CSV files in a workspace.
 - [references/diagnostics.md](references/diagnostics.md): what each diagnostic code means and how to fix it, and mistakes that give none.
 - [references/recipes.md](references/recipes.md): worked examples: a workspace, journal days, tasks, meetings, a small database.
-
-## The write subset
-
-A reader accepts every form. A writer needs few of them. Unless the file already uses something else, write only these:
-
-| Write | For |
-|---|---|
-| one tab per level | the tree |
-| `key:: value`, one space after `::`, items joined with `; ` | a field line |
-| `[key:: value]` on a node line | a short field value |
-| `[ ]` `[-]` `[?]` `[x]` at the start | state: new, in progress, waiting, done |
-| `+task` | the node's type |
-| `#acme`, `#client/acme` | a tag, kept in the label |
-| `[[Label]]`, `[[Label^id]]` | a reference to another node |
-| `@ Label` on its own line | a mirror: that node, shown here too |
-| `^id` at the end | an ID, only when something must refer to it by ID |
-| child lines | notes, prose, details |
-| a fenced block | code, tables, anything with its own syntax |
-
-Node lines are written in a fixed order (L4): list marker, state, label (tags, links and URLs included, where they read naturally), then inline fields, types and the ID:
-
-```
-- [ ] Send mapping draft to Anna #acme [due:: 2026-10-26] +task
-```
-
-## Reading a line
-
-Each line is decided by punctuation alone, never by words or letter case.
-
-- **Field or node (C5, C11, C51).** A line is a field when it has `::` outside quotes and brackets. The first such `::` splits it into key and value. Every other line is a node, and its text is the label.
-  - `due:: 2026-10-10` and `due::2026-10-10` are fields. `Project lead:: Anna` is a field with the key `Project lead`.
-  - `Note: remember this` is a node. One colon never makes a field.
-  - `::` in prose makes a field line: write `` `std::vector` `` in backticks.
-- **Tree (C9).** A line's parent is the nearest line above with a smaller indent. Blank lines don't count. Keep one indent character per file, tabs by default.
-- **Fields belong to the node above them**, written before its child nodes by convention (W1).
-- **Items (C15, C16).** A field value splits into items at `;`: `tags:: a; b; c` has three. Labels are never split. Quote a value to keep a `;` in it: `summary:: "agreed X; then Y"`.
-- **Child lines of a field (C13).** A field's child node lines are more items, and its child field lines are one anonymous node, read in formulas as `contact.primary`:
-  ```
-  contact::
-  	primary:: anna
-  	email:: anna@example.com
-  ```
-- **Quotes (C21 to C25).** `"` and backticks quote; `'` is text. A key, label, value or item that is exactly one quoted string is literal. A backtick span hides `::` and `;` anywhere on a line.
-- **Blocks (C29 to C31).** Three or more backticks on their own line open a literal block, closed by at least as many. The whole block is one node. An info string names its language: ```` ```csv ````.
-- **List markers (L16).** `-`, `*`, `+`, `#` or `1.` and a space at the start are decoration. `# Heading` is a node labelled `Heading`; an editor may draw it as a heading, but nesting comes from the indent alone. `•` is text.
-- **No syntax errors (C35).** Every file reads into a tree. Doubtful text gets a diagnostic.
-
-## The node line
-
-The forms on a node line, read wherever they are written (Spec Part 2). Each is short for a system field, whose key starts with `_` (M11):
-
-| Written | Is | Rule |
-|---|---|---|
-| `[ ]`, `[-]`, `[?]`, `[x]` at the start, after any list marker | `_state`: new, in-progress, waiting, done | L11 |
-| `[r]` or another character | `_state`: the custom state whose marker it is | L11, M29 |
-| `+task` | `_type` | L7 |
-| `^t9x1` | `_id` | L8 |
-| `#urgent`, `#project/apollo`, `[#Two words]` | `_tag`, kept in the label | L13, L29 |
-| `[key:: value]` | an inline field | L5 |
-| `[[Ruukki AB]]`, `[[ruukki]]`, `[[Ruukki AB^ruukki]]` | `_link`: by label, ID, or both | L10 |
-| `https://…`, `./file.pdf`, `[text](url)` | `_url` | L14 |
-| `=(a + b)` | `_formula`, output only | L12 |
-| `@ Label` as the whole line | `_mirror`: this node shows that one | L30 |
-| `? query` as the whole line | a search: `+search` with `[query:: …]` | L28 |
-
-- **Label (L19).** The line without the list marker, state, inline fields, types and ID. Tags, links, URLs and formulas stay. `Call #anna about the budget +task` has the label `Call #anna about the budget`, and `[[Call about the budget]]` finds it, with or without the tags (M23).
-- **Names (L3).** Type names, tag names and IDs are a letter followed by letters, digits, `_` and `-`. `#5`, `C#`, `+46` and `C++` are text.
-- **Tags (L13, L29).** A tag ends after its last name, so `#acme.` at the end of a sentence is the tag `acme` and a full stop. A tag with spaces is `[#Ord notes]`.
-- **Inline fields (L5).** `[key:: value]`, anywhere on the line. The value runs to the closing `]`, so it can hold spaces. A quoted inline value is text, never a reference: use a link.
-- **`_` keys.** `_state:: review`, `_type:: task`, `_id:: x` mean what the trigger means. Plain `state::`, `type::` and `id::` are ordinary fields of your own.
-- **Escapes (L18).** A backslash makes a form text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\?`, `\@`. Backticks do too.
-- **Value forms (L21 to L27)** are read in field items only: numbers (`-12`, `9.5`; not `007`, `+46`, `1e3`), booleans (`true`, `false`), dates (`2026-10-15`), datetimes (`2026-10-15T14:30`, `2026-10-15 14:30`), weeks (`2026-W42`) and months (`2026-10`). Quote to keep text: `zip:: "01234"`.
 
 ## What a workspace means
 
