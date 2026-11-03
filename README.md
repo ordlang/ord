@@ -24,6 +24,7 @@ Version **0.6.0-draft**. The specs are drafts: before 1.0.0, any version can cha
 | [JSON_mapping.md](JSON_mapping.md) | normative | How JSON maps to and from the data model. |
 | [CSV_mapping.md](CSV_mapping.md) | normative | How CSV files map to and from the data model, a row per node. |
 | [Grammar.md](Grammar.md) | informative | An ABNF grammar and a parsing strategy. |
+| [LLM_guide/GUIDE.md](LLM_guide/GUIDE.md) | informative | How a language model reads and writes Ord: the write subset, rules in brief, gotchas, with references for formulas, queries, CSV, diagnostics and recipes. Copied by tools such as Claude skills, pinned by version. |
 | [CHANGELOG.md](CHANGELOG.md) | informative | What changed in each version, and retired rule IDs. |
 
 Every rule has a permanent ID, such as `C5` (Core), `L11` (label syntax), `F3` (files), `D` and `T` (test format), `M` (Semantics), `J` (JSON) and `V` (CSV). IDs never change and are never reused.
@@ -50,7 +51,8 @@ node ordtest.mjs run Ord_Specification.md --dump "ord dump -" --fmt "ord fmt -"
 
 1. Change the rules and their tests in a pull request. CI lints every test.
 2. Add the change to the changelog, naming the rules it changes.
-3. To release, update the version line in every spec file, and tag the commit, such as `v0.4.0-draft`.
+3. If the change alters how Ord is written, update [LLM_guide](LLM_guide/GUIDE.md) in the same pull request, and add a line to its Gotchas when the old form still reads but means something else.
+4. To release, update the version line in every spec file and the guide, and tag the commit, such as `v0.4.0-draft`.
 
 ## License
 

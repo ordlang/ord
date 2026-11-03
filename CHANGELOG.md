@@ -1,10 +1,14 @@
 # Changelog
 
-From 0.4.0-draft, the specs in this repository share one version: the [Ord specification](Ord_Specification.md), [Test format](Test_format.md), [Semantics](Semantics.md), [JSON mapping](JSON_mapping.md), [CSV mapping](CSV_mapping.md) and the informative [Grammar](Grammar.md). Before that, each spec had its own version, listed under its name below.
+From 0.4.0-draft, the specs in this repository share one version: the [Ord specification](Ord_Specification.md), [Test format](Test_format.md), [Semantics](Semantics.md), [JSON mapping](JSON_mapping.md), [CSV mapping](CSV_mapping.md), the informative [Grammar](Grammar.md) and, from 0.6.0-draft, the informative [LLM guide](LLM_guide/GUIDE.md). Before that, each spec had its own version, listed under its name below.
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35, J1.1.
 
 ## 0.6.0-draft (2026-11-03)
+
+### LLM guide
+
+- New: [LLM_guide](LLM_guide/GUIDE.md), an informative guide for language models that read and write Ord, with references for formulas, queries, CSV, diagnostics and recipes. It shares the specs' version, and CI checks its version line. It was the Claude `ord` skill, moved here and updated to 0.6.0-draft, so that a spec change and the guide change land together.
 
 ### Spec
 
