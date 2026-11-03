@@ -4,6 +4,12 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35, J1.1.
 
+## Unreleased
+
+### Spec
+
+- L5: an inline field's key can be several names separated by single spaces, as in `[due date:: 2026-10-21]`, without quotes; the first may start with `_`, as system fields' keys do (`[_type:: task]`), which L5 now says. Any other key, such as one with two spaces or one that starts with a digit, is still quoted. The grammar has `inline-key`.
+
 ## 0.6.0-draft (2026-11-03)
 
 ### LLM guide
