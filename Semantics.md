@@ -64,10 +64,10 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   ```
 
   Creating `Weekly sync +meeting`, or adding `+meeting` to an existing `Weekly sync`, writes `Agenda`, `Notes` and `Action items` under it.
-- **M52.** A type's or a tag definition's `icon` setting is an emoji, as in `icon:: 📅`, and its `description` setting is text about the type or tag, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type and the description where the type is chosen.
+- **M52.** A type's or a tag definition's `icon` setting is an emoji, as in `icon:: 📅`, and its `description` setting is text about the type, tag or field, quoted (C21) when it holds `;`. Both are informative: this spec gives them no meaning, and tools don't check them. An editor may show the icon with the type and the description where the type is chosen.
 - **M20.** A node's **ID** is its `id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
 
-- **M53.** `type-def`, `tag-def` and `field-def` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types.
+- **M53.** `type-def`, `tag-def` and `field-def` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are defined by **system field definitions**, field definition nodes (M55) built in the same way, which their definitions list by key (M58).
 
   ```
   Type definition +type-def
@@ -79,7 +79,6 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   		state::
   		color::
   		checkbox::
-  			options:: true; false
   		nodes::
   		icon::
   		description::
@@ -100,10 +99,52 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
   		valid::
   		options::
   		tags::
-  			options:: true; false
   		icon::
   		description::
+  Name +field-def
+  	key:: name
+  	description:: The name of the type that a type definition defines, or the names of the tags that a tag definition defines.
+  Fields +field-def
+  	key:: fields
+  	description:: The fields of the type's nodes, as field lines or field definition nodes.
+  State +field-def
+  	key:: state
+  	description:: The type's custom states, each a name with an optional marker and base.
+  Color +field-def
+  	key:: color
+  	description:: A color name, a hex color, or the name of a field whose value gives the color.
+  Checkbox +field-def
+  	key:: checkbox
+  	options:: true; false
+  	description:: Whether the type's nodes get a checkbox.
+  Nodes +field-def
+  	key:: nodes
+  	description:: Nodes copied under a node when it is given the type.
+  Icon +field-def
+  	key:: icon
+  	description:: An emoji shown with the type, tag or field.
+  Description +field-def
+  	key:: description
+  	description:: Text about the type, tag or field.
+  Key +field-def
+  	key:: key
+  	description:: The key of the field that a field definition defines.
+  Value +field-def
+  	key:: value
+  	description:: A default, a computed value or an auto value.
+  Valid +field-def
+  	key:: valid
+  	description:: A formula that each value of the field must make true.
+  Options +field-def
+  	key:: options
+  	description:: The values the field is meant to hold, and the types of the nodes it refers to.
+  Tags +field-def
+  	key:: tags
+  	options:: true; false
+  	description:: Whether the field's options can be written as tags.
   ```
+
+  A system field definition applies only on nodes of the system types, where its field is a setting. On every other node its key is free: `name::` on a person is data, and a workspace may define its own field with the same key (M55), which applies everywhere but on nodes of the system types. The two are not the error `M55.1`.
 
 ### Built-in types (informative)
 
