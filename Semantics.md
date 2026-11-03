@@ -42,9 +42,9 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 
 ## 5. Types and IDs
 
-- **M17.** A node with a `defines` field is a **type definition**. Its value is the type's name, a name (L3). In the workspace file (Spec F5), a node whose line is only a `type` trigger, `+name`, is short for `[defines:: name]`: a type definition with an empty label, not a node of that type. Elsewhere such a line is a node of that type, as usual. A value that isn't a name is the error `M17.1`, and two definitions of one name are the error `M17.2`.
+- **M17.** A node with a `defines-type` field is a **type definition**. Its value is the type's name, a name (L3), as in `Task [defines-type:: task]`. A value that isn't a name is the error `M17.1`, and two definitions of one name are the error `M17.2`.
 - **M18.** A node's **types** are its `type` values, in order, without repeats. A type without a definition is allowed.
-- **M19.** A type definition's settings are its field lines `fields`, `state`, `color` and `checkbox`. `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name. In the workspace file, a node whose line is only `tag` triggers, with inline fields or field lines, sets those tags, as in `#urgent [color:: red]`; it isn't tagged itself, and its only setting is `color`. `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
+- **M19.** A type definition's settings are its field lines `fields`, `state`, `color` and `checkbox`. `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name. A node with a `defines-tag` field is a **tag definition** for the tags its values name, without `#`, as in `Urgent [defines-tag:: urgent] [color:: red]`; its only setting is `color`, which a tag's color is in, ignoring letter case. `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
 - **M20.** A node's **ID** is its `id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
 
 ### Built-in types (informative)
@@ -52,11 +52,11 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 A workspace usually starts with these definitions in its workspace file. They are ordinary type definitions, so fields and settings can be changed like on any type.
 
 ```
-Person [defines:: person]
+Person [defines-type:: person]
 	fields::
 		id:: auto $slug(label)
 		email::
-Task [defines:: task]
+Task [defines-type:: task]
 	fields::
 		due::
 ```
@@ -132,8 +132,8 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M14.1` | warning | A `parent` or `children` cell names a node owned by indentation | the cell |
 | `M14.2` | warning | `parent` and `children` cells give a node different owners | the later cell |
 | `M15` | error | A node is in an ownership loop | the node |
-| `M17.1` | error | A `defines` value isn't a name | the value |
-| `M17.2` | error | A type is defined twice | the second `defines` value |
+| `M17.1` | error | A `defines-type` value isn't a name | the value |
+| `M17.2` | error | A type is defined twice | the second `defines-type` value |
 | `M20.1` | error | Two nodes have one ID | each ID after the first, in file order (M5) |
 | `M20.3` | error | An ID isn't a name | the ID |
 | `M22.1` | error | A reference's ID matches no node | the reference |
@@ -185,7 +185,7 @@ file "a.ord"
 
 ```example graph M10 M26 M27 M29 M30
 --- types.ord
-Bug [defines:: bug]
+Bug [defines-type:: bug]
 	state:: triage [t] > new | review [r] > in-progress | shipped > done | someday
 --- work.ord
 [r] Fix login +bug
@@ -228,16 +228,17 @@ file "work.ord"
 --- Ord.workspace
 Types
 	+task
-		fields::
-			due::
+	Task [defines-type:: task]
 --- a.ord
 Write +task
 +task
-Task [defines:: task]
+Task [defines-type:: task]
 .
 file "Ord.workspace"
   node "Types" @1
     node "" @2
+      type "task"
+    node "Task" @3
 file "a.ord"
   node "Write" @1
     type "task"
@@ -253,7 +254,7 @@ Invoice 42 ^i42
 Anna +person ^anna
 Erik ^anna
 Now ^today
-Task [defines:: task]
+Task [defines-type:: task]
 	fields::
 		owner::
 			options:: +person

@@ -16,6 +16,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M17, M19: the workspace file has no syntax of its own. `defines` is renamed `defines-type`: `Task [defines-type:: task]`. A line that is only `+name` is a node of that type in the workspace file too, not a type definition. A tag's color is set by a **tag definition**, a node with a `defines-tag` field, in any file: `Urgent [defines-tag:: urgent] [color:: red]`; a line `#urgent [color:: red]` is an ordinary tagged node.
 - M10, M11, M21, M48 to M50: mirrors. `mirror` is a reserved, single-valued field whose value is a reference. A node with one is a mirror of the node it names, its source, which keeps its one owner. A mirror stands for its source: as a field's node item it is a reference from the field's node, and as a child it is its source in `children` and formulas, once per owner. A mirror under its own source is the warning `M50.1`, and lines under a mirror the warning `M50.2`.
 - M61, M65: a query matches a node in its own place, never a mirror. The term `@` and a reference matches the node it names; in a scoped query, when it or one of its mirrors is in the scope.
 - M9, M19, M21, M23, M24, M47, M61, M62: sigils are gone. A type definition has no `sigil` setting, so the errors `M19.1` and `M19.2` are gone too; a sigil is no longer a reference, a query term or a way to match a one-word label; and a field named after a type is a reference field only when its options name the type (`options:: +person`).
