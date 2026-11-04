@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/checkout@v4
         with:
           repository: ordlang/ord-utils
@@ -29,7 +31,17 @@ jobs:
       - name: Every spec has the same version
         run: |
           v=$(grep -m1 -o '^Version [^,]*' Ord_Specification.md)
-          for f in Test_format.md Semantics.md JSON_mapping.md CSV_mapping.md Grammar.md; do
+          for f in Test_format.md Semantics.md JSON_mapping.md CSV_mapping.md Grammar.md LLM_guide/brief.md LLM_guide/GUIDE.md; do
             grep -q "^$v," "$f" || { echo "$f: not $v"; exit 1; }
           done
           echo "$v"
+      - name: A spec change updates the LLM guide or says why not
+        run: |
+          base="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then echo "No base commit; skipping"; exit 0; fi
+          changed=$(git diff --name-only "$base" HEAD)
+          if ! echo "$changed" | grep -qE '^(Ord_Specification|Semantics|JSON_mapping|CSV_mapping)\.md$'; then echo "No normative spec changed"; exit 0; fi
+          if echo "$changed" | grep -q '^LLM_guide/'; then echo "LLM_guide changed too"; exit 0; fi
+          if git diff "$base" HEAD -- CHANGELOG.md | grep -qiE '^\+.*LLM guide: no change'; then echo "Changelog says the LLM guide needs no change"; exit 0; fi
+          echo "::error::A normative spec changed but LLM_guide/ didn't. Update LLM_guide/brief.md or LLM_guide/GUIDE.md, or add 'LLM guide: no change' to the changelog entry."
+          exit 1

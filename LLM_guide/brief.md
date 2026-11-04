@@ -26,7 +26,7 @@ Project Apollo
 - `key::` with nothing after it is an empty field. Its child lines are its values.
 - A line with `::` is a field line: the first `::` splits it into key and value, with or without a space after it, so `due::2026-10-15` is a field too. A `::` inside `[…]`, quotes or backticks doesn't count. A single colon is text, so `Note: remember this` is a node.
 - `;` separates values: `tags:: red; blue`. It only splits field values, never node labels.
-- An **inline field** sits on the node line in brackets: `Call Anna [due:: 2026-10-15]`. It means the same as a field line under the node. The value runs to the `]`, so it can have spaces: `[note:: two words]`.
+- An **inline field** sits on the node line in brackets: `Call Anna [due:: 2026-10-15]`. It means the same as a field line under the node. The value runs to the `]`, so it can have spaces: `[note:: two words]`. The key can be several words with single spaces between them, `[due date:: 2026-10-15]`; any other key is quoted, `["Project lead (2026)":: Anna]`.
 
 ```
 Invoice Ruukki +invoice

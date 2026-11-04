@@ -52,7 +52,7 @@ node ordtest.mjs run Ord_Specification.md --dump "ord dump -" --fmt "ord fmt -"
 
 1. Change the rules and their tests in a pull request. CI lints every test.
 2. Add the change to the changelog, naming the rules it changes.
-3. If the change alters how Ord is written, update [the brief](LLM_guide/brief.md) and [the guide](LLM_guide/GUIDE.md) in the same pull request, and add a line to its Gotchas when the old form still reads but means something else.
+3. If the change alters how Ord is written, update [the brief](LLM_guide/brief.md) and [the guide](LLM_guide/GUIDE.md) in the same pull request, and add a line to its Gotchas when the old form still reads but means something else. If it doesn't, add `LLM guide: no change` to the changelog entry. CI fails a change to a normative spec that does neither.
 4. To release, update the version line in every spec file, the brief and the guide, and tag the commit, such as `v0.4.0-draft`.
 
 ## License
