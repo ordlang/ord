@@ -37,7 +37,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M23.2` | A label matches several nodes | Reference by ID |
 | `M26` | A state that is neither built in nor defined by the node's types | Use a defined state or define it |
 | `M27.1`, `M28.1`, `M28.2` | A malformed custom state, or a marker built in or already used | Fix the type's `state` setting |
-| `M39` | `key:: =(…)` on a setting of a type, tag or field definition, or of a search | Remove it; formulas go under a type's `fields::`, in a field definition's `value` or `valid`, or on an ordinary node's field |
+| `M39` | `key:: =(…)` on a setting of a type, tag or field definition, or of a search other than `footer` | Remove it; formulas go under a type's `fields::`, in a field definition's `value` or `valid`, or on an ordinary node's field |
 | `M40` | Error: a value fails its field's `valid` check | Fix the value (it is kept as written) |
 | `M44.1`, `M44.2` | A computed field is in, or depends on, a cycle | Break the cycle in the type formulas |
 | `M44.3` | A formula fails, e.g. a generator outside `auto` | Fix the formula |
