@@ -12,6 +12,8 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M39, M64: a search node's `footer` holds `=expr`, evaluated with the list of the results' nodes as `$`; it is no longer M39.
+- M64: a search node's `sort` holds conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, with `asc` and `text` the defaults.
 - M37, M39: what a node writes for a field comes before its types' definitions. A formula on an ordinary node's field line makes a computed field on that node, replacing its types' formula, and a plain value written for the field replaces it too. M39 is now the error for a formula on a setting of a system node, other than a field definition node's `value` and `valid`; a formula on an ordinary node is no longer an error.
 - M53, M64: a search node's `columns` setting is `fields`.
 - M23: a label's name is the label without the tags at its end; tags in the prose are part of it. A reference matches a node by name, with or without the end tags: `[[Send proof]]` and `[[Send proof #mail]]` name `Send proof #mail #teams`, and `Call #anna about budget #projectX` is named `Call #anna about budget`. Before, a label matched with all its tags or with none, and the tags in the prose were removed too. An editor writes a reference with the name. M22.2 compares names, so `[[Send proof^p1]]` no longer warns. M47 takes a node by its name after its label as written. L19 says references name a node by its name, not with its tags.
@@ -21,7 +23,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 - The brief says an inline key can be several words, `[due date:: …]`, after L5.
 - CI: a change to a normative spec must change `LLM_guide/` or say why not, with a line `LLM guide: no change` in the changelog entry it adds.
-- Formulas, diagnostics and the checklist: a formula may sit on a node's field line, replacing its type's (M39); M39 is a formula on a setting. Queries: a search's `columns` is `fields`. Queries also say that system fields keep their `_` keys in terms, filters and `fields::`.
+- Formulas, diagnostics and the checklist: a formula may sit on a node's field line, replacing its type's (M39); M39 is a formula on a setting. Queries: a search's `columns` is `fields`. Queries also say that system fields keep their `_` keys in terms, filters and `fields::`. A search's `footer` is a formula over the results (M64), no longer M39. `sort` takes several conditions, with a value format.
 - Resolving (M22, M23): a label matches by its name, the label without the tags at its end; links are written with the name. M47 likewise.
 
 ## 0.6.0-draft (2026-11-03)

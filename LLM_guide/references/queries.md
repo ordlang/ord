@@ -59,9 +59,9 @@ View settings are implementation-defined. Common ones:
 |---|---|
 | `view` | `table`, `list`, `board` or `calendar` |
 | `fields` | one child field line per field shown (below) |
-| `sort` | a field and `asc` or `desc`: `sort:: due asc` |
+| `sort` | conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, asc and text by default: `sort:: flow; due desc date` |
 | `group` | a field to group by: `group:: project` |
-| `footer` | `=expr` over the visible rows, such as `=($sum(hours))`. It is M39 on a search node for now; leave it out until the spec settles it |
+| `footer` | `=expr` over the results, with their nodes as `$`: `=($sum(hours))`. Shown with each group, or board column |
 | `computed` | what a tool writes from the results, such as a read-only CSV block |
 
 ### Fields
