@@ -12,6 +12,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M42, M74 to M76: the function library has `$nodes(under?)`, every node or the nodes under one at any depth, and `$query(text, under?)`, the nodes an Ord query matches. M74 defines `$node(text)`, which M42 only listed. LLM guide: `formulas.md` lists them.
 - M39, M64: a search node's `footer` holds `=expr`, evaluated with the list of the results' nodes as `$`; it is no longer M39.
 - M64: a search node's `sort` holds conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, with `asc` and `text` the defaults.
 - M37, M39: what a node writes for a field comes before its types' definitions. A formula on an ordinary node's field line makes a computed field on that node, replacing its types' formula, and a plain value written for the field replaces it too. M39 is now the error for a formula on a setting of a system node, other than a field definition node's `value` and `valid`; a formula on an ordinary node is no longer an error.
