@@ -31,11 +31,13 @@ What a node writes comes first (M39): a formula on the node's field line replace
 - A field with only a default (a plain `value`) is empty to formulas; defaults are never written.
 - Everything else is JSONata: mapping `_children.(price * qty)`, filtering `_children[_state != "done"]`, `&` for text, `+` for numbers only, `and`, `or`, `$not()`, `? :`, `in`, array literals, `$x := …` bindings, and `$`-functions.
 
-## Ord's functions (M42, M43)
+## Ord's functions (M42, M43, M74 to M76)
 
 | Function | Gives |
 |---|---|
 | `$node(text)` | The node with that ID, else that label, like a link. `$node("^i42")` matches the ID only. `$node("i42").gross` |
+| `$nodes(under?)` | Every node, at any depth, in file order; with `under` (a node or its ID or label), the nodes under it. Filter on any field: `$nodes()["task" in _type and _state != "done"]` |
+| `$query(text, under?)` | The nodes an Ord query matches, by the query rules (queries.md): `$query("+task #project [ ]")`. No formula inside: filter the result instead |
 | `$today()` | Today's date, local: `2026-10-22` |
 | `$now()` | The date and time, local: `2026-10-22T14:30` |
 | `$date(text, days?)` | A date from ISO text or a date name, shifted by whole days: `$date(due, 7)`, `$date("tomorrow")`, `$date("next-monday")` |
@@ -102,6 +104,9 @@ More one-liners:
 - `=("task" in _type)`: has the type (`_type` is a list, so use `in`, not `=`)
 - ``=(`days-left` < 3)``: a hyphenated field, in backticks
 - `=($count(_children[("task" in _type) and _state != "done"]))`: open tasks under this node
+- `=($count($nodes($)[("task" in _type) and _state != "done"]))`: open tasks at any depth under this node
+- `=($count($query("+task [ ]")))`: open tasks in the workspace, by the query rules (`#project` also matches `#project/apollo`)
+- `=($sum($query("+task", "Apollo").hours))`: hours of the tasks under the node `Apollo`
 - `=(_parent._label)`: the owner's label
 - `=($node("journal-" & $today()))`: today's journal node
 - `=($sum(_children.(price * qty)))`: a sum of products
