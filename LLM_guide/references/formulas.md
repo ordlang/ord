@@ -56,7 +56,7 @@ JSONata's built-ins work as usual: text (`$uppercase`, `$lowercase`, `$substring
 ## Rules
 
 - **Date arithmetic.** Dates are text, so `due + 7` doesn't work. Use `$date(due, 7)` and `$days(start, end)`.
-- **Purity.** Only `$today()`, `$now()` and `$date()` with a date name follow the clock.
+- **Purity.** Only `$today()`, `$now()`, `$date()` with a date name and `$days()` with one argument follow the clock.
 - **Generators only in `auto`.** `$seq`, `$uuid`, `$id` and `$sid` would change on every evaluation, so they are errors in live formulas and queries.
 - **No `~` in formulas.** Use `$date("tomorrow")`, not `~tomorrow`.
 - **Errors and cycles (M44).** A failing formula (M44.3), a cycle (M44.1) or a dependency on a cycle (M44.2) leaves the field empty with a diagnostic. Cycles are per node, so `hours:: =($sum(_children.hours))` on a tree is fine.
