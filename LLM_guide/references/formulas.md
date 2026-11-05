@@ -9,13 +9,14 @@ A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Alway
 | Where | Written | Notes |
 |---|---|---|
 | Computed field, on a type | `total:: =($sum(_children.amount))` under `fields::` | Shown by tools, never written into nodes |
+| Computed field, on one node | `total:: =($sum(_children.amount))` on the node's own field line | Replaces the type's formula on that node (M39) |
 | Auto value, on a type | `_id:: auto $slug(_label)`, `code:: auto "T-" & $seq(3)` | Written once, when the node gets the type and the field is empty |
 | Computed label, on a type | `_label:: =(first & " " & last)` | Written into the node line by editors; tags on the line stay (M38). Don't edit it by hand |
 | Check, under a field definition | `valid:: =($value in ["low", "high"])` | A result that isn't true is the error M40; the value stays |
 | Inline, in a label | `Total =(a + b)` | Output only |
 | Query, template column, footer | `=(due < $today())` | Output only, see queries.md |
 
-Not on ordinary nodes: `x:: =(1 + 1)` on a node that isn't a type definition or field definition is the error M39 and isn't evaluated. Move the formula to the type's `fields::`, or write an inline `=(…)` in the label.
+What a node writes comes first (M39): a formula on the node's field line replaces its types' formula for that field, and so does a plain value (`total:: 12`). Put a formula on the type when every node of the type needs it, and on a node only for an exception. Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
 
 ## The data model a formula sees
 

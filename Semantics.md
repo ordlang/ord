@@ -147,8 +147,8 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   			description:: The query: terms joined by spaces for and, and by a bar for or.
   		view::
   			description:: How the results are shown.
-  		columns::
-  			description:: The fields shown as columns.
+  		fields::
+  			description:: The fields shown for each result.
   		sort::
   			description:: The order of the results.
   		group::
@@ -262,9 +262,9 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   ```
 
   Here `owner` and `priority` are defined for the whole workspace, and `due` only for `task`.
-- **M37.** A `value` of `=expr` makes a **computed field**: its value on each node of the type is the formula's result. A `value` of `auto expr` is an **auto value**: evaluated once, when a node has the type and the field is empty, and written as a plain value. Any other `value` is a default shown, never written.
+- **M37.** A `value` of `=expr` makes a **computed field**: its value on each node of the type is the formula's result, unless the node writes the field itself (M39). A `value` of `auto expr` is an **auto value**: evaluated once, when a node has the type and the field is empty, and written as a plain value. Any other `value` is a default shown, never written.
 - **M38.** A `_label` field definition with `=expr` computes the node's label, which a writer writes into the node line, keeping the line's other forms (L4). Tags written on the line stay, after the computed text, so they are part of the label (L19) without making it differ from the computed one.
-- **M39.** A field with a `=expr` value on a node that isn't a type definition or a field definition node is the error `M39`; the formula isn't evaluated.
+- **M39.** What a node writes for a field comes before its types' definitions of it. A field with a `=expr` value on an ordinary node makes a computed field on that node, whether or not one of its types defines the field: its value is the formula's result, and replaces the types' formula, as a plain value written for the field replaces it too. When a node writes both a formula and plain values for a field, or more than one formula, the first formula counts and the others are ignored. A `=expr` value of a setting of a node of a system type (M12), other than a field definition node's `value` and `valid`, is the error `M39`; the formula isn't evaluated.
 - **M40.** A `valid` setting holds `=expr`, evaluated per node with `value` bound to the field's value, a list when it has several. A result that isn't true is the error `M40`, and the value stays.
 - **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, system fields included: `_parent` is its owner (M13) and `_children` the nodes it owns (M16). A reference field's value is the node it refers to, and a field with field children (C13) is an object of them.
 - **M42.** The function library adds `$node(text)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text)`, `$first(x)` and `$last(x)`. Dates are ISO text. Their exact definitions are to be written here.
@@ -282,7 +282,7 @@ This section is a draft outline, like section 8.
 - **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
 - **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), or, when a field of one of its types with `tags:: true` (M47) would take the tag, when that field's value is what the tag would give it (with `tags:: true` and `options:: +project` on `project`, `#LU` matches a task with `project:: LU` as well as one written `#LU`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a formula when its result is true, and a word when its label contains it, ignoring letter case.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
-- **M64.** A search node's view settings (`view`, `columns`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. What `computed` writes into a file is still to be specified here.
+- **M64.** A search node's view settings (`view`, `fields`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. What `computed` writes into a file is still to be specified here.
 - **M65.** A query matches a node in its own place, never a mirror (M48), so a node mirrored in three places is one result. The term `@` and a reference, written as in a mirror line (L30) but with no space after `@`, matches the node the reference resolves to. In a query scoped to a file or to a node's children, that node matches when it or one of its mirrors is in the scope. Scopes are still to be specified.
 
 ## 10. Diagnostics
@@ -309,7 +309,7 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M27.1` | warning | A custom state isn't `name [m] > base` with a built-in base and a new name | the `state` setting |
 | `M28.1` | warning | A custom state uses a built-in marker | the `state` setting |
 | `M28.2` | warning | A marker belongs to a custom state already | the `state` setting |
-| `M39` | error | A formula on a node that isn't a type definition or a field definition node | the value |
+| `M39` | error | A formula on a setting of a node of a system type, other than a field definition node's `value` and `valid` | the value |
 | `M40` | error | A `valid` formula isn't true | the value |
 | `M44.1` | error | A computed field is in a cycle | the field's definition |
 | `M44.2` | error | A computed field depends on a cycle | the field's definition |

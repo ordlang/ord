@@ -117,7 +117,7 @@ Open tasks +search
 ? [ ] +task #acme
 ```
 
-Views, columns and the rest: [references/queries.md](references/queries.md).
+Views, fields and the rest: [references/queries.md](references/queries.md).
 
 ## Gotchas
 
@@ -142,6 +142,6 @@ Things that read fine but mean something else, or that models get wrong. Add to 
 - Values with `tags:: true` are written as tags, and typed nodes with a project field carry their project's tag.
 - Types are `+name`, tags `#name`; definitions are `+type-def`, `+tag-def` and `+field-def` nodes; nothing from the Gotchas list slipped in.
 - New references resolve: the label is unique, or you used an ID. New IDs are unused.
-- No formula sits on an ordinary node's field line, and no computed result was written.
+- No formula sits on a setting (other than a field definition's `value` or `valid`), and no computed result was written.
 - Lines you didn't need to change are unchanged.
 - If a checker is available, run it, and fix every error you caused.
