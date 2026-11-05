@@ -19,7 +19,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 - The brief says an inline key can be several words, `[due date:: …]`, after L5.
 - CI: a change to a normative spec must change `LLM_guide/` or say why not, with a line `LLM guide: no change` in the changelog entry it adds.
-- Formulas, diagnostics and the checklist: a formula may sit on a node's field line, replacing its type's (M39); M39 is a formula on a setting. Queries: a search's `columns` is `fields`.
+- Formulas, diagnostics and the checklist: a formula may sit on a node's field line, replacing its type's (M39); M39 is a formula on a setting. Queries: a search's `columns` is `fields`. Queries also say that system fields keep their `_` keys in terms, filters and `fields::`.
 
 ## 0.6.0-draft (2026-11-03)
 
