@@ -47,6 +47,7 @@ A query looks like the node lines it matches.
 - **Combining.** A space means and, `|` or, parentheses group, and `!` negates a term or group: `+task (#red | #blue) ![x] ![[Erik]]`.
 - **Mirrors.** A query matches a node in its own place, never a mirror, so a node mirrored in three places is one result.
 - **Archived nodes (M63).** Nodes tagged `archived` are left out unless the query names `#archived`.
+- **System fields (M11)** keep their `_` keys in terms and filters: `[_state:: done]`, `[_id:: t9x1]`, `[_tag:: urgent]`, `=(_parent._label = "Inbox")`.
 - **Filters are formulas.** There are no comparison operators in the query itself: write `=(due < $today() and hours > 2)`. Formulas in queries may use `$today()` and `$date("this-week")`, not generators. See formulas.md.
 - **Hyphenated keys in filters** need backticks: ``=(`days-left` < 3)``.
 
@@ -57,20 +58,20 @@ View settings are implementation-defined. Common ones:
 | Setting | Value |
 |---|---|
 | `view` | `table`, `list`, `board` or `calendar` |
-| `columns` | one child field line per column (below) |
+| `fields` | one child field line per field shown (below) |
 | `sort` | a field and `asc` or `desc`: `sort:: due asc` |
 | `group` | a field to group by: `group:: project` |
-| `footer` | `=expr` over the visible rows, such as `=($sum(hours))`. Ordlang reports it as M39 on a search node for now; leave it out until the spec settles it |
+| `footer` | `=expr` over the visible rows, such as `=($sum(hours))`. It is M39 on a search node for now; leave it out until the spec settles it |
 | `computed` | what a tool writes from the results, such as a read-only CSV block |
 
-### Columns
+### Fields
 
 ```
 Hours this month +search
 	view:: table
 	sort:: date desc
 	query:: +timelog =(date in $date("this-month"))
-	columns::
+	fields::
 		_label::
 		date::
 		client::
@@ -79,8 +80,9 @@ Hours this month +search
 			header:: Days ago
 ```
 
-- `key::` shows a field. `key:: =expr` is a template column, computed per row, output only.
-- A column's child lines are its settings, such as `header` and `width`.
+- `key::` shows a field. System fields keep their `_` keys: `_label::`, `_id::`, `_state::`, `_tag::`. `key:: =expr` is a template field, computed per row, output only.
+- A field line's child lines are its settings, such as `header` and `width`.
+- `columns::` is the old name of `fields::`.
 
 ## Writing searches well
 

@@ -10,10 +10,17 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 - L5: an inline field's key can be several names separated by single spaces, as in `[due date:: 2026-10-21]`, without quotes; the first may start with `_`, as system fields' keys do (`[_type:: task]`), which L5 now says. Any other key, such as one with two spaces or one that starts with a digit, is still quoted. The grammar has `inline-key`.
 
+### Semantics
+
+- M37, M39: what a node writes for a field comes before its types' definitions. A formula on an ordinary node's field line makes a computed field on that node, replacing its types' formula, and a plain value written for the field replaces it too. M39 is now the error for a formula on a setting of a system node, other than a field definition node's `value` and `valid`; a formula on an ordinary node is no longer an error.
+- M53, M64: a search node's `columns` setting is `fields`.
+- M41: in formulas, system fields have one-letter aliases: `L` `_label`, `P` `_parent`, `C` `_children`, `S` `_state`, `G` `_tag`, `Y` `_type`, `I` `_id`. A node's own field of that name comes first. LLM guide: no change.
+
 ### LLM guide
 
 - The brief says an inline key can be several words, `[due date:: …]`, after L5.
 - CI: a change to a normative spec must change `LLM_guide/` or say why not, with a line `LLM guide: no change` in the changelog entry it adds.
+- Formulas, diagnostics and the checklist: a formula may sit on a node's field line, replacing its type's (M39); M39 is a formula on a setting. Queries: a search's `columns` is `fields`. Queries also say that system fields keep their `_` keys in terms, filters and `fields::`.
 
 ## 0.6.0-draft (2026-11-03)
 
