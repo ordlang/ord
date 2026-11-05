@@ -773,7 +773,7 @@ root
 
 ## 17. Label and items
 
-- **L19.** A node's **label** is its line without the list marker, the `_state` trigger, inline fields, and the `_type` and `_id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `_label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it with its tags. Editors may render them differently.
+- **L19.** A node's **label** is its line without the list marker, the `_state` trigger, inline fields, and the `_type` and `_id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `_label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it by its name, the label without the tags at its end ([Semantics](Semantics.md) M23): `Call #anna to decide on budget`. Editors may render them differently.
 - **L20.** A field item that is exactly one value trigger (L2), or a mirror value (L31), is that value. Any other item is text, and the triggers in it are read as in a label.
 
 ```example labels C36 L3 L6 L7 L8 L11 L13 L16 L19
