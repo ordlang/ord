@@ -12,6 +12,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M42, M77 to M83: exact definitions of `$today()`, `$now()`, `$date()`, `$days()`, `$format()`, `$slug()`, `$first()` and `$last()`, and of date names (M78). M43: `$days()` with one argument follows the clock, as tools already did. LLM guide: `formulas.md` says so too.
 - M42, M74 to M76: the function library has `$nodes(under?)`, every node or the nodes under one at any depth, and `$query(text, under?)`, the nodes an Ord query matches. M74 defines `$node(text)`, which M42 only listed. LLM guide: `formulas.md` lists them.
 - M39, M64: a search node's `footer` holds `=expr`, evaluated with the list of the results' nodes as `$`; it is no longer M39.
 - M64: a search node's `sort` holds conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, with `asc` and `text` the defaults.
