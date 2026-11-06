@@ -8,15 +8,15 @@ A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Alway
 
 | Where | Written | Notes |
 |---|---|---|
-| Computed field, on a type | `total:: =($sum(_children.amount))` under `fields::` | Shown by tools, never written into nodes |
-| Computed field, on one node | `total:: =($sum(_children.amount))` on the node's own field line | Replaces the type's formula on that node (M39) |
+| Computed field | `total:: =($sum(_children.amount))` on the node's own field line | Written there by the type (M37) or by hand (M39) |
+| Field on a type | `total:: =($sum(_children.amount))` under `fields::` | Written on each node of the type, as is (M37). Changing it rewrites the nodes that still have the old formula (M84) |
 | Auto value, on a type | `_id:: auto $slug(_label)`, `code:: auto "T-" & $seq(3)` | Written once, when the node gets the type and the field is empty |
 | Computed label, on a type | `_label:: =(first & " " & last)` | Written into the node line by editors; tags on the line stay (M38). Don't edit it by hand |
 | Check, under a field definition | `valid:: =($value in ["low", "high"])` | A result that isn't true is the error M40; the value stays |
 | Inline, in a label | `Total =(a + b)` | Output only |
 | Query, template column, footer | `=(due < $today())` | Output only, see queries.md |
 
-What a node writes comes first (M39): a formula on the node's field line replaces its types' formula for that field, and so does a plain value (`total:: 12`). Put a formula on the type when every node of the type needs it, and on a node only for an exception. Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
+Only what is written on a node counts (M37, M39): a type's formula works on a node because it is written there. Changing a node's formula, or writing a plain value (`total:: 12`), changes that node only, and later changes to the type's formula leave it as it is (M84). Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
 
 ## The data model a formula sees
 
@@ -26,9 +26,9 @@ What a node writes comes first (M39): a formula on the node's field line replace
 - Numbers are numbers, booleans booleans. Dates, datetimes, weeks and months are ISO text, so `due < $today()` compares correctly.
 - System fields have their `_` keys: `_label` (with its tags), `_id`, `_type` (an array of types), `_state`, `_tag` (nested tags as `project/apollo`), `_parent` (the owner) and `_children` (child nodes, not field items). A mirror child stands for its source in `_children` (M49).
 - A reference field's value is the node it refers to: `client._label`, `owner.email`.
-- A field with field children is an object: with `contact::` holding `primary:: anna` on a child line, `contact.primary` is `anna`. Steps continue through references only when the field is a reference field (`options:: +person`).
+- A field with field children is an object: with `contact::` holding `primary:: anna` on a child line, `contact.primary` is `anna`. A formula in such a nested field line is evaluated on the node, not on the field: `$`, `_label`, `_parent` and the rest are the node's, at any depth (M41). Steps continue through references only when the field is a reference field (`options:: +person`).
 - Keys that aren't plain JSONata names go in backticks: `` `Project lead`.email ``. That includes every key with a `-`: `days-left` reads as `days - left`, so write `` `days-left` ``. Prefer keys without `-` for fields other formulas use.
-- A field with only a default (a plain `value`) is empty to formulas; defaults are never written.
+- A node has only the fields written on it; a type adds nothing at read time.
 - Everything else is JSONata: mapping `_children.(price * qty)`, filtering `_children[_state != "done"]`, `&` for text, `+` for numbers only, `and`, `or`, `$not()`, `? :`, `in`, array literals, `$x := …` bindings, and `$`-functions.
 
 ## Ord's functions (M42, M43, M74 to M76)

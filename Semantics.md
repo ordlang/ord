@@ -55,7 +55,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 - **M19.** A type definition's settings are those of `type-def` (M53). `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name.
 - **M59.** A node with the type `tag-def` (M53) is a **tag definition** for the tags its `name` values name, without `#`, ignoring letter case, as `Urgent +tag-def` with the field lines `name:: urgent` and `color:: red` under it. Each value is a tag as L13 or L29 reads it: it starts with a letter and holds no `]`. A value that isn't is the error `M17.1`, and two tag definitions for one tag are the error `M17.2`. Its settings are those of `tag-def`: `color`, a color name or `#rrggbb` that the tag is shown in, and `icon` and `description` (M52).
 - **M66.** `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
-- **M51.** A type's `nodes` setting is a **content template**: its node children (C13), with their child lines. When an editor or a tool gives a node the type, on a new node or an existing one, it writes a copy of them under the node, in order, after its other children, with their `_id` fields left out, so each node gets its own content. When a node is given several types at once, their templates follow each other in type order (M18). Field lines under `nodes::` aren't part of the template; a field's default is its `value` setting (M37). Only adding the type writes the template: a reader never adds it, and a node that already has the type doesn't get it again.
+- **M51.** A type's `nodes` setting is a **content template**: its node children (C13), with their child lines. When an editor or a tool gives a node the type, on a new node or an existing one, it writes a copy of them under the node, in order, after its other children, with their `_id` fields left out, so each node gets its own content. When a node is given several types at once, their templates follow each other in type order (M18). Field lines under `nodes::` aren't part of the template; a type's fields are written from its `fields` setting (M37). Only adding the type writes the template: a reader never adds it, and a node that already has the type doesn't get it again.
 
   ```
   Meeting +type-def
@@ -127,7 +127,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   		key::
   			description:: The key of the field it defines.
   		value::
-  			description:: A default, a computed value or an auto value.
+  			description:: What is written on the nodes of the types that list it: a formula, text, or an auto value.
   		valid::
   			description:: A formula that each value of the field must make true.
   		options::
@@ -231,7 +231,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 This section is a draft outline. Its rules are numbered so they can be referred to, and need tests before 1.0.
 
-- **M36.** A type definition's `fields` setting holds **field definitions**: **local field definitions**, its field lines under its anonymous node (C13), and field definition nodes (M55, M58). The two are one thing written two ways, with the same settings (M56), and differ only in scope: a local definition applies on the type's nodes, a field definition node on every node (M57). A local definition's key is the field it defines; its value is its `value` setting, and its child field lines are its other settings.
+- **M36.** A type definition's `fields` setting holds **field definitions**: **local field definitions**, its field lines under its anonymous node (C13), and field definition nodes (M55, M58). The two are one thing written two ways, with the same settings (M56), and differ only in scope: a local definition applies on the type's nodes, a field definition node on every node (M57). A local definition's key is the field it defines; its value is its `value` setting, and its child field lines are its other settings. A child field line whose key isn't a setting (M56) is a **nested field definition**: it defines a field written under that field, as a field line of its anonymous node (C13), and has the same settings and nested field definitions of its own, at any depth.
 - **M55.** A node with the type `field-def` (M53) is a **field definition node**. It defines the field whose key is its `key` value, for the whole workspace:
 
   ```
@@ -243,7 +243,7 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 
   A field definition node without a `key` is the warning `M55.3` and defines nothing. Where this spec matches a field to its definition, keys match ignoring letter case, as labels do (M23); the Core keeps keys as written, so `Due` and `due` on one node are still two fields. Two field definition nodes for one key are the error `M55.1`, and one for a system field (M11) the error `M55.2`.
 - **M56.** A field definition's settings, local or a node, are `value`, `valid`, `options` and `tags`, as in M37 to M47, and `icon` and `description`, as in M52. A field definition node has them as field lines, besides its `key`.
-- **M57.** A field definition node applies on every node (M36), so with the definition above, `Crash #high` has `priority:: high` whatever its types. Only its `value` (M37) is limited, to the nodes of the types that list it (M58), since only they are meant to have the field.
+- **M57.** A field definition node applies on every node (M36), so with the definition above, `Crash #high` has `priority:: high` whatever its types. Only its `value` (M37) is limited: it is written on the nodes of the types that list it (M58), since only they are meant to have the field.
 - **M58.** A type lists a field definition node in its `fields` setting in either of two ways:
   - a field line with its key and no value or child lines. A value or child lines there are the error `M58.1` and are left out, since a type can't change a field definition node. The exceptions are a `=expr` value for `_label` (M38) and an `auto expr` value for `_id` (M37).
   - the field definition node itself, written under `fields::` as a node item (C13). It is read there although it is under a setting (M12), and defines its field for the whole workspace, as it would anywhere else.
@@ -262,11 +262,30 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   ```
 
   Here `owner` and `priority` are defined for the whole workspace, and `due` only for `task`.
-- **M37.** A `value` of `=expr` makes a **computed field**: its value on each node of the type is the formula's result, unless the node writes the field itself (M39). A `value` of `auto expr` is an **auto value**: evaluated once, when a node has the type and the field is empty, and written as a plain value. Any other `value` is a default shown, never written.
-- **M38.** A `_label` field definition with `=expr` computes the node's label, which a writer writes into the node line, keeping the line's other forms (L4). Tags written on the line stay, after the computed text, so they are part of the label (L19) without making it differ from the computed one.
-- **M39.** What a node writes for a field comes before its types' definitions of it. A field with a `=expr` value on an ordinary node makes a computed field on that node, whether or not one of its types defines the field: its value is the formula's result, and replaces the types' formula, as a plain value written for the field replaces it too. When a node writes both a formula and plain values for a field, or more than one formula, the first formula counts and the others are ignored. A `=expr` value of a setting of a node of a system type (M12), other than a field definition node's `value` and `valid` and a search node's `footer` (M64), is the error `M39`; the formula isn't evaluated.
+- **M37.** **A type's fields are written on its nodes.** When an editor or a tool gives a node a type, on a new node or an existing one, it writes a field line for each of the type's field definitions (M36, M58) whose key the node doesn't have, where C48 puts a new field, in definition order. When a node has several types, each type's fields follow in type order (M18), and a key that an earlier type wrote isn't written again. The line holds the definition's `value` as written: `=expr` as a formula, which makes a **computed field** on the node (M39), any other value as text, and no value as `key::`. A `value` of `auto expr` is an **auto value**: the line is written as `key::`, and the expression is evaluated once, when the node has the type and the field is empty, and its result written as a plain value. Nested field definitions (M36) are written as field lines under their field, the same way. `_label` and `_id` aren't written as field lines: a `=expr` for `_label` computes the label (M38), and `auto expr` for `_id` gives the node its ID. A reader never gives a node a field or a value from its types: a node has what is written on it, and a type's `value` is what tools write.
+
+  ```
+  Invoice +type-def
+  	name:: invoice
+  	fields::
+  		amount::
+  		vat:: =(amount * 0.25)
+  		status:: open
+  ```
+
+  Given the type, `March +invoice` becomes:
+
+  ```
+  March +invoice
+  	amount::
+  	vat:: =(amount * 0.25)
+  	status:: open
+  ```
+- **M84.** **A type definition edits its nodes.** A change to a type's field definitions is a change to its nodes, as an edit through a mirror is a change to its source (M48), except that it is written into each node's file. When a type gains a field definition, nested ones included, tools write it on each node of the type that doesn't have its key, as M37 does. When a field definition's `value` changes, tools rewrite the field on each node whose value is still the old one as written, ignoring spaces and tabs at either end, and leave it where the node writes another value: that node has changed it. A field definition that is removed, or renamed, leaves its fields on the nodes as they are. Tools write these edits once the change to the type definition is done, not while it is being typed, as one edit of all the files, so one undo takes them back.
+- **M38.** A `_label` field definition with `=expr` computes the node's label, the one formula a type evaluates on its nodes without writing it in a field line (M37), which a writer writes into the node line, keeping the line's other forms (L4). Tags written on the line stay, after the computed text, so they are part of the label (L19) without making it differ from the computed one.
+- **M39.** A field with a `=expr` value on an ordinary node, written there by a type (M37) or by hand, makes a **computed field** on that node: its value is the formula's result. When a node writes both a formula and plain values for a field, or more than one formula, the first formula counts and the others are ignored. A `=expr` value of a setting of a node of a system type (M12), other than a field definition node's `value` and `valid` and a search node's `footer` (M64), is the error `M39`; the formula isn't evaluated.
 - **M40.** A `valid` setting holds `=expr`, evaluated per node with `value` bound to the field's value, a list when it has several. A result that isn't true is the error `M40`, and the value stays.
-- **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, system fields included: `_parent` is its owner (M13) and `_children` the nodes it owns (M16). A reference field's value is the node it refers to, and a field with field children (C13) is an object of them. Seven system fields also have one-letter aliases: `L` is `_label`, `P` `_parent`, `C` `_children`, `S` `_state`, `G` `_tag`, `Y` `_type` and `I` `_id`. A node's own field with the same key as an alias comes before it.
+- **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, system fields included: `_parent` is its owner (M13) and `_children` the nodes it owns (M16). A reference field's value is the node it refers to, and a field with field children (C13) is an object of them. A formula in a field line under another field, at any depth, is evaluated on the node that owns the outermost field, not on the anonymous node it is written in: with `first:: =(sublevel.second & _tag)` and `sublevel::` with `second:: =(_label)` under it on the node `Test #tag`, `$`, `_label`, `_parent`, `_children`, `_id` and the other fields are the same in both formulas, and `second` is `Test #tag`. Seven system fields also have one-letter aliases: `L` is `_label`, `P` `_parent`, `C` `_children`, `S` `_state`, `G` `_tag`, `Y` `_type` and `I` `_id`. A node's own field with the same key as an alias comes before it.
 - **M42.** The function library adds `$node(text)`, `$nodes(under?)`, `$query(text, under?)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text)`, `$first(x)` and `$last(x)`. Dates are ISO text. M74 to M83 define them.
 - **M74.** `$node(text)` gives the node that `text` names, as a link does: the node whose ID (M20) is `text`, ignoring letter case and spaces and tabs at either end, else the node whose label matches it (M23). Text that starts with `^` names a node by its ID only: `$node("^i42")`. Text that is one node's ID and another node's label gives the ID's node, with a warning. Text that names no node, or a label that matches several, gives nothing, with a warning. Unlike a reference field (M24), it matches nodes of any type. A number is read as its text, and a list gives the nodes its items name, leaving out those that name none; any other value gives nothing. Any text works, so `$node("journal-" & $today())` is today's journal node.
 - **M75.** `$nodes()` gives every node in the workspace, other than each file's root node (M13), field items (C13) and mirrors (M48): depth first, each node before the nodes it owns, in file order. Archived nodes (M63) are included. `$nodes(under)` gives only the nodes `under` owns, at any depth, in the same order; `under` is a node, or text naming one as `$node()` does, with its warnings, or a list of them, giving each node once. When it names no node, or the node owns none, the result is empty. The result is a list of nodes, filtered with JSONata on any field, system fields included: `$nodes()["task" in _type and _state != "done"]`.
@@ -321,9 +340,9 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M28.2` | warning | A marker belongs to a custom state already | the `state` setting |
 | `M39` | error | A formula on a setting of a node of a system type, other than a field definition node's `value` and `valid` and a search node's `footer` | the value |
 | `M40` | error | A `valid` formula isn't true | the value |
-| `M44.1` | error | A computed field is in a cycle | the field's definition |
-| `M44.2` | error | A computed field depends on a cycle | the field's definition |
-| `M44.3` | error | A formula fails to evaluate | the field's definition |
+| `M44.1` | error | A computed field is in a cycle | the formula |
+| `M44.2` | error | A computed field depends on a cycle | the formula |
+| `M44.3` | error | A formula fails to evaluate | the formula |
 | `M46` | warning | A value is none of the field's `options` | the value |
 | `M50.1` | warning | A mirror is under its own source | the mirror's `_mirror` value |
 | `M50.2` | warning | A line is under a mirror | the line |
