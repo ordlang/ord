@@ -8,6 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
+- C52: a field's value can hold a formula over several lines, read like a block between `=(` and its matching `)`: on a field line, or on a line of only the formula under a field line, a `=(` still open at the end of the line continues on the following lines until its parentheses close. Those lines are content, each without up to the opening line's indent; the rest of the closing line is the rest of the value. A formula that never closes stays on its line, as L12 says, and formulas in labels stay on one line. A writer writes such an item as its lines. C50, L12, the Grammar's reading steps and the principle on lines read on their own say so. LLM guide: formulas.md shows it.
 - L5: an inline field's key can be several names separated by single spaces, as in `[due date:: 2026-10-21]`, without quotes; the first may start with `_`, as system fields' keys do (`[_type:: task]`), which L5 now says. Any other key, such as one with two spaces or one that starts with a digit, is still quoted. The grammar has `inline-key`.
 
 ### Semantics
