@@ -14,6 +14,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M11, M23: a node's name, `_name`, has each formula in its label replaced by its result, so `Parent =("bad")` is named `Parent bad`, and links match it by that name as well as by the name as written. `_formula` read in a formula gives the results of the label's formulas, one item each. Implementations resolve references again when a result changes a name, at most twice. LLM guide: GUIDE.md and formulas.md say so.
 - M11: the system fields `_type` and `_tag` are renamed `_types` and `_tags`, as a node can have several of each; their system field definitions are `Types +field-def` and `Tags +field-def`. `+task` is short for `[_types:: task]` and `#urgent` for `[_tags:: urgent]`, in labels, field lines, CSV columns, formulas and searches. `_type` and `_tag` are ordinary fields now. The formula aliases `Y` and `G` stay. Every spec and the LLM guide use the new names.
 
 - M11, M41: the system field `_name`, the node's label without the tags at its end (its name, M23), read from the label, with the formula alias `N`. Writing it is the new error `M11.1`. Its system field definition is `Name +field-def`. LLM guide: GUIDE.md, formulas.md and diagnostics.md list it.
