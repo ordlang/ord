@@ -53,7 +53,7 @@ More detail, loaded when needed:
 - **Ownership (M13 to M16).** A node's owner is the node it is indented under, or a CSV `_parent` cell. Ownership never loops.
 - **Searches (M60 to M65).** A `+search` node with a `query` setting, or a line `? query`. See [references/queries.md](references/queries.md).
 - **Journal nodes.** Day nodes are ordinary nodes found by ID, not by place: `Monday 12, 2026 ^journal-2026-10-12`, under a week (`^journal-2026-W42`) or a month (`^journal-2026-10`). Which file holds them is up to the tool; see [references/recipes.md](references/recipes.md).
-- **No expansions.** `~today` and the like are typing aids, not syntax. In a file, write the value: `due:: 2026-10-23`.
+- **One-time formulas (L32, M85).** `~$today()` or `~(expr)` is evaluated once and replaced in the file by its value. When you write a file yourself, write the value: `due:: 2026-10-23`. On a type, `~` makes a value each node gets once: `_id:: ~("BE" & $seq(3))`.
 
 ## Writing and updating
 
@@ -102,7 +102,7 @@ Invoice +type-def
 		net:: =($sum(_children.amount))
 		gross:: =(net * 1.25)
 		late:: =($exists(due) and due < $today() and _state != "done")
-		code:: auto "INV-" & $seq(3)
+		code:: ~("INV-" & $seq(3))
 		vat::
 			valid:: =($value in [0, 0.12, 0.25])
 ```
