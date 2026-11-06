@@ -32,7 +32,7 @@ Project +type-def
 	fields::
 		status::
 			options:: active; paused; closed
-		open:: =($count(_children[("task" in _type) and _state != "done"]))
+		open:: =($count(_children[("task" in _types) and _state != "done"]))
 Issue +type-def
 	name:: issue
 	fields::

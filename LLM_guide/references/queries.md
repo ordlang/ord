@@ -47,7 +47,7 @@ A query looks like the node lines it matches.
 - **Combining.** A space means and, `|` or, parentheses group, and `!` negates a term or group: `+task (#red | #blue) ![x] ![[Erik]]`.
 - **Mirrors.** A query matches a node in its own place, never a mirror, so a node mirrored in three places is one result.
 - **Archived nodes (M63).** Nodes tagged `archived` are left out unless the query names `#archived`.
-- **System fields (M11)** keep their `_` keys in terms and filters: `[_state:: done]`, `[_id:: t9x1]`, `[_tag:: urgent]`, `=(_parent._label = "Inbox")`.
+- **System fields (M11)** keep their `_` keys in terms and filters: `[_state:: done]`, `[_id:: t9x1]`, `[_tags:: urgent]`, `=(_parent._label = "Inbox")`.
 - **Filters are formulas.** There are no comparison operators in the query itself: write `=(due < $today() and hours > 2)`. Formulas in queries may use `$today()` and `$date("this-week")`, not generators. See formulas.md.
 - **Hyphenated keys in filters** need backticks: ``=(`days-left` < 3)``.
 
@@ -80,7 +80,7 @@ Hours this month +search
 			header:: Days ago
 ```
 
-- `key::` shows a field. System fields keep their `_` keys: `_label::`, `_id::`, `_state::`, `_tag::`. `key:: =expr` is a template field, computed per row, output only.
+- `key::` shows a field. System fields keep their `_` keys: `_label::`, `_id::`, `_state::`, `_tags::`. `key:: =expr` is a template field, computed per row, output only.
 - A field line's child lines are its settings, such as `header` and `width`.
 - `columns::` is the old name of `fields::`.
 

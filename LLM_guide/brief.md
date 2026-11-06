@@ -44,9 +44,9 @@ Marks are shorthand for system fields, whose keys start with `_`. They can be wr
 | Mark | Meaning | Same as |
 |---|---|---|
 | `[ ]` `[-]` `[?]` `[x]` | state: new, in progress, waiting, done. Only at the start of the line | `[_state:: done]` |
-| `+task` | type | `[_type:: task]` |
-| `#urgent`, `#project/apollo` | tag, nested with `/` | `[_tag:: urgent]` |
-| `[#Ord notes]` | a tag that is more than a name | `[_tag:: Ord notes]` |
+| `+task` | type | `[_types:: task]` |
+| `#urgent`, `#project/apollo` | tag, nested with `/` | `[_tags:: urgent]` |
+| `[#Ord notes]` | a tag that is more than a name | `[_tags:: Ord notes]` |
 | `^t9x1` | ID, one per node | `[_id:: t9x1]` |
 | `[[Label]]`, `[[t9x1]]`, `[[Label^t9x1]]` | link to another node by label, ID or both | `[_link:: [[Label]]]` |
 | `https://…`, `./file.pdf`, `[text](url)` | link to a URL or file | `[_url:: …]` |
@@ -87,7 +87,7 @@ Call the venue +task
 - `nodes::` on a type definition is a template: a tool that adds the type to a node copies the nodes under `nodes::` under it.
 - A field that several types share is defined once, as a `+field-def` node with a `key` field and the field's settings, and listed by its key under each type's `fields::`. It applies on every node that has the field.
 - A tag's color is set by a `+tag-def` node: `Urgent +tag-def` with `name:: urgent` and `color:: red` under it.
-- Keys that start with `_` are system fields, which the marks are short for, such as `_type`, `_id` and `_state`. `type::`, `state::` and `id::` are ordinary fields.
+- Keys that start with `_` are system fields, which the marks are short for, such as `_types`, `_id` and `_state`. `type::`, `state::` and `id::` are ordinary fields.
 
 ## Mirrors and searches
 

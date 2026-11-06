@@ -18,7 +18,7 @@ A formula in a label stays on one line.
 
 | Where | Written | Notes |
 |---|---|---|
-| Computed field | `total:: =($sum(_children.amount))` on the node's field line, or `=(…)` alone on a child line of `total::` | Written there by the type (M37) or by hand. Each formula is an item: its result, one item per list element (M39). Mix with plain items: `tags:: draft; =(project._tag)` |
+| Computed field | `total:: =($sum(_children.amount))` on the node's field line, or `=(…)` alone on a child line of `total::` | Written there by the type (M37) or by hand. Each formula is an item: its result, one item per list element (M39). Mix with plain items: `tags:: draft; =(project._tags)` |
 | Field on a type | `total:: =($sum(_children.amount))` under `fields::` | Written on each node of the type, as is (M37). Changing it rewrites the nodes that still have the old formula (M84) |
 | One-time formula | `due:: ~$today()`, `code:: ~("T-" & $seq(3))`, `_id:: ~$slug(_label)` on a type | Evaluated once and replaced in the file by its result (M85); on a type, written on each node and replaced there. An error stays, shown after it |
 | Computed label, on a type | `_label:: =(first & " " & last)` | Written into the node line by editors; tags on the line stay (M38). Don't edit it by hand |
@@ -34,7 +34,7 @@ Only what is written on a node counts (M37, M39): a type's formula works on a no
 - `$root` is the graph root; its `_children` are each file's root node.
 - A field with one value is that value; several values are an array.
 - Numbers are numbers, booleans booleans. Dates, datetimes, weeks and months are ISO text, so `due < $today()` compares correctly.
-- System fields have their `_` keys: `_label` (with its tags), `_name` (the label without the tags at its end, as links match it: `Send proof #mail` is `Send proof`; alias `N`), `_id`, `_type` (an array of types), `_state`, `_tag` (nested tags as `project/apollo`), `_parent` (the owner) and `_children` (child nodes, not field items). A mirror child stands for its source in `_children` (M49).
+- System fields have their `_` keys: `_label` (with its tags), `_name` (the label without the tags at its end, each formula replaced by its result, as links match it: `Send proof #mail` is `Send proof`, `Parent =("bad")` is `Parent bad`; alias `N`), `_formula` (the results of the label's formulas), `_id`, `_types` (an array of types), `_state`, `_tags` (nested tags as `project/apollo`), `_parent` (the owner) and `_children` (child nodes, not field items). A mirror child stands for its source in `_children` (M49).
 - A reference field's value is the node it refers to: `client._label`, `owner.email`.
 - A field with field children is an object: with `contact::` holding `primary:: anna` on a child line, `contact.primary` is `anna`. A formula in such a nested field line is evaluated on the node, not on the field: `$`, `_label`, `_parent` and the rest are the node's, at any depth (M41). Steps continue through references only when the field is a reference field (`options:: +person`).
 - Keys that aren't plain JSONata names go in backticks: `` `Project lead`.email ``. That includes every key with a `-`: `days-left` reads as `days - left`, so write `` `days-left` ``. Prefer keys without `-` for fields other formulas use.
@@ -46,7 +46,7 @@ Only what is written on a node counts (M37, M39): a type's formula works on a no
 | Function | Gives |
 |---|---|
 | `$node(text)` | The node with that ID, else that label, like a link. `$node("^i42")` matches the ID only. `$node("i42").gross` |
-| `$nodes(under?)` | Every node, at any depth, in file order; with `under` (a node or its ID or label), the nodes under it. Filter on any field: `$nodes()["task" in _type and _state != "done"]` |
+| `$nodes(under?)` | Every node, at any depth, in file order; with `under` (a node or its ID or label), the nodes under it. Filter on any field: `$nodes()["task" in _types and _state != "done"]` |
 | `$query(text, under?)` | The nodes an Ord query matches, by the query rules (queries.md): `$query("+task #project [ ]")`. No formula inside: filter the result instead |
 | `$today()` | Today's date, local: `2026-10-22` |
 | `$now()` | The date and time, local: `2026-10-22T14:30` |
@@ -111,10 +111,10 @@ More one-liners:
 
 - `=($count(_children[_state = "done"]))`: done children
 - `=($node("i42").gross)`: a field on another node
-- `=("task" in _type)`: has the type (`_type` is a list, so use `in`, not `=`)
+- `=("task" in _types)`: has the type (`_types` is a list, so use `in`, not `=`)
 - ``=(`days-left` < 3)``: a hyphenated field, in backticks
-- `=($count(_children[("task" in _type) and _state != "done"]))`: open tasks under this node
-- `=($count($nodes($)[("task" in _type) and _state != "done"]))`: open tasks at any depth under this node
+- `=($count(_children[("task" in _types) and _state != "done"]))`: open tasks under this node
+- `=($count($nodes($)[("task" in _types) and _state != "done"]))`: open tasks at any depth under this node
 - `=($count($query("+task [ ]")))`: open tasks in the workspace, by the query rules (`#project` also matches `#project/apollo`)
 - `=($sum($query("+task", "Apollo").hours))`: hours of the tasks under the node `Apollo`
 - `=(_parent._label)`: the owner's label

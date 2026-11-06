@@ -4,7 +4,7 @@ Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Spe
 
 ## 1. Scope
 
-- **V1.** This spec maps CSV files to the Core data model (Spec, section 1) and back. A row is a node and a column is a field. The mapping is syntactic: columns such as `_type`, `_id`, `_parent` and `_children` are ordinary fields, which the index reads as system fields ([Semantics](Semantics.md) M11) as it reads them in text files ([Semantics](Semantics.md)).
+- **V1.** This spec maps CSV files to the Core data model (Spec, section 1) and back. A row is a node and a column is a field. The mapping is syntactic: columns such as `_types`, `_id`, `_parent` and `_children` are ordinary fields, which the index reads as system fields ([Semantics](Semantics.md) M11) as it reads them in text files ([Semantics](Semantics.md)).
 - **V2.** A **CSV mapper** reads and writes CSV as this spec says, and passes the tests with the `from-csv` and `to-csv` options (T4).
 
 ## 2. The label column
@@ -30,7 +30,7 @@ Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Spe
 - **V11.** A record with fewer cells than the header gets empty cells for the rest. Cells after the last column are left out. A second `_label` column is an ordinary field, and a column whose name is empty is left out. Each of these gives a warning.
 
 ```example from-csv labels V3 V4 V6 V7 V8 V9 V10
-_id,_type,_label,_state,due,attendees
+_id,_types,_label,_state,due,attendees
 t9x1,task,Send draft +task,new,2026-10-10,@anna; erik
 ,task,"Book room, big",new,,
 .
@@ -38,7 +38,7 @@ root
   node quoted "Send draft +task"
     field "_id"
       "t9x1"
-    field "_type"
+    field "_types"
       "task"
     field "_state"
       "new"
@@ -49,7 +49,7 @@ root
       "erik"
   node "Book room, big"
     field "_id"
-    field "_type"
+    field "_types"
       "task"
     field "_state"
       "new"
@@ -114,7 +114,7 @@ root
 
 ```example to-csv V3 V12 V13 V14 V15
 Send draft +task
-→_type:: task
+→_types:: task
 →due:: 2026-10-10
 →attendees:: anna; erik
 "Book room, big"
@@ -123,7 +123,7 @@ Send draft +task
 Plain
 →note:: "x; y"
 .
-_label,_type,due,attendees,tags,note
+_label,_types,due,attendees,tags,note
 Send draft +task,task,2026-10-10,anna; erik,,
 "Book room, big",,,,a,
 Plain,,,,,`x; y`

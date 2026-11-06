@@ -125,9 +125,9 @@ Open slot #hej⟨U+00A0⟩+hej⟨U+00A0⟩^hej
 root
   node "Open slot #hej +hej ^hej"
     label "Open slot #hej"
-    field "_tag" embedded
+    field "_tags" embedded
       "hej"
-    field "_type" inline
+    field "_types" inline
       "hej"
     field "_id" inline
       "hej"
@@ -599,43 +599,43 @@ A field can be written in three ways: as a field line (`key:: value`, Part 1), a
 ## 12. Scope
 
 - **L1.** Part 2 reads unquoted node labels and unquoted text items of fields. Quoted labels and items (C21), blocks (C29) and keys are never read.
-- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `_link`, `_url` and `_formula`, mirror values (L31), and value forms (L21). Inline fields and the `_type`, `_id`, `_state` and `_tag` triggers belong to nodes.
+- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `_link`, `_url` and `_formula`, mirror values (L31), and value forms (L21). Inline fields and the `_types`, `_id`, `_state` and `_tags` triggers belong to nodes.
 - **L3.** Unless a rule says otherwise, a form starts at the beginning of the text or right after a space or tab, and ends before the next space or tab or at the end of the text. A **name** is a letter followed by letters, digits, `_` and `-`. Letters are any Unicode letters.
-- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `_state` trigger, the label (L19), then inline fields, `_type` triggers and the `_id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `_type`, `_id` or `_state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `_tag` field stays an inline field, since writing it as a tag would put it in the label. The `_state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
+- **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `_state` trigger, the label (L19), then inline fields, `_types` triggers and the `_id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `_types`, `_id` or `_state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `_tags` field stays an inline field, since writing it as a tag would put it in the label. The `_state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
 
 ```example fmt labels L4
 +task Send draft [due:: 2026-10-20] #urgent [x] ^s1
 - [x] Done +b #a
-Plan [_type:: task] [_tag:: x]
+Plan [_types:: task] [_tags:: x]
 Ship [_state:: done]
 .
 Send draft #urgent [x] [due:: 2026-10-20] +task ^s1
 - [x] Done #a +b
-Plan [_tag:: x] +task
+Plan [_tags:: x] +task
 [x] Ship
 ```
 
 ## 13. Inline fields
 
-- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_type:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
+- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_types:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
 
 ```example labels L5
-Meet [due date:: 2026-10-21] [_type:: task] [Project lead:: anna]
+Meet [due date:: 2026-10-21] [_types:: task] [Project lead:: anna]
 Not fields: [two  spaces:: x] and [1 day:: y]
 .
 root
-  node "Meet [due date:: 2026-10-21] [_type:: task] [Project lead:: anna]"
+  node "Meet [due date:: 2026-10-21] [_types:: task] [Project lead:: anna]"
     label "Meet"
     field "due date" inline
       "2026-10-21" date
-    field "_type" inline
+    field "_types" inline
       "task"
     field "Project lead" inline
       "anna"
   node "Not fields: [two  spaces:: x] and [1 day:: y]"
 ```
 
-- **L29.** `[#text]` is short for the inline field `[_tag:: text]`: a bracket (C51) that holds `#`, a letter, and any text up to the bracket's closing `]`, read as the value of L5, so it can hold spaces and `;` splits it into items. It is a way to write a tag that is more than a name (L13), such as `[#Ord notes]`. Like any inline field it can start anywhere and is not part of the label (L19), and a writer keeps it as written. `[#` followed by anything other than a letter is not one, so `[#1]` and `[#]` are text, and `[#text](target)` is a Markdown link (L14).
+- **L29.** `[#text]` is short for the inline field `[_tags:: text]`: a bracket (C51) that holds `#`, a letter, and any text up to the bracket's closing `]`, read as the value of L5, so it can hold spaces and `;` splits it into items. It is a way to write a tag that is more than a name (L13), such as `[#Ord notes]`. Like any inline field it can start anywhere and is not part of the label (L19), and a writer keeps it as written. `[#` followed by anything other than a letter is not one, so `[#1]` and `[#]` are text, and `[#text](target)` is a Markdown link (L14).
 
 ```example labels L29
 Plan [#Ord notes] now +task
@@ -645,13 +645,13 @@ Also [#a; b c]
 root
   node "Plan [#Ord notes] now +task"
     label "Plan now"
-    field "_tag" inline
+    field "_tags" inline
       "Ord notes"
-    field "_type" inline
+    field "_types" inline
       "task"
   node "Also [#a; b c]"
     label "Also"
-    field "_tag" inline
+    field "_tags" inline
       "a"
       "b c"
   node "[#x](https://example.com) and [#1]"
@@ -659,7 +659,7 @@ root
       "https://example.com"
 ```
 
-- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the `_type` trigger `+search` and the inline field `[query:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node the type `task`, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
+- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the `_types` trigger `+search` and the inline field `[query:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node the type `task`, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
 
 ```example labels L28
 ? [ ] +task @anna
@@ -670,13 +670,13 @@ root
 root
   node "? [ ] +task @anna"
     label ""
-    field "_type" inline
+    field "_types" inline
       "search"
     field "query" inline
       "[ ] +task @anna"
   node "- ? #urgent"
     label ""
-    field "_type" inline
+    field "_types" inline
       "search"
     field "query" inline
       "#urgent"
@@ -749,19 +749,19 @@ meeting:: @Anna Smith; @Erik
 
 ## 14. Triggers
 
-- **L6.** A trigger is shortform for an inline field. Triggers exist only for the system fields below ([Semantics](Semantics.md) M11). Each of them holds one form of value, except `_tag`, whose value is ordinary text.
+- **L6.** A trigger is shortform for an inline field. Triggers exist only for the system fields below ([Semantics](Semantics.md) M11). Each of them holds one form of value, except `_tags`, whose value is ordinary text.
 
 | Field | Trigger | Read as | Value |
 |---|---|---|---|
-| `_type` | `+task` | `[_type:: task]` | a type name |
+| `_types` | `+task` | `[_types:: task]` | a type name |
 | `_id` | `^t9x1` | `[_id:: t9x1]` | an ID |
 | `_link` | `[[Node label]]`, `[[anna-47xu]]`, `[[Node label^anna-47xu]]` | `[_link:: [[Node label]]]`, `[_link:: [[anna-47xu]]]` | a node's label or ID, or both |
 | `_state` | `[ ]`, `[x]` | `[_state:: new]`, `[_state:: done]` | a state name |
 | `_formula` | `=sum(x)`, `=(a + b)` | `[_formula:: =sum(x)]`, `[_formula:: =(a + b)]` | an expression |
-| `_tag` | `#blue`, `#project/apollo`, `[#Ord notes]` (L29) | `[_tag:: blue]`, `[_tag:: project/apollo]`, `[_tag:: Ord notes]` | ordinary text |
+| `_tags` | `#blue`, `#project/apollo`, `[#Ord notes]` (L29) | `[_tags:: blue]`, `[_tags:: project/apollo]`, `[_tags:: Ord notes]` | ordinary text |
 | `_url` | `https://example.com`, `./spec.pdf` | `[_url:: https://example.com]`, `[_url:: ./spec.pdf]` | a URL or a path |
 
-- **L7.** `_type`: `+` followed by a name. `+46`, `C++` and a list marker `+ ` (L16) are not types.
+- **L7.** `_types`: `+` followed by a name. `+46`, `C++` and a list marker `+ ` (L16) are not types.
 - **L8.** `_id`: `^` followed by a name. More than one on a label is an error.
 - **L10.** `_link`: `[[`, a reference, and a closing `]]`, which is required: without it, the `[[` is text, with a warning. It can start anywhere and ends at the first `]]`. The reference is one of:
   - `[[Node label]]` or `[[anna-47xu]]`: a label or an ID. It refers to the node with that ID, or else to the node with that label.
@@ -771,7 +771,7 @@ meeting:: @Anna Smith; @Erik
   In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label, but not in an inline field (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
 - **L11.** `_state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
 - **L12.** `_formula`: `=` followed by an expression: by `(`, or without parentheses by a letter, a digit, `_`, `$`, `!`, `[`, `{`, `"`, `'`, `` ` ``, or `-` and a digit. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. Without parentheses, the expression has no spaces: it ends before the next space, tab or `;` outside parentheses and quoted strings (JSONata's `"…"`, `'…'` and `` `…` ``), its parentheses must balance, and `.`, `,`, `:`, `?` and `!` at its end are not part of it, as after a URL (L14). So `=$sum(_children.amount)`, `=price*qty`, `=_name`, `=2*x`, `="a"&b` and `=node("i42").total` are formulas wherever `=(…)` is, in a label, an inline field or a field's item, and `=x.` at the end of a sentence is `=x`. `=>`, `==`, `====` and `= 4` stay text, and so does `a=b`, where `=` doesn't start a word (L3). A formula with an `(` that is never closed is text, with a warning, unless it is a field value that continues on the lines after it (C52). `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
-- **L13.** `_tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
+- **L13.** `_tags`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `_url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
 ## 15. Start of a label
@@ -786,12 +786,12 @@ meeting:: @Anna Smith; @Erik
 root
   node "# Heading +task"
     label "Heading"
-    field "_type" inline
+    field "_types" inline
       "task"
   node "- # Not a second marker"
     label "# Not a second marker"
   node "#tag starts the label"
-    field "_tag" embedded
+    field "_tags" embedded
       "tag"
 ```
 
@@ -802,7 +802,7 @@ root
 
 ## 17. Label and items
 
-- **L19.** A node's **label** is its line without the list marker, the `_state` trigger, inline fields, and the `_type` and `_id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `_label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it by its name, the label without the tags at its end ([Semantics](Semantics.md) M23): `Call #anna to decide on budget`. Editors may render them differently.
+- **L19.** A node's **label** is its line without the list marker, the `_state` trigger, inline fields, and the `_types` and `_id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `_label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it by its name, the label without the tags at its end ([Semantics](Semantics.md) M23): `Call #anna to decide on budget`. Editors may render them differently.
 - **L20.** A field item that is exactly one value trigger (L2), or a mirror value (L31), is that value. Any other item is text, and the triggers in it are read as in a label.
 
 ```example labels C36 L3 L6 L7 L8 L11 L13 L16 L19
@@ -819,15 +819,15 @@ root
     label "Buy milk #urgent"
     field "_state" inline
       "in-progress"
-    field "_type" inline
+    field "_types" inline
       "errand"
-    field "_tag" embedded
+    field "_tags" embedded
       "urgent"
     field "_id" inline
       "m1lk"
   node "+task Call Anna"
     label "Call Anna"
-    field "_type" inline
+    field "_types" inline
       "task"
   node "1. Price +46, C++, C#, #5 and # heading"
     label "Price +46, C++, C#, #5 and # heading"
@@ -860,18 +860,18 @@ Not tags: #123 # C# ##x \#y and #
 root
   node "Call #anna to decide on budget #projectX. +task"
     label "Call #anna to decide on budget #projectX."
-    field "_tag" embedded
+    field "_tags" embedded
       "anna"
-    field "_tag" embedded
+    field "_tags" embedded
       "projectX"
-    field "_type" inline
+    field "_types" inline
       "task"
   node "Nested #project/apollo, #a/ and #b-2/c"
-    field "_tag" embedded
+    field "_tags" embedded
       "project/apollo"
-    field "_tag" embedded
+    field "_tags" embedded
       "a"
-    field "_tag" embedded
+    field "_tags" embedded
       "b-2/c"
   node "Not tags: #123 # C# ##x \\#y and #"
     label "Not tags: #123 # C# ##x #y and #"
@@ -935,7 +935,7 @@ root
     label "Call Anna about [[Ruukki AB]]"
     field "_link" embedded
       "[[Ruukki AB]]"
-    field "_type" inline
+    field "_types" inline
       "task"
     field "client" inline
       "[[Ruukki AB]]" _link
