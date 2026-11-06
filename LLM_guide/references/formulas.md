@@ -8,7 +8,7 @@ A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Alway
 
 | Where | Written | Notes |
 |---|---|---|
-| Computed field | `total:: =($sum(_children.amount))` on the node's own field line | Written there by the type (M37) or by hand (M39) |
+| Computed field | `total:: =($sum(_children.amount))` on the node's field line, or `=(…)` alone on a child line of `total::` | Written there by the type (M37) or by hand. Each formula is an item: its result, one item per list element (M39). Mix with plain items: `tags:: draft; =(project._tag)` |
 | Field on a type | `total:: =($sum(_children.amount))` under `fields::` | Written on each node of the type, as is (M37). Changing it rewrites the nodes that still have the old formula (M84) |
 | Auto value, on a type | `_id:: auto $slug(_label)`, `code:: auto "T-" & $seq(3)` | Written once, when the node gets the type and the field is empty |
 | Computed label, on a type | `_label:: =(first & " " & last)` | Written into the node line by editors; tags on the line stay (M38). Don't edit it by hand |
@@ -16,7 +16,7 @@ A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Alway
 | Inline, in a label | `Total =(a + b)` | Output only |
 | Query, template column, footer | `=(due < $today())` | Output only, see queries.md |
 
-Only what is written on a node counts (M37, M39): a type's formula works on a node because it is written there. Changing a node's formula, or writing a plain value (`total:: 12`), changes that node only, and later changes to the type's formula leave it as it is (M84). Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
+Only what is written on a node counts (M37, M39): a type's formula works on a node because it is written there. A formula can go wherever a value goes, inline fields included, and a field can hold several; editors show each result after its formula. Changing a node's formula, or writing a plain value (`total:: 12`), changes that node only, and later changes to the type's formula leave it as it is (M84). Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
 
 ## The data model a formula sees
 
