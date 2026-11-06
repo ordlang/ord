@@ -27,7 +27,7 @@ These goals are informative. They explain the rules and decide new ones.
 - **Plain text first.** A file is readable and editable in any editor. Tools add power but are never needed to read it.
 - **Every file reads.** There are no syntax errors. Every file is read into a tree, and anything doubtful is a diagnostic (C35).
 - **Punctuation decides.** Whether a line is a field or a node, and where its key, value and items are, is decided by `::`, `;`, quotes and indentation, never by words or letter case.
-- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block. Nothing in Core depends on other files or an index. Part 2 takes the one fact it needs from types, their custom state markers, as an option.
+- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block or a field value's formula over several lines (C52). Nothing in Core depends on other files or an index. Part 2 takes the one fact it needs from types, their custom state markers, as an option.
 - **Quoting turns syntax off.** Any text can be written literally by quoting it, with `"` or `` ` ``.
 - **Writing is stable.** Writing twice changes nothing (C33), and an edit leaves the lines it doesn't touch as they were (C41).
 - **Light syntax.** Single symbols and rules that let prose stay prose, instead of heavy delimiters.
@@ -137,7 +137,7 @@ root
 
 - **C50.** A reader reads a file in this order. Each step uses only what the steps before it found.
   1. Decode the file (C49, C2) and split it into lines (C1).
-  2. Find the blocks, from the top (C29). A block's lines, opening and closing lines included, are content and skip steps 3 and 4.
+  2. Find the blocks, from the top (C29). A block's lines, opening and closing lines included, are content and skip steps 3 and 4. Going on from the top, find the field values over several lines (C52) with steps 3 and 4 of their first line; their later lines are content.
   3. On every other line, take the indent (C4) and find the spans (C25) and brackets (C51). Then find the separator (C5), which splits the line into key and value (C6 to C8).
   4. Unquote the key and a node's label (C21). Split a field's value into items (C15, C16, C19), and unquote each item.
   5. Build the tree from the indents (C9, C10), with each block placed by its opening line (C31), and give each field its items (C13).
@@ -173,6 +173,33 @@ root
   node "````md\n```\nit's raw \\n\n```\n````"
   node "'''"
 `````
+
+- **C52.** A field's value can hold a formula over several lines, read like a block between its `=(` and the matching `)`. A line opens one when it is a field line whose value has an item that starts with `=(` (L12) and whose parentheses, counted as C15 counts a formula item's groups, are still open at the end of the line; or when its text after the indent is only such an item and it is directly under a field line (C9). The formula runs through the first following line where its parentheses close. Those later lines, blank ones included, are content of the value: they don't affect the tree and have no key or value of their own (C30). The value, or the label of the line under a field, is the lines joined with `\n`, each after the first with up to as many leading spaces and tabs removed as the opening line's indent (C31). The rest of the closing line after the `)` is the rest of the value, read as C15 says. A formula whose parentheses never close is not continued: the line is read on its own. Only field values continue: a formula in a label, or under a node, ends with its line. A writer writes a formula item over several lines, an item that is one `=(…)` closing at its end with a line break inside, as its lines, each at the line's indent, not quoted.
+
+```example C52
+Inv
+→total:: =(
+→→$sum(x)
+→); 4
+→sub::
+→→=(1 +
+→→␣␣2)
+→note:: sad =(
+→Total =(
+→→1)
+.
+root
+  node "Inv"
+    field "total"
+      "=(\n\t$sum(x)\n)"
+      "4"
+    field "sub"
+      node "=(1 +\n  2)"
+    field "note"
+      "sad =("
+    node "Total =("
+      node "1)"
+```
 
 ## 5. Quoting and spans
 
@@ -741,7 +768,7 @@ meeting:: @Anna Smith; @Erik
 
   In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label, but not in an inline field (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
 - **L11.** `_state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
-- **L12.** `_formula`: `=` followed by a letter, `!` or `(`. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. A path or function call, such as `=node("i42").total`, ends before the next space or tab outside parentheses and quoted strings; its parentheses must balance. A formula with an `(` that is never closed is text, with a warning. `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
+- **L12.** `_formula`: `=` followed by a letter, `!` or `(`. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. A path or function call, such as `=node("i42").total`, ends before the next space or tab outside parentheses and quoted strings; its parentheses must balance. A formula with an `(` that is never closed is text, with a warning, unless it is a field value that continues on the lines after it (C52). `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
 - **L13.** `_tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `_url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
