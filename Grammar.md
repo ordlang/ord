@@ -78,7 +78,7 @@ link-label    = quoted-string / 1*( link-char / "]" link-char )
                 ; a label that ends in "^" and a name is split into label and ID
 link-char     = %x00-09 / %x0B-5C / %x5E-10FFFF             ; not LF or "]"
 
-formula       = "=" ( paren-group / formula-start *formula-part )   ; L12
+formula       = ( "=" / "~" ) ( paren-group / formula-start *formula-part )   ; L12, L32
                 ; without parentheses, "." "," ":" "?" "!" at its end aren't part of it
 formula-start = letter / DIGIT / "_" / "$" / "!" / "[" / "{" / "'" / quoted-string / "-" DIGIT
 formula-part  = paren-group / quoted-string / path-char

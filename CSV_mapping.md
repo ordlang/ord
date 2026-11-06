@@ -63,6 +63,7 @@ Plain
 Anna's notes
 Send draft +task
 - [x] Done
+Meet ~ today
 Meet ~today
 See https://example.com
 \#hashtag
@@ -75,7 +76,8 @@ root
   node "Anna's notes"
   node quoted "Send draft +task"
   node quoted "- [x] Done"
-  node "Meet ~today"
+  node "Meet ~ today"
+  node quoted "Meet ~today"
   node quoted "See https://example.com"
   node quoted "\\#hashtag"
   node quoted "Trailing "

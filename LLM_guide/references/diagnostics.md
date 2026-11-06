@@ -41,7 +41,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M39` | `key:: =(…)` on a setting of a type, tag or field definition, or of a search other than `footer` | Remove it; formulas go under a type's `fields::`, in a field definition's `value` or `valid`, or on an ordinary node's field |
 | `M40` | Error: a value fails its field's `valid` check | Fix the value (it is kept as written) |
 | `M44.1`, `M44.2` | A computed field is in, or depends on, a cycle | Break the cycle in the formulas, on the nodes and their types |
-| `M44.3` | A formula fails, e.g. a generator outside `auto` | Fix the formula |
+| `M44.3` | A formula fails, e.g. a generator outside a `~` formula | Fix the formula |
 | `M46` | A value is none of the field's `options` | Use an option, or add it to `options` |
 | `M50.1` | A mirror under its own source | Move or remove the mirror |
 | `M50.2` | Lines under a mirror | Move them into the source |
@@ -49,6 +49,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M55.2` | A `+field-def` for a system field | Remove it |
 | `M55.3` | A `+field-def` without a `key` | Add `key::` |
 | `M58.1` | A type lists a `+field-def` key with a value or child lines | Move the settings to the field definition node |
+| `M85.1` | A field definition's `value` is `auto expr` | Write `~(expr)` |
 
 ## CSV (CSV mapping)
 

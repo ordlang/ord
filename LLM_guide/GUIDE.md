@@ -36,7 +36,7 @@ More detail, loaded when needed:
   Settings: `name`, `fields`, `state`, `color` (a color name, `#rrggbb`, or a field's name such as `color:: project`), `checkbox`, `nodes` (a template copied under new nodes of the type, M51), `icon` and `description`. Prose children are documentation. There is no inheritance; a node can have several types, and a type without a definition is allowed.
 - **Tag definitions (M59).** `Urgent +tag-def` with `name:: urgent` and `color:: red` under it.
 - **Field definitions (M36 to M47, M55 to M58, M84).** Each field line under `fields::` defines a field for the type. A type's fields are written on its nodes (M37): when a node gets the type, each field it lacks is written under it, with the `value` setting as written, so the file holds what the node has. Nothing comes from the type at read time.
-  - `=expr` is written as a formula, a computed field on the node. A formula is an item wherever a value goes, and `key::` with `=(…)` alone on its child line means `key:: =(…)` (M39); `auto expr` as an empty `key::`, filled once; any other value as text; none as `key::`.
+  - `=expr` is written as a formula, a computed field on the node. A formula is an item wherever a value goes, and `key::` with `=(…)` alone on its child line means `key:: =(…)` (M39); `~expr` as is, then replaced once by its result (M85); any other value as text; none as `key::`.
   - A child field line whose key isn't a setting (`value`, `valid`, `options`, `tags`, `icon`, `description`) is a nested field, written under its field. A formula in a nested field sees the node as `$`, at any depth (M41).
   - Changing a type's fields changes its nodes (M84): a new field is written on each node, and a changed `value` rewrites the nodes that still have the old one. When you edit a type definition in a file, make these edits too.
   - `options` lists the values the field is meant to hold (another value is the warning M46). An item `+name` makes it a **reference field** to nodes of that type (M24): `options:: +person`.
@@ -44,7 +44,7 @@ More detail, loaded when needed:
   - `valid` is a check, `=expr` with `$value`; a failure is the error M40.
   - A field used by several types can be a `+field-def` node with a `key`, defined once for the workspace; a type then lists it by key with no value (M58).
 - **Value types are never declared.** They are inferred from the values.
-- **System fields (M11).** `_label`, `_name` (the label without the tags at its end, with each formula replaced by its result; links match it; read-only, writing it is the error M11.1), `_types`, `_id`, `_state`, `_tags`, `_link`, `_mirror`, `_formula`, `_url`, `_parent`, `_children`. `_label`, `_id`, `_state` and `_mirror` hold one value each; two is the error M10. A type may compute `_label` and give `_id` an auto rule, and nothing else about them.
+- **System fields (M11).** `_label`, `_name` (the label without the tags at its end, with each formula replaced by its result; links match it; read-only, writing it is the error M11.1), `_types`, `_id`, `_state`, `_tags`, `_link`, `_mirror`, `_formula`, `_url`, `_parent`, `_children`. `_label`, `_id`, `_state` and `_mirror` hold one value each; two is the error M10. A type may compute `_label` and give `_id` a one-time formula (`_id:: ~("BE" & $seq(3))`), and nothing else about them.
 - **IDs (M20).** Unique in the workspace, matched ignoring case. Short and readable: `acme`, `i42`. Nodes only need one when something refers to them by ID.
 - **References (M21 to M24).** Links, `_link` and `_mirror` values, mirror values (`attendees:: @Anna Smith`), plain values of a reference field, tags on a reference field with `tags:: true`, and CSV `_parent`/`_children` cells. Plain values of any other field are text, even when they name a node.
 - **Resolving (M22, M23).** Text that could be either matches an ID first, then a label by its name: the label without the tags at its end, ignoring case. Tags in the prose are part of the name, so `Send proof #mail #teams` is named `Send proof` and `Call #anna about budget #projectX` is named `Call #anna about budget`. Write links with the name: `[[Send proof^p1]]`. A label that matches no node, or several, doesn't resolve (warnings M23.1, M23.2). `[[^id]]` is ID only, `[["Label"]]` label only, `[[Label^id]]` both, and the ID wins.
@@ -53,7 +53,7 @@ More detail, loaded when needed:
 - **Ownership (M13 to M16).** A node's owner is the node it is indented under, or a CSV `_parent` cell. Ownership never loops.
 - **Searches (M60 to M65).** A `+search` node with a `query` setting, or a line `? query`. See [references/queries.md](references/queries.md).
 - **Journal nodes.** Day nodes are ordinary nodes found by ID, not by place: `Monday 12, 2026 ^journal-2026-10-12`, under a week (`^journal-2026-W42`) or a month (`^journal-2026-10`). Which file holds them is up to the tool; see [references/recipes.md](references/recipes.md).
-- **No expansions.** `~today` and the like are typing aids, not syntax. In a file, write the value: `due:: 2026-10-23`.
+- **One-time formulas (L32, M85).** `~$today()` or `~(expr)` is evaluated once and replaced in the file by its value. When you write a file yourself, write the value: `due:: 2026-10-23`. On a type, `~` makes a value each node gets once: `_id:: ~("BE" & $seq(3))`.
 
 ## Writing and updating
 
@@ -77,7 +77,7 @@ More detail, loaded when needed:
 - **No IDs by default.** Add `^id` only when a reference by label wouldn't resolve or a tool must address the node by ID. Journal nodes always get their `^journal-…` ID.
 - **Long text.** One paragraph per child line. Code and tables in a fenced block.
 
-**Never write computed results into files.** Computed fields, search results and inline formula results are shown by tools, not stored. The exceptions are a computed `_label`, which an editor writes into the node line, and `auto` values, written once. `key:: =expr` on an ordinary node is the error M39: formulas belong on definitions.
+**Never write computed results into files.** Computed fields, search results and inline formula results are shown by tools, not stored. The exceptions are a computed `_label`, which an editor writes into the node line, and one-time formulas (`~…`), which tools replace with their result. `key:: =expr` on an ordinary node is the error M39: formulas belong on definitions.
 
 **Common updates:**
 - **Complete a task.** `[ ]` to `[x]`. To add a checkbox, put `[ ] ` after any list marker.
@@ -102,7 +102,7 @@ Invoice +type-def
 		net:: =($sum(_children.amount))
 		gross:: =(net * 1.25)
 		late:: =($exists(due) and due < $today() and _state != "done")
-		code:: auto "INV-" & $seq(3)
+		code:: ~("INV-" & $seq(3))
 		vat::
 			valid:: =($value in [0, 0.12, 0.25])
 ```

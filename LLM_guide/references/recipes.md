@@ -23,7 +23,7 @@ Task +type-def
 Person +type-def
 	name:: person
 	fields::
-		_id:: auto $slug(_label)
+		_id:: ~$slug(_label)
 		email::
 		phone::
 Project +type-def

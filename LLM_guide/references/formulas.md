@@ -20,7 +20,7 @@ A formula in a label stays on one line.
 |---|---|---|
 | Computed field | `total:: =($sum(_children.amount))` on the node's field line, or `=(…)` alone on a child line of `total::` | Written there by the type (M37) or by hand. Each formula is an item: its result, one item per list element (M39). Mix with plain items: `tags:: draft; =(project._tags)` |
 | Field on a type | `total:: =($sum(_children.amount))` under `fields::` | Written on each node of the type, as is (M37). Changing it rewrites the nodes that still have the old formula (M84) |
-| Auto value, on a type | `_id:: auto $slug(_label)`, `code:: auto "T-" & $seq(3)` | Written once, when the node gets the type and the field is empty |
+| One-time formula | `due:: ~$today()`, `code:: ~("T-" & $seq(3))`, `_id:: ~$slug(_label)` on a type | Evaluated once and replaced in the file by its result (M85); on a type, written on each node and replaced there. An error stays, shown after it |
 | Computed label, on a type | `_label:: =(first & " " & last)` | Written into the node line by editors; tags on the line stay (M38). Don't edit it by hand |
 | Check, under a field definition | `valid:: =($value in ["low", "high"])` | A result that isn't true is the error M40; the value stays |
 | Inline, in a label | `Total =(a + b)` | Output only |
@@ -67,8 +67,8 @@ JSONata's built-ins work as usual: text (`$uppercase`, `$lowercase`, `$substring
 
 - **Date arithmetic.** Dates are text, so `due + 7` doesn't work. Use `$date(due, 7)` and `$days(start, end)`.
 - **Purity.** Only `$today()`, `$now()`, `$date()` with a date name and `$days()` with one argument follow the clock.
-- **Generators only in `auto`.** `$seq`, `$uuid`, `$id` and `$sid` would change on every evaluation, so they are errors in live formulas and queries.
-- **No `~` in formulas.** Use `$date("tomorrow")`, not `~tomorrow`.
+- **Generators only in `~`.** `$seq`, `$uuid`, `$id` and `$sid` would change on every evaluation, so they are errors in `=` formulas and queries (M43).
+- **`~` writes once.** `~$today()` becomes the date; `=$today()` stays a formula and follows the clock. `auto expr` is gone: write `~(expr)` (M85.1).
 - **Errors and cycles (M44).** A failing formula (M44.3), a cycle (M44.1) or a dependency on a cycle (M44.2) leaves the field empty with a diagnostic. Cycles are per node, so `hours:: =($sum(_children.hours))` on a tree is fine.
 - **`valid` checks (M40).** `$value` is the field's value, a list when it has several.
 
@@ -82,7 +82,7 @@ Invoice +type-def
 			options:: +company
 		net:: =($sum(_children.amount))
 		gross:: =(net * 1.25)
-		code:: auto "INV-" & $seq(3)
+		code:: ~("INV-" & $seq(3))
 Task +type-def
 	name:: task
 	fields::
@@ -102,7 +102,7 @@ Plant +type-def
 Person +type-def
 	name:: person
 	fields::
-		_id:: auto $slug(_label)
+		_id:: ~$slug(_label)
 		_label:: =(first & " " & last)
 		initials:: =($uppercase($substring(first, 0, 1) & $substring(last, 0, 1)))
 ```
