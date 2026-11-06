@@ -82,6 +82,7 @@ Call the venue +task
 `owner:: Anna` refers to the node `Anna +person`. Without `options:: +person`, it would be text.
 
 - `options:: a; b` lists the values a field is meant to hold. With `tags:: true` as well, an option can be written as a tag on the node: with `options:: bug; feature` and `tags:: true` on an `issue type` field, `Crash +issue #bug` has `issue type:: bug`.
+- A type's fields are written on its nodes: a tool that adds the type to a node writes each field the node lacks, with the field's `value` as written (a formula stays a formula), and nested field lines under it. Changing a field on the type changes its nodes the same way, except where a node has its own value. A formula in a nested field line sees the node, as `$`.
 - `checkbox:: true` on a type definition gives its nodes a checkbox: a tool that adds the type to a node without a state adds `[ ]`.
 - `nodes::` on a type definition is a template: a tool that adds the type to a node copies the nodes under `nodes::` under it.
 - A field that several types share is defined once, as a `+field-def` node with a `key` field and the field's settings, and listed by its key under each type's `fields::`. It applies on every node that has the field.
