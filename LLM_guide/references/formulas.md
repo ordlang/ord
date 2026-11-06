@@ -34,7 +34,7 @@ Only what is written on a node counts (M37, M39): a type's formula works on a no
 - `$root` is the graph root; its `_children` are each file's root node.
 - A field with one value is that value; several values are an array.
 - Numbers are numbers, booleans booleans. Dates, datetimes, weeks and months are ISO text, so `due < $today()` compares correctly.
-- System fields have their `_` keys: `_label` (with its tags), `_id`, `_type` (an array of types), `_state`, `_tag` (nested tags as `project/apollo`), `_parent` (the owner) and `_children` (child nodes, not field items). A mirror child stands for its source in `_children` (M49).
+- System fields have their `_` keys: `_label` (with its tags), `_name` (the label without the tags at its end, as links match it: `Send proof #mail` is `Send proof`; alias `N`), `_id`, `_type` (an array of types), `_state`, `_tag` (nested tags as `project/apollo`), `_parent` (the owner) and `_children` (child nodes, not field items). A mirror child stands for its source in `_children` (M49).
 - A reference field's value is the node it refers to: `client._label`, `owner.email`.
 - A field with field children is an object: with `contact::` holding `primary:: anna` on a child line, `contact.primary` is `anna`. A formula in such a nested field line is evaluated on the node, not on the field: `$`, `_label`, `_parent` and the rest are the node's, at any depth (M41). Steps continue through references only when the field is a reference field (`options:: +person`).
 - Keys that aren't plain JSONata names go in backticks: `` `Project lead`.email ``. That includes every key with a `-`: `days-left` reads as `days - left`, so write `` `days-left` ``. Prefer keys without `-` for fields other formulas use.

@@ -23,6 +23,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | Code | Means | Usual fix |
 |---|---|---|
 | `M10` | A second `_label`, `_id`, `_state` or `_mirror` on one node | Remove one, e.g. a `_state::` line under a `[x]` node |
+| `M11.1` | A `_name` value written on a node | Remove it: `_name` is read from the label |
 | `M14.1`, `M14.2` | A CSV `_parent`/`_children` cell names a node owned by indentation, or the two disagree | Point at a top-level node, or make the cells agree |
 | `M15` | An ownership loop through `_parent`/`_children` cells | Break the loop |
 | `M17.1` | A type or tag definition's `name` isn't a name | Rename it |
