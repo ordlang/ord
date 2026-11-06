@@ -768,7 +768,7 @@ meeting:: @Anna Smith; @Erik
 
   In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label, but not in an inline field (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
 - **L11.** `_state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
-- **L12.** `_formula`: `=` followed by a letter, `!` or `(`. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. A path or function call, such as `=node("i42").total`, ends before the next space or tab outside parentheses and quoted strings; its parentheses must balance. A formula with an `(` that is never closed is text, with a warning, unless it is a field value that continues on the lines after it (C52). `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
+- **L12.** `_formula`: `=` followed by an expression: by `(`, or without parentheses by a letter, a digit, `_`, `$`, `!`, `[`, `{`, `"`, `'`, `` ` ``, or `-` and a digit. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. Without parentheses, the expression has no spaces: it ends before the next space, tab or `;` outside parentheses and quoted strings (JSONata's `"…"`, `'…'` and `` `…` ``), its parentheses must balance, and `.`, `,`, `:`, `?` and `!` at its end are not part of it, as after a URL (L14). So `=$sum(_children.amount)`, `=price*qty`, `=_name`, `=2*x`, `="a"&b` and `=node("i42").total` are formulas wherever `=(…)` is, in a label, an inline field or a field's item, and `=x.` at the end of a sentence is `=x`. `=>`, `==`, `====` and `= 4` stay text, and so does `a=b`, where `=` doesn't start a word (L3). A formula with an `(` that is never closed is text, with a warning, unless it is a field value that continues on the lines after it (C52). `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
 - **L13.** `_tag`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `_url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
@@ -884,6 +884,7 @@ who:: [[Anna]]
 See https://example.com/a. and ./spec.pdf, not //x
 Total =(a + b) then =sum(x
 Broken [[link
+Sum =$sum(x)*2. Not => or ==
 .
 root
   node "Plan [due:: 2026-10-20] [\"Project lead\":: anna] [parts:: a;b] [note:: \"two words\"] [memo:: two words]"
@@ -915,6 +916,9 @@ root
     field "_formula" embedded
       "=(a + b)"
   node "Broken [[link"
+  node "Sum =$sum(x)*2. Not => or =="
+    field "_formula" embedded
+      "=$sum(x)*2"
 ! L12 7:21
 ! L10 8:8
 ```

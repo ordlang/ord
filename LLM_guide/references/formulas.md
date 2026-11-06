@@ -2,7 +2,7 @@
 
 Rules: Semantics M36 to M45.
 
-A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Always wrap it in parentheses: `=` must be followed by a letter, `!` or `(`, so `=$sum(x)` is text and `=($sum(x))` a formula. Inside the parentheses, `;` doesn't split a field's items (C15), so `=($a := 2; $a * 3)` is one value. In a field's value, a formula can run over several lines (C52): leave `=(` open at the end of the field line, or of a line of only the formula under it, indent the lines after it, and close it with `)`, like a code block:
+A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Without spaces it needs no parentheses: `=$sum(x)`, `=price*qty`, `=_name` and `=2*x` are formulas wherever `=(…)` is (L12). It ends at a space, tab or `;` outside parentheses and strings, and `.`, `,`, `:`, `?` or `!` at its end are prose. Wrap it in parentheses when it has spaces: `=(price * qty)`. Inside the parentheses, `;` doesn't split a field's items (C15), so `=($a := 2; $a * 3)` is one value. In a field's value, a formula can run over several lines (C52): leave `=(` open at the end of the field line, or of a line of only the formula under it, indent the lines after it, and close it with `)`, like a code block:
 
 ```
 total:: =(
