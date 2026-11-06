@@ -44,7 +44,7 @@ More detail, loaded when needed:
   - `valid` is a check, `=expr` with `$value`; a failure is the error M40.
   - A field used by several types can be a `+field-def` node with a `key`, defined once for the workspace; a type then lists it by key with no value (M58).
 - **Value types are never declared.** They are inferred from the values.
-- **System fields (M11).** `_label`, `_name` (the label without the tags at its end; read-only, writing it is the error M11.1), `_type`, `_id`, `_state`, `_tag`, `_link`, `_mirror`, `_formula`, `_url`, `_parent`, `_children`. `_label`, `_id`, `_state` and `_mirror` hold one value each; two is the error M10. A type may compute `_label` and give `_id` an auto rule, and nothing else about them.
+- **System fields (M11).** `_label`, `_name` (the label without the tags at its end; read-only, writing it is the error M11.1), `_types`, `_id`, `_state`, `_tags`, `_link`, `_mirror`, `_formula`, `_url`, `_parent`, `_children`. `_label`, `_id`, `_state` and `_mirror` hold one value each; two is the error M10. A type may compute `_label` and give `_id` an auto rule, and nothing else about them.
 - **IDs (M20).** Unique in the workspace, matched ignoring case. Short and readable: `acme`, `i42`. Nodes only need one when something refers to them by ID.
 - **References (M21 to M24).** Links, `_link` and `_mirror` values, mirror values (`attendees:: @Anna Smith`), plain values of a reference field, tags on a reference field with `tags:: true`, and CSV `_parent`/`_children` cells. Plain values of any other field are text, even when they name a node.
 - **Resolving (M22, M23).** Text that could be either matches an ID first, then a label by its name: the label without the tags at its end, ignoring case. Tags in the prose are part of the name, so `Send proof #mail #teams` is named `Send proof` and `Call #anna about budget #projectX` is named `Call #anna about budget`. Write links with the name: `[[Send proof^p1]]`. A label that matches no node, or several, doesn't resolve (warnings M23.1, M23.2). `[[^id]]` is ID only, `[["Label"]]` label only, `[[Label^id]]` both, and the ID wins.
@@ -91,7 +91,7 @@ More detail, loaded when needed:
 
 ## Formulas in brief
 
-A formula is a JSONata 2.x expression written `=(…)` (M41, L12). Always wrap it in parentheses: `=$sum(x)` is text. `$` is the current node, bare names are its fields, and system fields have their `_` keys: `_children`, `_parent`, `_state`, `_type`, `_label`. Dates are ISO text: compare with `<`, shift with `$date(due, 7)`, count with `$days(a, b)`, never `due + 7`.
+A formula is a JSONata 2.x expression written `=(…)` (M41, L12). Always wrap it in parentheses: `=$sum(x)` is text. `$` is the current node, bare names are its fields, and system fields have their `_` keys: `_children`, `_parent`, `_state`, `_types`, `_label`. Dates are ISO text: compare with `<`, shift with `$date(due, 7)`, count with `$days(a, b)`, never `due + 7`.
 
 ```
 Invoice +type-def
