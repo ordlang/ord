@@ -78,13 +78,15 @@ link-label    = quoted-string / 1*( link-char / "]" link-char )
                 ; a label that ends in "^" and a name is split into label and ID
 link-char     = %x00-09 / %x0B-5C / %x5E-10FFFF             ; not LF or "]"
 
-formula       = "=" ( paren-group / ( letter / "!" ) *formula-part )   ; L12
+formula       = "=" ( paren-group / formula-start *formula-part )   ; L12
+                ; without parentheses, "." "," ":" "?" "!" at its end aren't part of it
+formula-start = letter / DIGIT / "_" / "$" / "!" / "[" / "{" / "'" / quoted-string / "-" DIGIT
 formula-part  = paren-group / quoted-string / path-char
 paren-group   = "(" *( paren-group / quoted-string / paren-char ) ")"
 paren-char    = %x00-09 / %x0B-21 / %x23-26 / %x2A-5F / %x61-10FFFF
                 ; not LF, a parenthesis or a quote character
-path-char     = %x00-08 / %x0B-1F / %x21 / %x23-26 / %x2A-5F / %x61-10FFFF
-                ; not space or tab either
+path-char     = %x00-08 / %x0B-1F / %x21 / %x23-26 / %x2A-3A / %x3C-5F / %x61-10FFFF
+                ; not space, tab or ";" either
 
 url           = bare-url / bare-path / md-link              ; L14
 bare-url      = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." ) "://" *non-ws
