@@ -89,5 +89,5 @@ Hours this month +search
 - Put the search where the user will look for it: a project node, the workspace file, or today's journal day for a quick `?`.
 - Prefer types, tags and states over words; words only search labels.
 - Use `![x]` for "not done": it also covers custom states based on done.
-- When a filter repeats, make it a computed field on the type (`late:: =(…)`) and query `=(late)`.
+- When a filter repeats, make it a calculated field on the type (`late:: =(…)`) and query `=(late)`.
 - Don't write results, counts or dates computed from the query into the file.

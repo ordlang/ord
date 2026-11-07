@@ -48,7 +48,9 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M55.1` | Two `+field-def` nodes for one key | Merge them |
 | `M55.2` | A `+field-def` for a system field | Remove it |
 | `M55.3` | A `+field-def` without a `key` | Add `key::` |
-| `M58.1` | A type lists a `+field-def` key with a value or child lines | Move the settings to the field definition node |
+| `M58.1` | A type lists a `+field-def` key with a value or child lines, or calculates a system field such as `_label` | Move the settings to the field definition node; don't calculate `_label` |
+| `M87.1` | A node writes a field its type calculates | Remove the line: the value is calculated |
+| `M87.2` | A calculated field's definition has a nested field, or a definition has a formula alone on a child line | Write the formula on the key's line; drop the nested field |
 | `M85.1` | A field definition's `value` is `auto expr` | Write `~(expr)` |
 
 ## CSV (CSV mapping)
