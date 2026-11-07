@@ -19,10 +19,10 @@ Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Spe
 
 JSON is read by writing it as Ord, as these rules say, and reading the result (Spec, Part 1).
 
-- **J8.** An object becomes a node. `_label` becomes its label, other members become field lines, and `_children` become child node lines. An object without `_label` becomes a node with an empty label, `""`, with its members as children.
+- **J8.** An object becomes a node. `_label` becomes its label, other members become field lines, and `_children` become child node lines. An object without `_label` becomes a node line that holds its first member that can be written as an inline field (L5) as one, `[key:: items]`, with its other members as children: a member whose key is names separated by single spaces and whose value is a string, number or boolean, or an array of them, with each item written bare in the inline field, without `;`, `[`, `]`, backticks, quotes or line breaks (C26). Without such a member it becomes a node with an empty label, `""`, with its members as children.
 - **J9.** A string becomes the field's value. `null` becomes an empty value. An object with only ordinary members becomes the field's field children (C13). Any other object becomes one child node following J8.
-- **J10.** An array becomes the field's node children, one per item.
-- **J11.** Within an array, `null` becomes `::`, a string becomes a node line, and an object follows J8.
+- **J10.** An array of strings, numbers and booleans becomes the field's items, `key:: a; b`, quoted as C26 says. So does an array whose such items all come before its objects; the objects then follow J11, except that one object with only ordinary members becomes the field's field children (C13), as in J9. Any other array, one with `null`, a nested array, an item after an object, or text with a line break, becomes the field's node children, one per item.
+- **J11.** Within an array that becomes node children (J10), `null` becomes `::`, a string, number or boolean a node line, and an object follows J8.
 - **J12.** Text is quoted according to C26.
 - **J14.** A nested array becomes a node `""` with one child per item, following J11. An empty nested array becomes `::`, like `null`.
 - **J15.** A root array's items become root lines, following J11. A scalar root is wrapped in a one-item root array. A `_label` on the root object gives a warning and is kept as an ordinary field.
@@ -41,8 +41,8 @@ root
   field "client"
     "Ruukki AB"
   field "contacts"
-    node "Anna"
-    node "Erik"
+    "Anna"
+    "Erik"
   field "lines"
     node "Workshop"
       field "hours"
@@ -70,14 +70,12 @@ root
   field "b"
     quoted ""
   field "c"
-    node "x"
+    "x"
   field "d"
   field "e"
     node empty
     node "y"
-    node quoted ""
-      field "z"
-        "1"
+    node "[z:: 1]"
   field "f"
     node
       field "primary"
@@ -95,6 +93,40 @@ root
   node "Book room"
     field "due"
       "2026-10-20"
+```
+
+```example from-json J8 J10
+{
+  "tags": ["a", "b; c"],
+  "one": ["x", { "p": "1" }],
+  "rows": ["x", { "a": "1", "n": { "b": "2" } }, { "a": "3" }],
+  "deep": [{ "n": { "b": "2" } }, { "a": "3" }]
+}
+.
+root
+  field "tags"
+    "a"
+    quoted "b; c"
+  field "one"
+    "x"
+    node
+      field "p"
+        "1"
+  field "rows"
+    "x"
+    node "[a:: 1]"
+      field "n"
+        node
+          field "b"
+            "2"
+    node "[a:: 3]"
+  field "deep"
+    node quoted ""
+      field "n"
+        node
+          field "b"
+            "2"
+    node "[a:: 3]"
 ```
 
 ```example from-json J15
@@ -195,6 +227,7 @@ Ruukki
 
 - Numbers and booleans become strings.
 - An empty array comes back as `null`, and a one-item array as its item (J10, J5).
+- An array of one object with only ordinary members comes back as the object (J10, J9).
 - A nested array, and a root array, come back as objects with `_children` (J14, J15).
 - A scalar JSON root comes back as an object (J15).
 - A `_label` on the root object has no form, since the root has no label line (J15).
