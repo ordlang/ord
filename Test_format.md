@@ -15,7 +15,7 @@ The **dump** is a text form of the data model (Spec, section 1). Read tests comp
 - **D3.** A node's children are written in file order (C12): `field` and `node` lines.
 - **D4.** The children of a field are its items, in order (C13): a string for a text item and a `node` line for a node. A quoted text item is written `quoted` and the string.
 - **D5.** A node is `node` followed by its label: a string, `quoted` and a string for a quoted label, `empty` for an unquoted empty label, or nothing for an anonymous node.
-- **D6.** A field is `field` and its key as a string, followed by `list` when its `list` is true (C16).
+- **D6.** A field is `field` and its key as a string, followed by `list` when its `list` is true (C16), also for an inline field (L5), before `inline`.
 - **D7.** Diagnostics follow the tree, one per line, sorted by line, column and code: `!`, the code and the position (C37). The severity isn't written, since the code sets it.
 
 ### A2. Strings
