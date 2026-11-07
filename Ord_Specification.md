@@ -65,6 +65,7 @@ Node      label     Text, empty, or absent (anonymous node)
 
 Field     key       text
           items     ordered list of Item
+          list      true or false (C16)
 
 Item      Text or Node
 
@@ -314,7 +315,7 @@ root
     "b"
   field "Send draft due"
     "2026-10-10"
-  field "a"
+  field "a" list
   node "hello"
   node "hello"
   field "a"
@@ -400,7 +401,7 @@ root
     node
       field "primary"
         "anna"
-  field "m"
+  field "m" list
     "a"
   node ";"
     node "a"
@@ -411,7 +412,7 @@ root
 ## 9. Items in a field's value
 
 - **C15.** In a field's own value, a `;` that is not inside a span (C25) separates items. Spaces and tabs touching a `;` belong to it. In a **formula item**, one that starts with `=` or `~` (L12, L32), a `;` inside a **group** is content too: a `(` outside spans opens a group that ends at its matching `)`, counting nested parentheses and skipping spans and **strings**: a `"` or `'` inside a group starts a string that ends at the next same character not escaped by `\`, as in JSONata. A `(` without a match is ordinary text. So `=$f(a; b); c` has two items, `=($a & "x; y")` one, and `x(a; b)` two, since it is not a formula.
-- **C16.** Each part between separators, and before and after them, is an item unless it is empty. So an empty value gives no item, `a;;b` has two items, and `a;`, `;a` and `;` have one, one and none.
+- **C16.** Each part between separators, and before and after them, is an item unless it is empty. So an empty value gives no item, `a;;b` has two items, and `a;`, `;a` and `;` have one, one and none. A value with a separator and fewer than two items is a **list**: the field's `list` is true, so `a;` is a list of one item and `;` an empty list, where `a` is one item and an empty value none. A field with two or more items is a list without it. A writer writes a list's `;` after its inline items, as `key:: a;` and `key:: ;`.
 - **C19.** `;` splits only a field's own value. Node labels are never split.
 
 ```example C15 C16
@@ -429,7 +430,7 @@ root
   field "a"
   field "b"
     "anna"
-  field "c"
+  field "c" list
     "anna"
   field "d"
     "anna"
@@ -437,8 +438,8 @@ root
   field "e"
     "a"
     "b"
-  field "f"
-  field "g"
+  field "f" list
+  field "g" list
     "a"
   field "h"
     "a\\"
@@ -519,7 +520,7 @@ f::
   h:: "nb\u00A0sp"
 .
 a:: x; y; z
-b::
+b:: ;
 c:: "plain"
 Send→draft→+task
 
@@ -551,7 +552,7 @@ Key:: ends with \
 'single'
 a:: say `hi`; "x
 .
-k:: x
+k:: x;
 "a:b:":: v
 Key:: ends with \
 ::
