@@ -19,10 +19,10 @@ Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Spe
 
 JSON is read by writing it as Ord, as these rules say, and reading the result (Spec, Part 1).
 
-- **J8.** An object becomes a node. `_label` becomes its label, other members become field lines, and `_children` become child node lines. An object without `_label` becomes a node with an empty label, `""`, with its members as children.
+- **J8.** An object becomes a node. `_label` becomes its label, other members become field lines, and `_children` become child node lines. An object without `_label` becomes a node line that holds its first member that can be written as an inline field (L5) as one, `[key:: items]`, with its other members as children: a member whose key is names separated by single spaces and whose value is a string, number or boolean, or an array of them, with each item written bare in the inline field, without `;`, `[`, `]`, backticks, quotes or line breaks (C26). Without such a member it becomes a node with an empty label, `""`, with its members as children. An array of one item is written with its `;`, `[key:: a;]` (C16). Writing JSON reads such a line back as the object (J3a).
 - **J9.** A string becomes the field's value. `null` becomes an empty value. An object with only ordinary members becomes the field's field children (C13). Any other object becomes one child node following J8.
-- **J10.** An array becomes the field's node children, one per item.
-- **J11.** Within an array, `null` becomes `::`, a string becomes a node line, and an object follows J8.
+- **J10.** An array of strings, numbers and booleans becomes the field's items, `key:: a; b`, quoted as C26 says. So does an array whose such items all come before its objects; the objects then follow J11, except that one object with only ordinary members becomes the field's field children (C13), as in J9. Any other array, one with `null`, a nested array, an item after an object, or text with a line break, becomes the field's node children, one per item. An array of one item or none is a list (C16), with a `;` after its items: `key:: a;`, `key:: ;`, and `key:: ;` with the object's fields under it for one object.
+- **J11.** Within an array that becomes node children (J10), `null` becomes `::`, a string, number or boolean a node line, and an object follows J8.
 - **J12.** Text is quoted according to C26.
 - **J14.** A nested array becomes a node `""` with one child per item, following J11. An empty nested array becomes `::`, like `null`.
 - **J15.** A root array's items become root lines, following J11. A scalar root is wrapped in a one-item root array. A `_label` on the root object gives a warning and is kept as an ordinary field.
@@ -41,8 +41,8 @@ root
   field "client"
     "Ruukki AB"
   field "contacts"
-    node "Anna"
-    node "Erik"
+    "Anna"
+    "Erik"
   field "lines"
     node "Workshop"
       field "hours"
@@ -69,15 +69,13 @@ root
   field "a"
   field "b"
     quoted ""
-  field "c"
-    node "x"
-  field "d"
+  field "c" list
+    "x"
+  field "d" list
   field "e"
     node empty
     node "y"
-    node quoted ""
-      field "z"
-        "1"
+    node "[z:: 1]"
   field "f"
     node
       field "primary"
@@ -95,6 +93,40 @@ root
   node "Book room"
     field "due"
       "2026-10-20"
+```
+
+```example from-json J8 J10
+{
+  "tags": ["a", "b; c"],
+  "one": ["x", { "p": "1" }],
+  "rows": ["x", { "a": "1", "n": { "b": "2" } }, { "a": "3" }],
+  "deep": [{ "n": { "b": "2" } }, { "a": "3" }]
+}
+.
+root
+  field "tags"
+    "a"
+    quoted "b; c"
+  field "one"
+    "x"
+    node
+      field "p"
+        "1"
+  field "rows"
+    "x"
+    node "[a:: 1]"
+      field "n"
+        node
+          field "b"
+            "2"
+    node "[a:: 3]"
+  field "deep"
+    node quoted ""
+      field "n"
+        node
+          field "b"
+            "2"
+    node "[a:: 3]"
 ```
 
 ```example from-json J15
@@ -134,8 +166,10 @@ root
   - `_label` is its label. It is omitted when the node is anonymous, or when its label is empty.
   - Each field becomes a key.
   - `_children` is an array of its child nodes. It is omitted when there are none.
-- **J4.** A node without children becomes its label as a string, or `null` when the label is empty and unquoted (`::`).
+- **J3a.** A node whose unquoted label holds only inline fields (Spec L5), as `[a:: 1] [b:: x;]`, and nothing else, becomes an object of them, as J8 writes an object without `_label`: each inline field is a key, read as a field is (J5), and the node's fields and child nodes follow J3, without `_label`. This is the one place writing JSON reads label syntax (Spec Part 2).
+- **J4.** A node without children becomes its label as a string, or `null` when the label is empty and unquoted (`::`), unless J3a applies.
 - **J5.** A field's JSON value is:
+  - an array of its items, if it is a list of one item or none (C16): `a;` gives `["a"]` and `;` gives `[]`
   - `null`, if it has no items
   - the item itself, if it has one item
   - an array of its items, if it has several
@@ -143,6 +177,22 @@ root
 - **J7.** All values are strings.
 - **J7a.** Fields with the same key on one node become one JSON key. Their items are concatenated in file order, and the result is always an array: `tag:: a` and `tag:: b` give `"tag": ["a", "b"]`.
 - **J16.** A field whose key is `_label` or `_children` is written as that JSON key, with a warning, since it reads back as the label or the child nodes (J1).
+
+```example to-json J3a J5
+rows::
+→[a:: 1] [b:: x;]
+→→n:: 2
+→[a:: 3]
+→plain
+.
+{
+  "rows": [
+    { "a": "1", "b": ["x"], "n": "2" },
+    { "a": "3" },
+    "plain"
+  ]
+}
+```
 
 ```example to-json J1a J2 J3 J4 J5 J6 J7 J7a
 a::
@@ -175,10 +225,10 @@ Ruukki
 {
   "a": null,
   "b": "anna",
-  "c": "anna",
+  "c": ["anna"],
   "d": ["anna", "oscar"],
   "e": ["a", "b"],
-  "f": null,
+  "f": [],
   "h": "",
   " hello": "world",
   "i": ["Anna", "Gustav"],
@@ -194,7 +244,6 @@ Ruukki
 ## 5. Known gaps
 
 - Numbers and booleans become strings.
-- An empty array comes back as `null`, and a one-item array as its item (J10, J5).
 - A nested array, and a root array, come back as objects with `_children` (J14, J15).
 - A scalar JSON root comes back as an object (J15).
 - A `_label` on the root object has no form, since the root has no label line (J15).

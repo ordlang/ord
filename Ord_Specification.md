@@ -27,7 +27,7 @@ These goals are informative. They explain the rules and decide new ones.
 - **Plain text first.** A file is readable and editable in any editor. Tools add power but are never needed to read it.
 - **Every file reads.** There are no syntax errors. Every file is read into a tree, and anything doubtful is a diagnostic (C35).
 - **Punctuation decides.** Whether a line is a field or a node, and where its key, value and items are, is decided by `::`, `;`, quotes and indentation, never by words or letter case.
-- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block or a field value's formula over several lines (C52). Nothing in Core depends on other files or an index. Part 2 takes the one fact it needs from types, their custom state markers, as an option.
+- **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block or a formula over several lines (C52). Nothing in Core depends on other files or an index. Part 2 takes the one fact it needs from types, their custom state markers, as an option.
 - **Quoting turns syntax off.** Any text can be written literally by quoting it, with `"` or `` ` ``.
 - **Writing is stable.** Writing twice changes nothing (C33), and an edit leaves the lines it doesn't touch as they were (C41).
 - **Light syntax.** Single symbols and rules that let prose stay prose, instead of heavy delimiters.
@@ -65,6 +65,7 @@ Node      label     Text, empty, or absent (anonymous node)
 
 Field     key       text
           items     ordered list of Item
+          list      true or false (C16)
 
 Item      Text or Node
 
@@ -137,7 +138,7 @@ root
 
 - **C50.** A reader reads a file in this order. Each step uses only what the steps before it found.
   1. Decode the file (C49, C2) and split it into lines (C1).
-  2. Find the blocks, from the top (C29). A block's lines, opening and closing lines included, are content and skip steps 3 and 4. Going on from the top, find the field values over several lines (C52) with steps 3 and 4 of their first line; their later lines are content.
+  2. Find the blocks, from the top (C29). A block's lines, opening and closing lines included, are content and skip steps 3 and 4. Going on from the top, find the formulas over several lines (C52), in field values and on node lines, with steps 3 and 4 of their first line; their later lines are content.
   3. On every other line, take the indent (C4) and find the spans (C25) and brackets (C51). Then find the separator (C5), which splits the line into key and value (C6 to C8).
   4. Unquote the key and a node's label (C21). Split a field's value into items (C15, C16, C19), and unquote each item.
   5. Build the tree from the indents (C9, C10), with each block placed by its opening line (C31), and give each field its items (C13).
@@ -174,7 +175,7 @@ root
   node "'''"
 `````
 
-- **C52.** A field's value can hold a formula over several lines, read like a block between its `=(` or `~(` and the matching `)`. A line opens one when it is a field line whose value has an item that starts with `=(` or `~(` (L12, L32) and whose parentheses, counted as C15 counts a formula item's groups, are still open at the end of the line; or when its text after the indent is only such an item and it is directly under a field line (C9). The formula runs through the first following line where its parentheses close. Those later lines, blank ones included, are content of the value: they don't affect the tree and have no key or value of their own (C30). The value, or the label of the line under a field, is the lines joined with `\n`, each after the first with up to as many leading spaces and tabs removed as the opening line's indent (C31). The rest of the closing line after the `)` is the rest of the value, read as C15 says. A formula whose parentheses never close is not continued: the line is read on its own. Only field values continue: a formula in a label, or under a node, ends with its line. A writer writes a formula item over several lines, an item that is one `=(…)` or `~(…)` closing at its end with a line break inside, as its lines, each at the line's indent, not quoted.
+- **C52.** A field's value, or a node line that is only a formula, can hold a formula over several lines, read like a block between its `=(` or `~(` and the matching `)`. A line opens one when it is a field line whose value has an item that starts with `=(` or `~(` (L12, L32) and whose parentheses, counted as C15 counts a formula item's groups, are still open at the end of the line; or when it is a node line whose text after the indent is only such an item (C9), under a field line, under a node or at the root. The formula runs through the first following line where its parentheses close. Those later lines, blank ones included, are content of the value: they don't affect the tree and have no key or value of their own (C30). The value, or the label of the line under a field, is the lines joined with `\n`, each after the first with up to as many leading spaces and tabs removed as the opening line's indent (C31). The rest of the closing line after the `)` is the rest of the value, read as C15 says. A formula whose parentheses never close is not continued: the line is read on its own. A formula after other text in a label ends with its line, so prose such as `Price =(see below` never takes the lines under it. A node whose label is such a formula keeps its child lines, after the closing line. A writer writes a formula item over several lines, an item that is one `=(…)` or `~(…)` closing at its end with a line break inside, and a node whose label is one, as its lines, each at the line's indent, not quoted.
 
 ```example C52
 Inv
@@ -187,6 +188,9 @@ Inv
 →note:: sad =(
 →Total =(
 →→1)
+→=(2 *
+→→3)
+→→kid
 .
 root
   node "Inv"
@@ -199,6 +203,8 @@ root
       "sad =("
     node "Total =("
       node "1)"
+    node "=(2 *\n\t3)"
+      node "kid"
 ```
 
 ## 5. Quoting and spans
@@ -314,7 +320,7 @@ root
     "b"
   field "Send draft due"
     "2026-10-10"
-  field "a"
+  field "a" list
   node "hello"
   node "hello"
   field "a"
@@ -400,7 +406,7 @@ root
     node
       field "primary"
         "anna"
-  field "m"
+  field "m" list
     "a"
   node ";"
     node "a"
@@ -411,7 +417,7 @@ root
 ## 9. Items in a field's value
 
 - **C15.** In a field's own value, a `;` that is not inside a span (C25) separates items. Spaces and tabs touching a `;` belong to it. In a **formula item**, one that starts with `=` or `~` (L12, L32), a `;` inside a **group** is content too: a `(` outside spans opens a group that ends at its matching `)`, counting nested parentheses and skipping spans and **strings**: a `"` or `'` inside a group starts a string that ends at the next same character not escaped by `\`, as in JSONata. A `(` without a match is ordinary text. So `=$f(a; b); c` has two items, `=($a & "x; y")` one, and `x(a; b)` two, since it is not a formula.
-- **C16.** Each part between separators, and before and after them, is an item unless it is empty. So an empty value gives no item, `a;;b` has two items, and `a;`, `;a` and `;` have one, one and none.
+- **C16.** Each part between separators, and before and after them, is an item unless it is empty. So an empty value gives no item, `a;;b` has two items, and `a;`, `;a` and `;` have one, one and none. A value with a separator and fewer than two items is a **list**: the field's `list` is true, so `a;` is a list of one item and `;` an empty list, where `a` is one item and an empty value none. A field with two or more items is a list without it. A writer writes a list's `;` after its inline items, as `key:: a;` and `key:: ;`.
 - **C19.** `;` splits only a field's own value. Node labels are never split.
 
 ```example C15 C16
@@ -429,7 +435,7 @@ root
   field "a"
   field "b"
     "anna"
-  field "c"
+  field "c" list
     "anna"
   field "d"
     "anna"
@@ -437,8 +443,8 @@ root
   field "e"
     "a"
     "b"
-  field "f"
-  field "g"
+  field "f" list
+  field "g" list
     "a"
   field "h"
     "a\\"
@@ -519,7 +525,7 @@ f::
   h:: "nb\u00A0sp"
 .
 a:: x; y; z
-b::
+b:: ;
 c:: "plain"
 Send→draft→+task
 
@@ -551,7 +557,7 @@ Key:: ends with \
 'single'
 a:: say `hi`; "x
 .
-k:: x
+k:: x;
 "a:b:":: v
 Key:: ends with \
 ::
@@ -617,7 +623,7 @@ Plan [_tags:: x] +task
 
 ## 13. Inline fields
 
-- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_types:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
+- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_types:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20), and is a list as a field's value is (C16): `[x:: a;]` is a list of one item and `[x:: ;]` an empty one. A writer keeps such a field inline rather than as a trigger (L4). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
 
 ```example labels L5
 Meet [due date:: 2026-10-21] [_types:: task] [Project lead:: anna]

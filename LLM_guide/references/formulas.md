@@ -12,7 +12,7 @@ total:: =(
 )
 ```
 
-A formula in a label stays on one line.
+A node line that is only the formula can run over lines the same way, and keeps its child lines after the closing `)`. A formula after other text in a label stays on one line.
 
 ## Where formulas go
 
@@ -36,6 +36,7 @@ A type's formula is calculated on its nodes without being written there (M87); e
 - System fields have their `_` keys: `_label` (with its tags), `_name` (the label without the tags at its end, each formula replaced by its result, as links match it: `Send proof #mail` is `Send proof`, `Parent =("bad")` is `Parent bad`; alias `N`), `_formula` (the results of the label's formulas), `_id`, `_types` (an array of types), `_state`, `_tags` (nested tags as `project/apollo`), `_parent` (the owner) and `_children` (child nodes, not field items). A mirror child stands for its source in `_children` (M49).
 - A reference field's value is the node it refers to: `client._label`, `owner.email`.
 - A field with field children is an object: with `contact::` holding `primary:: anna` on a child line, `contact.primary` is `anna`. A formula in such a nested field line is evaluated on the node, not on the field: `$`, `_label`, `_parent` and the rest are the node's, at any depth (M41). Steps continue through references only when the field is a reference field (`options:: +person`).
+- A result that is an object is Ord fields (M39): `=({"a": 1, "b": {"c": 2}})` shows `a = 1`, then `b::` with `c = 2` under it, under its line, as calculated fields show (`a:: 1, b.c:: 2` where it must fit one line, as in a name), and `x:: ~({"a": 1, "b": {"c": 2}})` is written as `x::` with `a:: 1` and `b::` under it, `c:: 2` under `b::`. A list is items joined by `; `. Several objects are node lines under the field, each with its first plain field inline: `x:: ~([{"a": 1}, {"a": 2}])` becomes `x::` with `[a:: 1]` and `[a:: 2]` under it, as JSON arrays are read (J10).
 - Keys that aren't plain JSONata names go in backticks: `` `Project lead`.email ``. That includes every key with a `-`: `days-left` reads as `days - left`, so write `` `days-left` ``. Prefer keys without `-` for fields other formulas use.
 - A node has only the fields written on it; a type adds nothing at read time.
 - Everything else is JSONata: mapping `_children.(price * qty)`, filtering `_children[_state != "done"]`, `&` for text, `+` for numbers only, `and`, `or`, `$not()`, `? :`, `in`, array literals, `$x := …` bindings, and `$`-functions.
@@ -67,7 +68,7 @@ JSONata's built-ins work as usual: text (`$uppercase`, `$lowercase`, `$substring
 - **Date arithmetic.** Dates are text, so `due + 7` doesn't work. Use `$date(due, 7)` and `$days(start, end)`.
 - **Purity.** Only `$today()`, `$now()`, `$date()` with a date name and `$days()` with one argument follow the clock.
 - **Generators only in `~`.** `$seq`, `$uuid`, `$id` and `$sid` would change on every evaluation, so they are errors in `=` formulas and queries (M43).
-- **`~` writes once.** `~$today()` becomes the date; `=$today()` stays a formula and follows the clock. `auto expr` is gone: write `~(expr)` (M85.1).
+- **`~` writes once.** `~$today()` becomes the date once the cursor leaves it; `=$today()` stays a formula and follows the clock. A result is written as any field is: `~(["a"])` gives `a;`, text with `;` or a line break is quoted. `auto expr` is gone: write `~(expr)` (M85.1).
 - **Errors and cycles (M44).** A failing formula (M44.3), a cycle (M44.1) or a dependency on a cycle (M44.2) leaves the field empty with a diagnostic. Cycles are per node, so `hours:: =($sum(_children.hours))` on a tree is fine.
 - **`valid` checks (M40).** `$value` is the field's value, a list when it has several.
 
