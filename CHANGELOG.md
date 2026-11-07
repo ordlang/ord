@@ -8,6 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
+- C52: a node line that is only a formula, `=(` or `~(` left open at its end, runs over several lines too, under a field, under a node or at the root, and keeps its child lines after the closing line. A formula after other text in a label still ends with its line.
 - M85: a one-time formula's result is written by the writer every field uses (J9 to J11, C16, C26), so lists, one-item lists and text with `;` or line breaks are written as elsewhere; in a label, a list is joined by `; `. An editor writes it once the cursor is neither in it nor next to it, and a character that breaks it keeps the result it showed, with the character after it.
 - L5, C16: an inline field's value is a list the same way, `[x:: a;]` and `[x:: ;]`, and stays an inline field rather than a trigger. J3a: writing JSON reads a node line of only inline fields, as J8 writes an object without `_label`, back as that object, so such objects round-trip. D6: `list` comes before `inline` in the dump.
 - C16: a value with a `;` and fewer than two items is a **list**, a new `list` flag in the data model: `a;` is a list of one item and `;` an empty list. Writers keep the `;` (`key:: a;`, `key:: ;`), the dump prints `field "k" list` (D6), JSON gives `["a"]` and `[]` for them (J5), and JSON's one-item and empty arrays are written that way (J10), so they round-trip; the known gaps on them are gone. M41: a formula reads a list as an array, whatever its length.

@@ -12,7 +12,7 @@ total:: =(
 )
 ```
 
-A formula in a label stays on one line.
+A node line that is only the formula can run over lines the same way, and keeps its child lines after the closing `)`. A formula after other text in a label stays on one line.
 
 ## Where formulas go
 
