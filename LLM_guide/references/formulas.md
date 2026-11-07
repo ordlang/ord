@@ -1,6 +1,6 @@
 # Ord formulas (JSONata)
 
-Rules: Semantics M36 to M45.
+Rules: Semantics M36 to M45, M87.
 
 A formula is a JSONata 2.x expression written as `=(…)` (M41, Spec L12). Without spaces it needs no parentheses: `=$sum(x)`, `=price*qty`, `=_name` and `=2*x` are formulas wherever `=(…)` is (L12). It ends at a space, tab or `;` outside parentheses and strings, and `.`, `,`, `:`, `?` or `!` at its end are prose. Wrap it in parentheses when it has spaces: `=(price * qty)`. Inside the parentheses, `;` doesn't split a field's items (C15), so `=($a := 2; $a * 3)` is one value. In a field's value, a formula can run over several lines (C52): leave `=(` open at the end of the field line, or of a line of only the formula under it, indent the lines after it, and close it with `)`, like a code block:
 
@@ -18,15 +18,14 @@ A formula in a label stays on one line.
 
 | Where | Written | Notes |
 |---|---|---|
-| Computed field | `total:: =($sum(_children.amount))` on the node's field line, or `=(…)` alone on a child line of `total::` | Written there by the type (M37) or by hand. Each formula is an item: its result, one item per list element (M39). Mix with plain items: `tags:: draft; =(project._tags)` |
-| Field on a type | `total:: =($sum(_children.amount))` under `fields::` | Written on each node of the type, as is (M37). Changing it rewrites the nodes that still have the old formula (M84) |
+| Computed field, on a node | `total:: =($sum(_children.amount))` on the node's field line, or `=(…)` alone on a child line of `total::` | Written by hand, for that node only. Each formula is an item: its result, one item per list element (M39). Mix with plain items: `tags:: draft; =(project._tags)` |
+| Calculated field, on a type | `total:: =($sum(_children.amount))` under `fields::`, the formula on the key's line | Every node of the type has it, never written on them (M87); editors show `total = 1200` first under the node. A node can't write it (M87.1). Changing the formula changes no file |
 | One-time formula | `due:: ~$today()`, `code:: ~("T-" & $seq(3))`, `_id:: ~$slug(_label)` on a type | Evaluated once and replaced in the file by its result (M85); on a type, written on each node and replaced there. An error stays, shown after it |
-| Computed label, on a type | `_label:: =(first & " " & last)` | Written into the node line by editors; tags on the line stay (M38). Don't edit it by hand |
 | Check, under a field definition | `valid:: =($value in ["low", "high"])` | A result that isn't true is the error M40; the value stays |
 | Inline, in a label | `Total =(a + b)` | Output only |
 | Query, template column, footer | `=(due < $today())` | Output only, see queries.md |
 
-Only what is written on a node counts (M37, M39): a type's formula works on a node because it is written there. A formula can go wherever a value goes, inline fields included, and a field can hold several; editors show each result after its formula. Changing a node's formula, or writing a plain value (`total:: 12`), changes that node only, and later changes to the type's formula leave it as it is (M84). Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
+A type's formula is calculated on its nodes without being written there (M87); everything else a node has is written on it (M37). On a node, a formula can go wherever a value goes, inline fields included, and a field can hold several; editors show each result after its formula. A node can't override a calculated field: writing `total:: 12` on it is the error M87.1. A type can't calculate `_label` (M58.1). Not on settings: `footer:: =(…)` or `color:: =(…)` on a type, tag or field definition, or on a search, is the error M39 and isn't evaluated; a field definition's `value` and `valid` are the exceptions.
 
 ## The data model a formula sees
 
@@ -103,7 +102,7 @@ Person +type-def
 	name:: person
 	fields::
 		_id:: ~$slug(_label)
-		_label:: =(first & " " & last)
+		full name:: =(first & " " & last)
 		initials:: =($uppercase($substring(first, 0, 1) & $substring(last, 0, 1)))
 ```
 

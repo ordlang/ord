@@ -40,7 +40,7 @@ A query looks like the node lines it matches.
 | `[r]` | in the custom state whose marker is `r` |
 | `[[Ruukki AB]]`, `[[ruukki]]` | with a field referring to that node, by label or ID |
 | `@Ruukki AB` | the node itself; in a scoped query, when it or one of its mirrors is in scope |
-| `[key:: value]` | with a `key` value equal to the text, ignoring case: `[client:: ruukki]`, `[due:: 2026-10-10]` |
+| `[key:: value]` | with a `key` value equal to the text, ignoring case: `[client:: ruukki]`, `[due:: 2026-10-10]`. A calculated or computed field's value counts: `[total:: 2050]`. Compare with a formula: `=(total > 1000)` |
 | `=(expr)` | where the JSONata formula is true for the node |
 | `word`, `"two words"` | whose label contains it, ignoring case |
 
@@ -89,5 +89,5 @@ Hours this month +search
 - Put the search where the user will look for it: a project node, the workspace file, or today's journal day for a quick `?`.
 - Prefer types, tags and states over words; words only search labels.
 - Use `![x]` for "not done": it also covers custom states based on done.
-- When a filter repeats, make it a computed field on the type (`late:: =(…)`) and query `=(late)`.
+- When a filter repeats, make it a calculated field on the type (`late:: =(…)`) and query `=(late)`.
 - Don't write results, counts or dates computed from the query into the file.
