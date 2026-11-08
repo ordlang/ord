@@ -40,6 +40,8 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M27.1`, `M28.1`, `M28.2` | A malformed custom state, or a marker built in or already used | Fix the type's `state` setting |
 | `M39` | `key:: =(…)` on a setting of a type, tag or field definition, or of a search other than `footer` | Remove it; formulas go under a type's `fields::`, in a field definition's `value` or `valid`, or on an ordinary node's field |
 | `M40` | Error: a value fails its field's `valid` check | Fix the value (it is kept as written) |
+| `M41.1` | A workspace formula's key isn't a `$` name, or is a function's, e.g. `sum` | Rename the key under `formulas::` |
+| `M41.2` | A workspace formula's key is given twice | Remove or rename one; the first counts |
 | `M44.1`, `M44.2` | A computed field is in, or depends on, a cycle | Break the cycle in the formulas, on the nodes and their types |
 | `M44.3` | A formula fails, e.g. a generator outside a `~` formula | Fix the formula |
 | `M46` | A value is none of the field's `options` | Use an option, or add it to `options` |
