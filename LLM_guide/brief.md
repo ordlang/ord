@@ -50,7 +50,7 @@ Marks are shorthand for system fields, whose keys start with `_`. They can be wr
 | `^t9x1` | ID, one per node | `[_id:: t9x1]` |
 | `[[Label]]`, `[[t9x1]]`, `[[Label^t9x1]]` | link to another node by label, ID or both | `[_link:: [[Label]]]` |
 | `https://…`, `./file.pdf`, `[text](url)` | link to a URL or file | `[_url:: …]` |
-| `=(net * 1.25)` | a computed value | `[_formula:: =(net * 1.25)]` |
+| `=(net * 1.25)` | a computed value | `[_result:: =(net * 1.25)]` |
 | `@ Label`, `@ Label^t9x1` | a mirror: shows that node here. Only at the start of the line | `[_mirror:: Label]` |
 | `? +task [ ]` | a search. Only at the start of the line | `+search [query:: +task [ ]]` |
 

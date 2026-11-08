@@ -605,7 +605,7 @@ A field can be written in three ways: as a field line (`key:: value`, Part 1), a
 ## 12. Scope
 
 - **L1.** Part 2 reads unquoted node labels and unquoted text items of fields. Quoted labels and items (C21), blocks (C29) and keys are never read.
-- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `_link`, `_url` and `_formula`, mirror values (L31), and value forms (L21). Inline fields and the `_types`, `_id`, `_state` and `_tags` triggers belong to nodes.
+- **L2.** In a label, every form in this part applies. In a field item, only the value triggers apply: `_link`, `_url` and `_result`, mirror values (L31), and value forms (L21). Inline fields and the `_types`, `_id`, `_state` and `_tags` triggers belong to nodes.
 - **L3.** Unless a rule says otherwise, a form starts at the beginning of the text or right after a space or tab, and ends before the next space or tab or at the end of the text. A **name** is a letter followed by letters, digits, `_` and `-`. Letters are any Unicode letters.
 - **L4.** Inline fields and triggers are read wherever they are written on a node line. A writer keeps the line in a fixed order: the list marker (L16), the `_state` trigger, the label (L19), then inline fields, `_types` triggers and the `_id` trigger. It moves forms that are out of place and keeps the written order within each group. To move a form, it cuts the form with the whitespace L19 removes with it, and writes it into its group with one space between it and its neighbours. It edits the line this way rather than building it from the label, so escapes (L18) and other spacing stay as written, and writing stays stable (C33). An inline field for `_types`, `_id` or `_state` whose value can be written as the trigger is written as the trigger, in its group. Links, URLs, formulas and tags stay where they are written, as they are part of the label. An inline `_tags` field stays an inline field, since writing it as a tag would put it in the label. The `_state` trigger is only read at the start (L11), so `[x]` later in a line is text. A line with an inline search (L28) is written as it is: nothing on it is read as a form, so nothing is moved.
 
@@ -721,7 +721,7 @@ root
 
 - **L31.** An unquoted text item of a field line or an inline field that starts with `@`, followed by text other than spaces and tabs, is a **mirror value**: a reference to a node, as a link is. The reference is the rest of the item without the spaces and tabs after `@`, read as inside `[[` and `]]` (L10), and nothing in it is read as a form. The item is split from its neighbours at `;` first (C15), so a label with `;` is written as a link. A quoted item such as `"@psu"` is text, as is `@` later in an item. A writer writes a mirror value with no space after `@`, as in `attendees:: @Anna Smith; @Erik`. What it means is in [Semantics](Semantics.md) M21 and M49.
 
-- **L32.** `_formula` also has a **one-time** form: `~` followed by an expression, read as L12 reads one after `=`, as `~(…)` or, without spaces, `~expr`, in a label, an inline field or a field's item. The value keeps the `~`. So `~$today()`, `~("BE" & $seq(3))` and `~$uuid()` are one-time formulas, and `~` before a space, or inside a word, is text. A tool evaluates it once and writes its result in its place ([Semantics](Semantics.md) M85).
+- **L32.** `_result` also has a **one-time** form: `~` followed by an expression, read as L12 reads one after `=`, as `~(…)` or, without spaces, `~expr`, in a label, an inline field or a field's item. The value keeps the `~`. So `~$today()`, `~("BE" & $seq(3))` and `~$uuid()` are one-time formulas, and `~` before a space, or inside a word, is text. A tool evaluates it once and writes its result in its place ([Semantics](Semantics.md) M85).
 
 ```example labels L20 L31 D13
 attendees:: @Anna Smith; @ Erik; "@quoted"
@@ -763,7 +763,7 @@ meeting:: @Anna Smith; @Erik
 | `_id` | `^t9x1` | `[_id:: t9x1]` | an ID |
 | `_link` | `[[Node label]]`, `[[anna-47xu]]`, `[[Node label^anna-47xu]]` | `[_link:: [[Node label]]]`, `[_link:: [[anna-47xu]]]` | a node's label or ID, or both |
 | `_state` | `[ ]`, `[x]` | `[_state:: new]`, `[_state:: done]` | a state name |
-| `_formula` | `=sum(x)`, `=(a + b)` | `[_formula:: =sum(x)]`, `[_formula:: =(a + b)]` | an expression |
+| `_result` | `=sum(x)`, `=(a + b)` | `[_result:: =sum(x)]`, `[_result:: =(a + b)]` | an expression |
 | `_tags` | `#blue`, `#project/apollo`, `[#Ord notes]` (L29) | `[_tags:: blue]`, `[_tags:: project/apollo]`, `[_tags:: Ord notes]` | ordinary text |
 | `_url` | `https://example.com`, `./spec.pdf` | `[_url:: https://example.com]`, `[_url:: ./spec.pdf]` | a URL or a path |
 
@@ -776,7 +776,7 @@ meeting:: @Anna Smith; @Erik
 
   In a reference field, a plain value is a reference too, without the brackets, and so is a quoted one in a field line, where the quotes mark a label, but not in an inline field (L5). Brackets and `^` are only needed where plain text would otherwise be read as text. Reference fields and how references resolve are in [Semantics](Semantics.md), section 6.
 - **L11.** `_state`: `[`, one character and a closing `]` at the start of a label, after any list marker (L16), followed by a space, a tab or the end. `[ ]` reads as `new`, `[-]` as `in-progress`, `[?]` as `waiting` and `[x]` as `done`, the built-in states. Any other character is a custom marker, defined by a type's custom state ([Semantics](Semantics.md) M27), and reads as itself, for the index to map to that state. A marker no type defines is a diagnostic.
-- **L12.** `_formula`: `=` followed by an expression: by `(`, or without parentheses by a letter, a digit, `_`, `$`, `!`, `[`, `{`, `"`, `'`, `` ` ``, or `-` and a digit. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. Without parentheses, the expression has no spaces: it ends before the next space, tab or `;` outside parentheses and quoted strings (JSONata's `"…"`, `'…'` and `` `…` ``), its parentheses must balance, and `.`, `,`, `:`, `?` and `!` at its end are not part of it, as after a URL (L14). So `=$sum(_children.amount)`, `=price*qty`, `=_name`, `=2*x`, `="a"&b` and `=node("i42").total` are formulas wherever `=(…)` is, in a label, an inline field or a field's item, and `=x.` at the end of a sentence is `=x`. `=>`, `==`, `====` and `= 4` stay text, and so does `a=b`, where `=` doesn't start a word (L3). A formula with an `(` that is never closed is text, with a warning, unless it is a field value that continues on the lines after it (C52). `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
+- **L12.** `_result`: `=` followed by an expression: by `(`, or without parentheses by a letter, a digit, `_`, `$`, `!`, `[`, `{`, `"`, `'`, `` ` ``, or `-` and a digit. The value keeps the `=`. `=(…)` ends at the matching `)`, which is required. Without parentheses, the expression has no spaces: it ends before the next space, tab or `;` outside parentheses and quoted strings (JSONata's `"…"`, `'…'` and `` `…` ``), its parentheses must balance, and `.`, `,`, `:`, `?` and `!` at its end are not part of it, as after a URL (L14). So `=$sum(_children.amount)`, `=price*qty`, `=_name`, `=2*x`, `="a"&b` and `=node("i42").total` are formulas wherever `=(…)` is, in a label, an inline field or a field's item, and `=x.` at the end of a sentence is `=x`. `=>`, `==`, `====` and `= 4` stay text, and so does `a=b`, where `=` doesn't start a word (L3). A formula with an `(` that is never closed is text, with a warning, unless it is a field value that continues on the lines after it (C52). `2 + 2 = 4` stays text. What formulas mean is in [Semantics](Semantics.md), section 8.
 - **L13.** `_tags`: `#` followed by a name, then any number of `/` and a name, for a nested tag such as `#project/apollo`. It ends after its last name, unlike other forms (L3), so punctuation after it is text: `#projectX.` at the end of a sentence is the tag `projectX` and a `.`. `#` followed by a space (a list marker at the start of a label, L16), a digit (`#123`, an issue number) or another `#` is not a tag, and neither is a `#` that doesn't start a form, as in `C#` or a URL. A tag stays in the label (L19).
 - **L14.** `_url`: a bare URL (a scheme of a letter, then letters, digits, `+`, `-` and `.`, then `://`), a bare path (`./`, `../`, `~/` or `/`, then a character that is neither whitespace nor `/`), or a Markdown link `[text](target)`, which can start anywhere and reads as the target. A target with spaces goes in `<…>`. A bare URL or path doesn't include a trailing `.`, `,`, `;`, `:`, `!`, `?` or `)`. A URL is a value, never a reference to a node.
 
@@ -921,11 +921,11 @@ root
     field "_url" embedded
       "./spec.pdf"
   node "Total =(a + b) then =sum(x"
-    field "_formula" embedded
+    field "_result" embedded
       "=(a + b)"
   node "Broken [[link"
   node "Sum =$sum(x)*2. Not => or =="
-    field "_formula" embedded
+    field "_result" embedded
       "=$sum(x)*2"
 ! L12 7:21
 ! L10 8:8
