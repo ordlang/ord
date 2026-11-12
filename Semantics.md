@@ -46,23 +46,23 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 
 ## 5. Types and IDs
 
-- **M17.** A node with the type `type-def` (M53) is a **type definition**. It defines the type named by its `name` value, a name (L3):
+- **M17.** A node with the type `ord-type` (M53) is a **type definition**. It defines the type named by its `name` value, a name (L3):
 
   ```
-  Task +type-def
+  Task +ord-type
   	name:: task
   ```
 
   A type definition without a `name` is the warning `M17.3` and defines nothing. A value that isn't a name is the error `M17.1`, and two definitions of one name are the error `M17.2`.
 - **M18.** A node's **types** are its `_types` values, in order, without repeats. A type without a definition is allowed.
 - **M20.** A node's **ID** is its `_id` value. It must be a name (L3), with the error `M20.3`, and IDs match ignoring letter case. Two nodes with one ID is the error `M20.1`; both keep it, and references resolve to the first in file order (M5).
-- **M19.** A type definition's settings are those of `type-def` (M53). `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name.
-- **M59.** A node with the type `tag-def` (M53) is a **tag definition** for the tags its `name` values name, without `#`, ignoring letter case, as `Urgent +tag-def` with the field lines `name:: urgent` and `color:: red` under it. Each value is a tag as L13 or L29 reads it: it starts with a letter and holds no `]`. A value that isn't is the error `M17.1`, and two tag definitions for one tag are the error `M17.2`. Its settings are those of `tag-def`: `color`, a color name or `#rrggbb` that the tag is shown in, and `icon` and `description` (M52).
+- **M19.** A type definition's settings are those of `ord-type` (M53). `color` is how editors show the type, e.g. as a pill: a color name (`red`, `orange`, `yellow`, `green`, `teal`, `blue`, `purple`, `pink`, `brown`, `gray`, `black`, `white`) or `#rrggbb`; or the name of a field, as in `color:: project`, so a node's type shows in the color of its value there: the `color` of the node the value refers to, else a color the editor picks by that node's label, or for a value that refers to no node, by its text. A node without the value shows the type as it would without the setting. A color name is never read as a field's name.
+- **M59.** A node with the type `ord-tag` (M53) is a **tag definition** for the tags its `name` values name, without `#`, ignoring letter case, as `Urgent +ord-tag` with the field lines `name:: urgent` and `color:: red` under it. Each value is a tag as L13 or L29 reads it: it starts with a letter and holds no `]`. A value that isn't is the error `M17.1`, and two tag definitions for one tag are the error `M17.2`. Its settings are those of `ord-tag`: `color`, a color name or `#rrggbb` that the tag is shown in, and `icon` and `description` (M52).
 - **M66.** `checkbox:: true` (L27) gives the type's nodes a checkbox: when an editor or a tool gives a node line the type and the node has no state, it adds the trigger `[ ]` (L11) before the line's text, after any list marker (L16), so `Buy milk +todo` becomes `[ ] Buy milk +todo`. A node that has a state keeps it, and a node without one is not an error: a reader doesn't add the trigger, and taking it away again is allowed.
 - **M51.** A type's `nodes` setting is a **content template**: its node children (C13), with their child lines. When an editor or a tool gives a node the type, on a new node or an existing one, it writes a copy of them under the node, in order, after its other children, with their `_id` fields left out, so each node gets its own content. When a node is given several types at once, their templates follow each other in type order (M18). Field lines under `nodes::` aren't part of the template; a type's fields are written from its `fields` setting (M37). Only adding the type writes the template: a reader never adds it, and a node that already has the type doesn't get it again.
 
   ```
-  Meeting +type-def
+  Meeting +ord-type
   	name:: meeting
   	nodes::
   		Agenda
@@ -78,7 +78,7 @@ The Spec says how text becomes a tree of nodes and fields. This spec says what t
 A workspace usually starts with this definition in its workspace file. It is an ordinary type definition, so its fields and settings can be changed like on any type.
 
 ```
-Task +type-def
+Task +ord-type
 	name:: task
 	fields::
 		due::
@@ -88,11 +88,11 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 ## 5a. System types and fields
 
-- **M53.** `type-def`, `tag-def`, `field-def` and `search` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), and are settings only on their own nodes: on any other node, `name::`, `key::`, `color::` and the others are ordinary fields, and a node that has them without the system type defines nothing. The system field definitions (M11) are built in the same way.
+- **M53.** `ord-type`, `ord-tag`, `ord-field`, `ord-workspace` and `search` are **system types**, built into every workspace. This spec defines them, as if these definitions were in the workspace file, and a file that defines one of them is the error `M17.2`. Their color is `white`, so editors show them apart from a workspace's own types. Their settings are local field definitions (M36), and are settings only on their own nodes: on any other node, `name::`, `key::`, `color::` and the others are ordinary fields, and a node that has them without the system type defines nothing. The system field definitions (M11) are built in the same way.
 
   ```
-  Type definition +type-def
-  	name:: type-def
+  Type definition +ord-type
+  	name:: ord-type
   	color:: white
   	fields::
   		name::
@@ -112,8 +112,8 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   			description:: An emoji shown with it.
   		description::
   			description:: Text about it.
-  Tag definition +type-def
-  	name:: tag-def
+  Tag definition +ord-type
+  	name:: ord-tag
   	color:: white
   	fields::
   		name::
@@ -124,8 +124,8 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   			description:: An emoji shown with it.
   		description::
   			description:: Text about it.
-  Field definition +type-def
-  	name:: field-def
+  Field definition +ord-type
+  	name:: ord-field
   	color:: white
   	fields::
   		key::
@@ -143,7 +143,17 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   			description:: An emoji shown with it.
   		description::
   			description:: Text about it.
-  Search +type-def
+  Workspace +ord-type
+  	name:: ord-workspace
+  	color:: white
+  	fields::
+  		name::
+  			description:: The workspace's name.
+  		icon::
+  			description:: An emoji shown with it.
+  		description::
+  			description:: Text about it.
+  Search +ord-type
   	name:: search
   	color:: white
   	fields::
@@ -165,43 +175,46 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   			description:: An emoji shown with it.
   		description::
   			description:: Text about it.
-  Label +field-def
+  Label +ord-field
   	key:: _label
   	description:: The node's label, its line without the forms that are not part of it.
-  Name +field-def
+  Name +ord-field
   	key:: _name
   	description:: The node's label without the tags at its end (M23), read from the label; it can't be written.
-  Types +field-def
+  Types +ord-field
   	key:: _types
   	description:: The node's types.
-  ID +field-def
+  ID +ord-field
   	key:: _id
   	description:: The node's ID, a name that references can use.
-  State +field-def
+  State +ord-field
   	key:: _state
   	description:: The node's state, a built-in state or a custom state of its types.
-  Tags +field-def
+  Tags +ord-field
   	key:: _tags
   	description:: The node's tags.
-  Link +field-def
+  Link +ord-field
   	key:: _link
   	description:: A reference to a node, by its label, its ID or both.
-  Mirror +field-def
+  Mirror +ord-field
   	key:: _mirror
   	description:: The node that this node is a mirror of, its source.
-  Result +field-def
+  Result +ord-field
   	key:: _result
   	description:: The formulas in a label, evaluated where they are written; read in a formula, their results. A formula in a field's value is a formula item of that field (M39).
-  URL +field-def
+  URL +ord-field
   	key:: _url
   	description:: A URL or a path.
-  Parent +field-def
+  Parent +ord-field
   	key:: _parent
   	description:: The node's owner: the node it is indented under, or the node a CSV cell names.
-  Children +field-def
+  Children +ord-field
   	key:: _children
   	description:: The nodes it owns, in order: by indentation, then by CSV cells.
   ```
+
+- **M88.** A node with the type `ord-workspace` (M53) in the workspace file (Spec F5) is the **workspace node**. Its `name` value is the workspace's **name**, which an editor shows for the workspace in place of its folder's name, as `Notes +ord-workspace` with `name:: Pontus's notes` under it. Its settings are those of `ord-workspace`: `name`, and `icon` and `description` (M52). Only the first one in the workspace file counts; a second one, and one in any other file, is the warning `M88.1` and names nothing. A workspace without one has no name, and an editor shows its folder's.
+- **M89.** **Workspace properties.** A `pinned files` or `pinned nodes` field line in the workspace file, at any depth, under a node or not, lists what an editor shows first, as pinned. Their values are written as child lines under the field line, one value each (C13), as in `pinned files::` with `notes/projects.ord` and `journal.ord` under it. A `pinned files` value is a file's path, relative to the workspace folder, with `/` between folders; a `pinned nodes` value is a reference (M21), as `[[^apollo]]` or `[[Project Apollo]]`. The values of every such field in the file count, in file order, and one given twice counts once. They are not settings: they configure nothing else, and the node they are written on keeps them as ordinary fields. A value that names no file or no node is left out, without a diagnostic. In any other file, `pinned files` and `pinned nodes` are ordinary fields.
 
 ## 6. References
 
@@ -239,10 +252,10 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 This section is a draft outline. Its rules are numbered so they can be referred to, and need tests before 1.0.
 
 - **M36.** A type definition's `fields` setting holds **field definitions**: **local field definitions**, its field lines under its anonymous node (C13), and field definition nodes (M55, M58). The two are one thing written two ways, with the same settings (M56), and differ only in scope: a local definition applies on the type's nodes, a field definition node on every node (M57). A local definition's key is the field it defines, what is written after it on its line is its `value` setting, and its child field lines are its other settings. A formula must start on the key's line (M87). A child field line whose key isn't a setting (M56) is a **nested field definition**: it defines a field written under that field, as a field line of its anonymous node (C13), and has the same settings and nested field definitions of its own, at any depth.
-- **M55.** A node with the type `field-def` (M53) is a **field definition node**. It defines the field whose key is its `key` value, for the whole workspace:
+- **M55.** A node with the type `ord-field` (M53) is a **field definition node**. It defines the field whose key is its `key` value, for the whole workspace:
 
   ```
-  Priority +field-def
+  Priority +ord-field
   	key:: priority
   	options:: high; medium; low
   	tags:: true
@@ -258,10 +271,10 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   For a key that no field definition node defines, a type defines its own field (M36).
 
   ```
-  Task +type-def
+  Task +ord-type
   	name:: task
   	fields::
-  		Owner +field-def
+  		Owner +ord-field
   			key:: owner
   			options:: +person
   		priority::
@@ -272,7 +285,7 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 - **M37.** **A type's fields are written on its nodes.** When an editor or a tool gives a node a type, on a new node or an existing one, it writes a field line for each of the type's field definitions (M36, M58), other than calculated fields (M87), whose key the node doesn't have, where C48 puts a new field, in definition order. When a node has several types, each type's fields follow in type order (M18), and a key that an earlier type wrote isn't written again. The line holds the definition's `value` as written: `~expr` as a one-time formula, which is then replaced with its result (M85), any other value as text, and no value as `key::`. Nested field definitions (M36) are written as field lines under their field, the same way. `_id` isn't written as a field line: a `~expr` for it gives each node of the type without an ID one, once: the result, when it is a name (L3) that no other node has as its ID, else an ID the tool makes up. A reader never gives a node a field or a value from its types, except a calculated field (M87): a node has what is written on it, and a type's `value` is what tools write.
 
   ```
-  Invoice +type-def
+  Invoice +ord-type
   	name:: invoice
   	fields::
   		amount::
@@ -291,7 +304,7 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 - **M87.** **Calculated fields.** A field definition (M36, M55) whose `value` is a formula, `=expr` (L12), defines a **calculated field**. Every node the definition's value applies to (M37, M57) has the field, with the formula's result as its value, evaluated on the node (M41) as a formula item is (M39), so a list gives one item per element and nothing gives none. The field is never written on the nodes, and a file read as plain text doesn't hold it (M86). On a local field definition, the formula is written after the key on its line and must start there; one over several lines (C52) continues under it:
 
   ```
-  Expense +type-def
+  Expense +ord-type
   	name:: expense
   	fields::
   		line_a::
@@ -355,7 +368,7 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M15` | error | A node is in an ownership loop | the node |
 | `M17.1` | error | A type definition's `name` isn't a name, or a tag definition's isn't a tag | the value |
 | `M17.2` | error | A type or a tag is defined twice, or a system type in a file | the second `name` field |
-| `M17.3` | warning | A type definition has no `name` | the `+type-def` trigger |
+| `M17.3` | warning | A type definition has no `name` | the `+ord-type` trigger |
 | `M20.1` | error | Two nodes have one ID | each ID after the first, in file order (M5) |
 | `M20.3` | error | An ID isn't a name | the ID |
 | `M22.1` | error | A reference's ID matches no node | the reference |
@@ -379,11 +392,12 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M50.2` | warning | A line is under a mirror | the line |
 | `M55.1` | error | A field is defined by two field definition nodes | the second `key` field |
 | `M55.2` | error | A system field (M11) is defined again | the `key` value |
-| `M55.3` | warning | A field definition node has no `key` | the `+field-def` trigger |
+| `M55.3` | warning | A field definition node has no `key` | the `+ord-field` trigger |
 | `M58.1` | error | A type gives a field definition node's key a value or child lines | the field line |
 | `M87.1` | error | A node writes a field that one of its types calculates | the value |
 | `M87.2` | error | A calculated field's definition has a nested field, or a local field definition has a formula alone on a child line | the line |
 | `M85.1` | warning | A field definition's `value` is `auto expr`, now written `~(expr)` | the value |
+| `M88.1` | warning | A second `ord-workspace` node in the workspace file, or one in another file | the type |
 
 ---
 
@@ -416,7 +430,7 @@ file "a.ord"
 
 ```example graph M10 M26 M27 M29 M30
 --- types.ord
-Bug +type-def
+Bug +ord-type
 	name:: bug
 	state:: triage [t] > new | review [r] > in-progress | shipped > done | someday
 --- work.ord
@@ -433,7 +447,7 @@ Odd
 .
 file "types.ord"
   node "Bug" @1
-    type "type-def"
+    type "ord-type"
 file "work.ord"
   node "Fix login" @1
     type "bug"
@@ -461,12 +475,12 @@ file "work.ord"
 --- Ord.workspace
 Types
 	+task
-	Task +type-def
+	Task +ord-type
 		name:: task
 --- a.ord
 Write +task
 +task
-Task +type-def
+Task +ord-type
 	name:: task
 .
 file "Ord.workspace"
@@ -474,14 +488,14 @@ file "Ord.workspace"
     node "" @2
       type "task"
     node "Task" @3
-      type "type-def"
+      type "ord-type"
 file "a.ord"
   node "Write" @1
     type "task"
   node "" @2
     type "task"
   node "Task" @3
-    type "type-def"
+    type "ord-type"
 ! M17.2 a.ord:4:2
 ```
 
@@ -491,7 +505,7 @@ Invoice 42 ^i42
 Anna +person ^anna
 Erik ^anna
 Now ^today
-Task +type-def
+Task +ord-type
 	name:: task
 	fields::
 		owner::
@@ -520,7 +534,7 @@ file "a.ord"
   node "Now" @4
     id "today"
   node "Task" @5
-    type "type-def"
+    type "ord-type"
   node "Fix" @10
     type "task"
     ref "owner" -> a.ord:2

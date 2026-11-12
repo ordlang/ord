@@ -28,7 +28,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M15` | An ownership loop through `_parent`/`_children` cells | Break the loop |
 | `M17.1` | A type or tag definition's `name` isn't a name | Rename it |
 | `M17.2` | A type or tag defined twice, or a system type defined in a file | Merge the definitions, or remove the one for a system type |
-| `M17.3` | A `+type-def` without a `name` | Add `name::` |
+| `M17.3` | A `+ord-type` without a `name` | Add `name::` |
 | `M20.1` | Two nodes share an ID | Rename one ID and its references |
 | `M20.3` | An ID isn't a name (`^12`) | Start it with a letter |
 | `M22.1` | A reference's ID matches no node | Fix the ID, or add it to the intended node |
@@ -47,13 +47,14 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M46` | A value is none of the field's `options` | Use an option, or add it to `options` |
 | `M50.1` | A mirror under its own source | Move or remove the mirror |
 | `M50.2` | Lines under a mirror | Move them into the source |
-| `M55.1` | Two `+field-def` nodes for one key | Merge them |
-| `M55.2` | A `+field-def` for a system field | Remove it |
-| `M55.3` | A `+field-def` without a `key` | Add `key::` |
-| `M58.1` | A type lists a `+field-def` key with a value or child lines, or calculates a system field such as `_label` | Move the settings to the field definition node; don't calculate `_label` |
+| `M55.1` | Two `+ord-field` nodes for one key | Merge them |
+| `M55.2` | A `+ord-field` for a system field | Remove it |
+| `M55.3` | A `+ord-field` without a `key` | Add `key::` |
+| `M58.1` | A type lists a `+ord-field` key with a value or child lines, or calculates a system field such as `_label` | Move the settings to the field definition node; don't calculate `_label` |
 | `M87.1` | A node writes a field its type calculates | Remove the line: the value is calculated |
 | `M87.2` | A calculated field's definition has a nested field, or a definition has a formula alone on a child line | Write the formula on the key's line; drop the nested field |
 | `M85.1` | A field definition's `value` is `auto expr` | Write `~(expr)` |
+| `M88.1` | A second `+ord-workspace` node, or one outside the workspace file | Keep one, in `Ord.workspace` |
 
 ## CSV (CSV mapping)
 

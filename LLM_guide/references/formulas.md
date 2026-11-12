@@ -77,7 +77,7 @@ JSONata's built-ins work as usual: text (`$uppercase`, `$lowercase`, `$substring
 ## Examples
 
 ```
-Invoice +type-def
+Invoice +ord-type
 	name:: invoice
 	fields::
 		client::
@@ -85,7 +85,7 @@ Invoice +type-def
 		net:: =($sum(_children.amount))
 		gross:: =(net * 1.25)
 		code:: ~("INV-" & $seq(3))
-Task +type-def
+Task +ord-type
 	name:: task
 	fields::
 		due::
@@ -94,14 +94,14 @@ Task +type-def
 		thisweek:: =(due in $date("this-week"))
 		priority::
 			valid:: =($value in ["low", "medium", "high"])
-Plant +type-def
+Plant +ord-type
 	name:: plant
 	fields::
 		watered::
 		every::
 		next:: =($date(watered, every))
 		thirsty:: =(next <= $today())
-Person +type-def
+Person +ord-type
 	name:: person
 	fields::
 		_id:: ~$slug(_label)
