@@ -66,10 +66,10 @@ State `done`, label `Send mapping draft to [[Anna]] #urgent`, field `due`, type 
 
 ## Types and references
 
-A type is defined by a `+type-def` node with a `name` field, in any file, usually the workspace file. Its `fields::` list the type's fields, and a field whose `options` name a type, as `+person`, holds references to nodes of that type: a plain value is enough.
+A type is defined by a `+ord-type` node with a `name` field, in any file, usually the workspace file. Its `fields::` list the type's fields, and a field whose `options` name a type, as `+person`, holds references to nodes of that type: a plain value is enough.
 
 ```
-Task +type-def
+Task +ord-type
 	name:: task
 	fields::
 		owner::
@@ -86,8 +86,8 @@ Call the venue +task
 - A field on the type with a formula, `total:: =(a + b)`, is calculated: every node of the type has it, and it is never written on them. Editors show it under the node as `total = 2050`. Don't write it on a node.
 - `checkbox:: true` on a type definition gives its nodes a checkbox: a tool that adds the type to a node without a state adds `[ ]`.
 - `nodes::` on a type definition is a template: a tool that adds the type to a node copies the nodes under `nodes::` under it.
-- A field that several types share is defined once, as a `+field-def` node with a `key` field and the field's settings, and listed by its key under each type's `fields::`. It applies on every node that has the field.
-- A tag's color is set by a `+tag-def` node: `Urgent +tag-def` with `name:: urgent` and `color:: red` under it.
+- A field that several types share is defined once, as a `+ord-field` node with a `key` field and the field's settings, and listed by its key under each type's `fields::`. It applies on every node that has the field.
+- A tag's color is set by a `+ord-tag` node: `Urgent +ord-tag` with `name:: urgent` and `color:: red` under it.
 - Keys that start with `_` are system fields, which the marks are short for, such as `_types`, `_id` and `_state`. `type::`, `state::` and `id::` are ordinary fields.
 
 ## Mirrors and searches
