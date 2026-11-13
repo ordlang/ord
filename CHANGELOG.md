@@ -49,6 +49,10 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 - M23: a label's name is the label without the tags at its end; tags in the prose are part of it. A reference matches a node by name, with or without the end tags: `[[Send proof]]` and `[[Send proof #mail]]` name `Send proof #mail #teams`, and `Call #anna about budget #projectX` is named `Call #anna about budget`. Before, a label matched with all its tags or with none, and the tags in the prose were removed too. An editor writes a reference with the name. M22.2 compares names, so `[[Send proof^p1]]` no longer warns. M47 takes a node by its name after its label as written. L19 says references name a node by its name, not with its tags.
 - M41: in formulas, system fields have one-letter aliases: `L` `_label`, `P` `_parent`, `C` `_children`, `S` `_state`, `G` `_tag`, `Y` `_type`, `I` `_id`. A node's own field of that name comes first. LLM guide: no change.
 
+### Wording
+
+- Examples and tests in every spec and the LLM guide use the made-up company Globex Corp (ID `globex`) in place of Ruukki AB. No rule changes.
+
 ### LLM guide
 
 - The brief says an inline key can be several words, `[due date:: …]`, after L5.

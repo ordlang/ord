@@ -71,7 +71,7 @@ More detail, loaded when needed:
 **Choosing the shape:**
 - **Field or prose.** Fields are for values you would sort, filter or compare on: a date, an owner, a status, an amount, a project. Notes and details are child lines: under a meeting, `Ask about the budget`, not `note:: Ask about the budget`.
 - **Inline or field line.** Short values inline, `[due:: 2026-10-20]`; long values and several items as field lines.
-- **Type or tag.** A type (`+task`, "is a task") says what a node is and brings fields. A tag (`#urgent`) is a loose label. A nested tag (`#client/ruukki`) for a family of tags.
+- **Type or tag.** A type (`+task`, "is a task") says what a node is and brings fields. A tag (`#urgent`) is a loose label. A nested tag (`#client/globex`) for a family of tags.
 - **Tags over fields.** When a field has `tags:: true`, write its value as a tag: `#acme` rather than `[project:: acme]`, `#bug` rather than `issue type:: bug`. If the workspace doesn't have `tags:: true` on that field yet, write the field, and suggest adding the setting.
 - **Project tag on typed nodes.** When a type has a `project` reference field with `tags:: true`, give each of its nodes the project's tag, even under the project node: `[ ] Send mapping draft #acme [due:: 2026-10-26] +task`. Use the project's label or ID as written.
 - **Define types when fields repeat.** Several nodes with the same fields get a type. Don't invent a type for a single node.
@@ -113,7 +113,7 @@ Full rules and functions: [references/formulas.md](references/formulas.md).
 
 ## Searches in brief
 
-A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Ruukki AB]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
+A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Globex Corp]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
 
 ```
 Open tasks +search

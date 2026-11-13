@@ -76,7 +76,7 @@ Week 43, 2026 ^journal-2026-W43
 [-] Paint the hallway +task
 	owner:: Anna Smith
 	Second coat on Saturday
-[?] Quote from Ruukki #waiting-on +task
+[?] Quote from Globex #waiting-on +task
 [x] Order tiles for #home/kitchen +task
 [s] Build a sauna +task
 ```
@@ -123,10 +123,10 @@ The task stays where it is. Write nothing under the mirror.
 ## A small database
 
 ```
-Ruukki AB +company
+Globex Corp +company
 	org-nr:: "556123-4567"
 Invoice 42 +invoice
-	client:: Ruukki AB
+	client:: Globex Corp
 	date:: 2026-10-15
 	Design work
 		amount:: 1000
