@@ -11,7 +11,7 @@ Three ways to write one:
 ```
 Open tasks +search
 	query:: +task ![x]
-? [ ] +task #acme
+? [ ] +task #apollo
 Late for Anna +search
 	view:: table
 	sort:: due asc
@@ -35,12 +35,12 @@ A query looks like the node lines it matches.
 |---|---|
 | `+task` | of that type |
 | `#urgent` | with that tag, or one nested under it: `#project` matches `#project/apollo` |
-| `#acme` | also with a field whose `tags:: true` would take the tag: `#acme` matches `[project:: ACME]` when `project` has `options:: +project` and `tags:: true` |
+| `#apollo` | also with a field whose `tags:: true` would take the tag: `#apollo` matches `[project:: Apollo]` when `project` has `options:: +project` and `tags:: true` |
 | `[ ]`, `[-]`, `[?]`, `[x]` | in that built-in state, or with that base: `[x]` also matches custom states based on done |
 | `[r]` | in the custom state whose marker is `r` |
-| `[[Globex Corp]]`, `[[globex]]` | with a field referring to that node, by label or ID |
-| `@Globex Corp` | the node itself; in a scoped query, when it or one of its mirrors is in scope |
-| `[key:: value]` | with a `key` value equal to the text, ignoring case: `[client:: globex]`, `[due:: 2026-10-10]`. A calculated or computed field's value counts: `[total:: 2050]`. Compare with a formula: `=(total > 1000)` |
+| `[[Acme Corp]]`, `[[acme]]` | with a field referring to that node, by label or ID |
+| `@Acme Corp` | the node itself; in a scoped query, when it or one of its mirrors is in scope |
+| `[key:: value]` | with a `key` value equal to the text, ignoring case: `[client:: acme]`, `[due:: 2026-10-10]`. A calculated or computed field's value counts: `[total:: 2050]`. Compare with a formula: `=(total > 1000)` |
 | `=(expr)` | where the JSONata formula is true for the node |
 | `word`, `"two words"` | whose label contains it, ignoring case |
 

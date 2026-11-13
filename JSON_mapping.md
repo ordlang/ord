@@ -5,7 +5,7 @@ Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Spe
 ## 1. Scope
 
 - **J17.** This spec maps JSON to the Core data model (Spec, section 1) and back. Its conventions exist so that JSON → Ord → JSON keeps what it can; section 5 lists what it can't.
-- **J1a.** The mapping is syntactic. It doesn't read label syntax (Spec Part 2) or resolve references, so a reference is the text written, e.g. `client:: globex` gives `"client": "globex"`.
+- **J1a.** The mapping is syntactic. It doesn't read label syntax (Spec Part 2) or resolve references, so a reference is the text written, e.g. `client:: acme` gives `"client": "acme"`.
 - **J18.** A **JSON mapper** reads and writes JSON as this spec says, and passes the tests with the `from-json` and `to-json` options (T4).
 
 ## 2. System keys
@@ -29,7 +29,7 @@ JSON is read by writing it as Ord, as these rules say, and reading the result (S
 
 ```example from-json J8 J9 J10
 {
-  "client": "Globex Corp",
+  "client": "Acme Corp",
   "contacts": ["Anna", "Erik"],
   "lines": [
     { "_label": "Workshop", "hours": "6" },
@@ -39,7 +39,7 @@ JSON is read by writing it as Ord, as these rules say, and reading the result (S
 .
 root
   field "client"
-    "Globex Corp"
+    "Acme Corp"
   field "contacts"
     "Anna"
     "Erik"
@@ -60,7 +60,7 @@ root
   "d": [],
   "e": [null, "y", { "z": "1" }],
   "f": { "primary": "anna" },
-  "g": { "_label": "Globex", "owner": "anna" },
+  "g": { "_label": "Acme", "owner": "anna" },
   "h": [["a", "b"], []],
   "_children": ["Call Anna", { "_label": "Book room", "due": "2026-10-20" }]
 }
@@ -81,7 +81,7 @@ root
       field "primary"
         "anna"
   field "g"
-    node "Globex"
+    node "Acme"
       field "owner"
         "anna"
   field "h"
@@ -217,8 +217,8 @@ matrix::
 →→b
 tag:: a
 tag:: b
-client:: [[Globex Corp]]
-Globex
+client:: [[Acme Corp]]
+Acme
 →Call Anna
 →;
 .
@@ -236,8 +236,8 @@ Globex
   "k": ["x", "Anna", { "primary": "anna" }],
   "matrix": { "_children": ["a", "b"] },
   "tag": ["a", "b"],
-  "client": "[[Globex Corp]]",
-  "_children": [{ "_label": "Globex", "_children": ["Call Anna", ";"] }]
+  "client": "[[Acme Corp]]",
+  "_children": [{ "_label": "Acme", "_children": ["Call Anna", ";"] }]
 }
 ```
 

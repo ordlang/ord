@@ -45,7 +45,7 @@ Urgent +ord-tag
 ```
 
 - `issue type` takes its options as tags: `Login fails #bug +issue` has `issue type:: bug`, not the tag `bug`.
-- `project` takes projects as tags: `[ ] Call Anna #acme +task` refers to `ACME +project`.
+- `project` takes projects as tags: `[ ] Call Anna #apollo +task` refers to `Apollo +project`.
 - `owner:: Anna Smith` is a reference to the `+person` node `Anna Smith`.
 - Add a `.txt` file per topic.
 
@@ -76,7 +76,7 @@ Week 43, 2026 ^journal-2026-W43
 [-] Paint the hallway +task
 	owner:: Anna Smith
 	Second coat on Saturday
-[?] Quote from Globex #waiting-on +task
+[?] Quote from Acme #waiting-on +task
 [x] Order tiles for #home/kitchen +task
 [s] Build a sauna +task
 ```
@@ -123,10 +123,10 @@ The task stays where it is. Write nothing under the mirror.
 ## A small database
 
 ```
-Globex Corp +company
+Acme Corp +company
 	org-nr:: "556123-4567"
 Invoice 42 +invoice
-	client:: Globex Corp
+	client:: Acme Corp
 	date:: 2026-10-15
 	Design work
 		amount:: 1000

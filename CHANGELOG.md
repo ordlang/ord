@@ -51,7 +51,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Wording
 
-- Examples and tests in every spec and the LLM guide use the made-up company Globex Corp (ID `globex`) in place of Ruukki AB. No rule changes.
+- Examples and tests in every spec and the LLM guide use the made-up company Acme Corp (ID `acme`) in place of Ruukki AB; the second company in the C13 and L6 examples is Globex, and the project in the LLM guide's tag examples is Apollo, not ACME. No rule changes.
 
 ### LLM guide
 
