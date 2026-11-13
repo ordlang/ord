@@ -36,7 +36,7 @@ The **dump** is a text form of the data model (Spec, section 1). Read tests comp
 
   The node's other children follow (D3).
 - **D13.** A text item of a field line or an `inline` field that is exactly one value trigger (L20) is followed by the name of the field it stands for, e.g. `"https://example.com" _url`, and a mirror value (L31) by `_mirror`, e.g. `"@Anna" _mirror`. One that is exactly a value form (L21) is followed by the form's name, e.g. `"2026-10-15" date`. Items of `embedded` fields have no name, since the field already says what they are. Any other text item gets the fields read from it as `embedded` field children, as in D12.
-- **D14.** A field read from a form that L19 removes from the label, an inline field or a `_state`, `_types` or `_id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula or tag, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Ruukki AB]]"`.
+- **D14.** A field read from a form that L19 removes from the label, an inline field or a `_state`, `_types` or `_id` trigger, is marked `inline`: a writer moves it (L4), and it means the same as a field line. A field read from a form that stays in the label, a link, URL, formula or tag, is marked `embedded`, since where it is written is part of what the text says. A trigger's item is the value of the inline field it reads as (L6), so a link keeps its brackets, as in `"[[Acme Corp]]"`.
 
 ### A5. Grammar
 
@@ -67,7 +67,7 @@ unescaped = %x20-21 / %x23-5B / %x5D-10FFFF  ; minus what C47 escapes
 These examples are tests (part B).
 
 ```example C13 C16 C29
-client:: Ruukki; Acme
+client:: Acme; Globex
 tags:: a;;b;
 contact::
 →primary:: anna
@@ -80,8 +80,8 @@ a,b
 .
 root
   field "client"
-    "Ruukki"
     "Acme"
+    "Globex"
   field "tags"
     "a"
     "b"

@@ -26,7 +26,7 @@ Version 0.6.0-draft, 2026-11-03. A companion spec to [Ord specification](Ord_Spe
 
   So `Send draft +task` is quoted and `+task` stays text, while `Short row` isn't quoted. An empty cell, or no `_label` column, gives an empty label that is quoted, so a writer writes it `""` (Spec C42).
 - **V9.** Every other column gives each node a field, in column order, whose key is the column name. Its value is the cell, read as a field's value in a text file (Spec, section 9): split into items at `;`, with spans and quotes as there. So an empty cell gives a field without items (C16).
-- **V10.** In a node read from CSV, Part 2 reads only value forms (L21 to L27). Label syntax and value triggers are never read in cells, so `@anna`, `[[Ruukki AB]]`, `https://example.com` and `=sum(x)` are text.
+- **V10.** In a node read from CSV, Part 2 reads only value forms (L21 to L27). Label syntax and value triggers are never read in cells, so `@anna`, `[[Acme Corp]]`, `https://example.com` and `=sum(x)` are text.
 - **V11.** A record with fewer cells than the header gets empty cells for the rest. Cells after the last column are left out. A second `_label` column is an ordinary field, and a column whose name is empty is left out. Each of these gives a warning.
 
 ```example from-csv labels V3 V4 V6 V7 V8 V9 V10

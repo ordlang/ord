@@ -29,7 +29,7 @@ Project Apollo
 - An **inline field** sits on the node line in brackets: `Call Anna [due:: 2026-10-15]`. It means the same as a field line under the node. The value runs to the `]`, so it can have spaces: `[note:: two words]`. The key can be several words with single spaces between them, `[due date:: 2026-10-15]`; any other key is quoted, `["Project lead (2026)":: Anna]`.
 
 ```
-Invoice Ruukki +invoice
+Invoice Acme +invoice
 	period:: 2026-Q3
 	rate:: 1200
 	Project lead:: Anna

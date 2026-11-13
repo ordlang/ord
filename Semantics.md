@@ -227,7 +227,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 - **M22.** A reference names a node by ID, by label, or both, as in L10. A plain text value that is a reference (M21), in a field line, an inline field or a cell, is read as inside `[[` and `]]`, as a `_mirror` value is: `follows:: Send proof^p1` names the node by ID and label, as `[[Send proof^p1]]` does, and `follows:: ^p1` by ID alone. `$node()` (M74) reads its text so too. It resolves:
   - by ID alone (`^x1`, or ID and label): the node with that ID. If none has it, the error `M22.1`. The label is never a fallback; when it no longer matches the node (M23), the warning `M22.2`.
   - by label alone (`"Anna Smith"`, or a quoted link): the node with that label, as in M23.
-  - by text that could be either (`[[anna]]`, `client:: ruukki`): the node with that ID, or else the node with that label. When it is one node's ID and another node's label, the ID wins, with the warning `M22.3`.
+  - by text that could be either (`[[anna]]`, `client:: acme`): the node with that ID, or else the node with that label. When it is one node's ID and another node's label, the ID wins, with the warning `M22.3`.
 - **M23.** A label matches a node when their names are equal, ignoring spaces and tabs at either end and letter case. A label's **name** is the label without the tags (L13) at its end: each tag followed only by spaces, tabs and other tags is removed, with the spaces and tabs before it. Tags elsewhere are part of the name, and a label that is only tags is its own name. So `Buy milk #urgent` is named `Buy milk`, and `[[Buy milk]]`, `[[Buy milk #urgent]]` and `[[Buy milk^x1]]` name it; `Call #anna about budget #projectX` is named `Call #anna about budget`, which `[[Call about budget]]` doesn't match. A label with formulas (L12) matches by its name as written and by its name with each formula's result in its place (M11): `Parent =("bad")` matches both `[[Parent =("bad")]]` and `[[Parent bad]]`. The results are those of the last evaluation; when they change a name, references are resolved again and the formulas evaluated again, at most twice, so a name that depends on the references it resolves settles. An editor that writes a reference to a node writes its name. Letter case is compared by mapping both to lowercase with Unicode's default case mapping (not locale-specific); there is no other normalization, so `é` written as one character or as `e` and a combining accent are different labels. In a reference field (M24), only nodes of its types match. No match is the warning `M23.1`; several matches is the warning `M23.2`, and the reference doesn't resolve.
 - **M24.** A field is a **reference field** when its field definition, a type's (M36) or a field definition node (M55), has an `options` setting (M46) that names one or more types, each as an item `+name`, as in `options:: +person` or `options:: +person; +company`. A plain value of a reference field is then a reference to a node of those types, unless it equals one of the setting's other options, ignoring letter case, which stays text: with `options:: nobody; +person`, `owner:: nobody` is text and `owner:: Anna` a reference. Any other field's plain values are text, even when they name a node; a tool may suggest adding `options:: +name`, but doesn't resolve them.
 - **M25.** References may form cycles. They are links, not ownership or dependencies.
@@ -412,18 +412,18 @@ Tests work as in the [Test format](Test_format.md), part B, with one more option
 
 ```example graph M8 M18 M20 M21 M22 M23
 --- a.ord
-Ruukki AB +company ^ruukki
+Acme Corp +company ^acme
 Anna +person
-Call [[Anna]] about [[Ruukki AB]]
-	client:: ruukki
+Call [[Anna]] about [[Acme Corp]]
+	client:: acme
 .
 file "a.ord"
-  node "Ruukki AB" @1
-    id "ruukki"
+  node "Acme Corp" @1
+    id "acme"
     type "company"
   node "Anna" @2
     type "person"
-  node "Call [[Anna]] about [[Ruukki AB]]" @3
+  node "Call [[Anna]] about [[Acme Corp]]" @3
     ref "_link" -> a.ord:2
     ref "_link" -> a.ord:1
 ```

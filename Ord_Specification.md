@@ -623,7 +623,7 @@ Plan [_tags:: x] +task
 
 ## 13. Inline fields
 
-- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_types:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20), and is a list as a field's value is (C16): `[x:: a;]` is a list of one item and `[x:: ;]` an empty one. A writer keeps such a field inline rather than as a trigger (L4). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Ruukki AB]]]`, `[net:: =(gross * 0.8)]`.
+- **L5.** `[key:: value]` is an **inline field**: a bracket (C51) that holds a key, `::` and a value. The key is one or more names (L3) separated by single spaces, as in `[due date:: value]`, the first of them with a `_` before it for a system field (M11), as in `[_types:: task]`; or a quoted string (C21) for any other key, as in `["Project lead (2026)":: value]`. Spaces and tabs around the `::` are allowed. The value is the text after them up to the bracket's closing `]`, without trailing spaces and tabs, so it can hold spaces. It is split into items like a field value (C15 to C20), and is a list as a field's value is (C16): `[x:: a;]` is a list of one item and `[x:: ;]` an empty one. A writer keeps such a field inline rather than as a trigger (L4). An empty value is not an inline field. A quoted value is text and never a reference, even in a reference field; a reference is written as a link. An inline field can start anywhere in a label and ends at its `]`. A `]` in the value needs a matching `[` before it, or goes in backticks. Examples: `[due:: 2026-10-10]`, `[due date:: 2026-10-10]`, `[note:: two words]`, `["Project lead":: anna]`, `[parts:: a; b]`, `[client:: [[Acme Corp]]]`, `[net:: =(gross * 0.8)]`.
 
 ```example labels L5
 Meet [due date:: 2026-10-21] [_types:: task] [Project lead:: anna]
@@ -932,19 +932,19 @@ root
 ```
 
 ```example labels L6 L10 L20 D12 D13 D14
-Call Anna about [[Ruukki AB]] +task [client:: [[Ruukki AB]]] [due:: 2026-10-20]
+Call Anna about [[Acme Corp]] +task [client:: [[Acme Corp]]] [due:: 2026-10-20]
 See [[anna-47xu]], [[Anna Smith^anna-47xu]] and [[^x1]]
-client:: [[Ruukki AB]]; see [[Acme]] now
+client:: [[Acme Corp]]; see [[Globex]] now
 .
 root
-  node "Call Anna about [[Ruukki AB]] +task [client:: [[Ruukki AB]]] [due:: 2026-10-20]"
-    label "Call Anna about [[Ruukki AB]]"
+  node "Call Anna about [[Acme Corp]] +task [client:: [[Acme Corp]]] [due:: 2026-10-20]"
+    label "Call Anna about [[Acme Corp]]"
     field "_link" embedded
-      "[[Ruukki AB]]"
+      "[[Acme Corp]]"
     field "_types" inline
       "task"
     field "client" inline
-      "[[Ruukki AB]]" _link
+      "[[Acme Corp]]" _link
     field "due" inline
       "2026-10-20" date
   node "See [[anna-47xu]], [[Anna Smith^anna-47xu]] and [[^x1]]"
@@ -955,10 +955,10 @@ root
     field "_link" embedded
       "[[^x1]]"
   field "client"
-    "[[Ruukki AB]]" _link
-    "see [[Acme]] now"
+    "[[Acme Corp]]" _link
+    "see [[Globex]] now"
       field "_link" embedded
-        "[[Acme]]"
+        "[[Globex]]"
 ```
 
 ## 18. Value forms

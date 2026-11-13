@@ -42,7 +42,7 @@ More detail, loaded when needed:
   - A child field line whose key isn't a setting (`value`, `valid`, `options`, `tags`, `icon`, `description`) is a nested field, written under its field. A formula in a nested field sees the node as `$`, at any depth (M41).
   - Changing a type's fields changes its nodes (M84): a new field is written on each node, a changed `value` rewrites the nodes that still have the old one, and a key renamed in place is renamed on each node, keeping its value. A changed formula changes no file. When you edit a type definition in a file, make these edits too.
   - `options` lists the values the field is meant to hold (another value is the warning M46). An item `+name` makes it a **reference field** to nodes of that type (M24): `options:: +person`.
-  - `tags:: true` lets the options be written as tags (M47): with `options:: bug; feature`, `Crash +issue #bug` has `issue type:: bug`. On a reference field, a tag names a node of the type by its label as written, then by its name (the label without the tags at its end), then by ID: `#acme` on a task refers to `ACME +project`.
+  - `tags:: true` lets the options be written as tags (M47): with `options:: bug; feature`, `Crash +issue #bug` has `issue type:: bug`. On a reference field, a tag names a node of the type by its label as written, then by its name (the label without the tags at its end), then by ID: `#apollo` on a task refers to `Apollo +project`.
   - `valid` is a check, `=expr` with `$value`; a failure is the error M40.
   - A field used by several types can be a `+ord-field` node with a `key`, defined once for the workspace; a type then lists it by key with no value (M58).
 - **Value types are never declared.** They are inferred from the values.
@@ -71,9 +71,9 @@ More detail, loaded when needed:
 **Choosing the shape:**
 - **Field or prose.** Fields are for values you would sort, filter or compare on: a date, an owner, a status, an amount, a project. Notes and details are child lines: under a meeting, `Ask about the budget`, not `note:: Ask about the budget`.
 - **Inline or field line.** Short values inline, `[due:: 2026-10-20]`; long values and several items as field lines.
-- **Type or tag.** A type (`+task`, "is a task") says what a node is and brings fields. A tag (`#urgent`) is a loose label. A nested tag (`#client/ruukki`) for a family of tags.
-- **Tags over fields.** When a field has `tags:: true`, write its value as a tag: `#acme` rather than `[project:: acme]`, `#bug` rather than `issue type:: bug`. If the workspace doesn't have `tags:: true` on that field yet, write the field, and suggest adding the setting.
-- **Project tag on typed nodes.** When a type has a `project` reference field with `tags:: true`, give each of its nodes the project's tag, even under the project node: `[ ] Send mapping draft #acme [due:: 2026-10-26] +task`. Use the project's label or ID as written.
+- **Type or tag.** A type (`+task`, "is a task") says what a node is and brings fields. A tag (`#urgent`) is a loose label. A nested tag (`#client/acme`) for a family of tags.
+- **Tags over fields.** When a field has `tags:: true`, write its value as a tag: `#apollo` rather than `[project:: apollo]`, `#bug` rather than `issue type:: bug`. If the workspace doesn't have `tags:: true` on that field yet, write the field, and suggest adding the setting.
+- **Project tag on typed nodes.** When a type has a `project` reference field with `tags:: true`, give each of its nodes the project's tag, even under the project node: `[ ] Send mapping draft #apollo [due:: 2026-10-26] +task`. Use the project's label or ID as written.
 - **Define types when fields repeat.** Several nodes with the same fields get a type. Don't invent a type for a single node.
 - **References, not copies.** Link to a node, or mirror it, rather than copying its text. Reference by label when it is unique; give the target an ID and reference that when it isn't, or may change.
 - **No IDs by default.** Add `^id` only when a reference by label wouldn't resolve or a tool must address the node by ID. Journal nodes always get their `^journal-…` ID.
@@ -113,12 +113,12 @@ Full rules and functions: [references/formulas.md](references/formulas.md).
 
 ## Searches in brief
 
-A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Ruukki AB]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
+A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Acme Corp]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
 
 ```
 Open tasks +search
 	query:: +task ![x]
-? [ ] +task #acme
+? [ ] +task #apollo
 ```
 
 Views, fields and the rest: [references/queries.md](references/queries.md).
