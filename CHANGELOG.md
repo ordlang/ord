@@ -55,6 +55,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### LLM guide
 
+- New fields are field lines or tags, never inline fields, whatever the value's length: GUIDE.md's "Field lines, not inline fields" replaces "Inline or field line", and the Tasks recipe, the examples, the `Call note::` gotcha and the checklist follow. Inline fields keep their meaning (L5) and stay where they are in existing files. The brief is unchanged.
 - The brief says an inline key can be several words, `[due date:: …]`, after L5.
 - CI: a change to a normative spec must change `LLM_guide/` or say why not, with a line `LLM guide: no change` in the changelog entry it adds.
 - Formulas, diagnostics and the checklist: a formula may sit on a node's field line, replacing its type's (M39); M39 is a formula on a setting. Queries: a search's `columns` is `fields`. Queries also say that system fields keep their `_` keys in terms, filters and `fields::`. A search's `footer` is a formula over the results (M64), no longer M39. `sort` takes several conditions, with a value format.
