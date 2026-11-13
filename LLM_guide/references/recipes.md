@@ -58,7 +58,8 @@ Week 43, 2026 ^journal-2026-W43
 	Wednesday 21, 2026 ^journal-2026-10-21
 		Called the plumber
 	Thursday 22, 2026 ^journal-2026-10-22
-		[ ] Buy tiles [due:: 2026-10-24] +task
+		[ ] Buy tiles +task
+			due:: 2026-10-24
 		Meeting with Anna +meeting
 			Agreed on the kitchen layout
 			[ ] Send drawings to Anna +task
@@ -72,7 +73,8 @@ Week 43, 2026 ^journal-2026-W43
 ## Tasks
 
 ```
-[ ] Book electrician #urgent [due:: 2026-10-30] +task
+[ ] Book electrician #urgent +task
+	due:: 2026-10-30
 [-] Paint the hallway +task
 	owner:: Anna Smith
 	Second coat on Saturday
@@ -83,7 +85,7 @@ Week 43, 2026 ^journal-2026-W43
 
 - Complete: `[ ]` to `[x]`. Start: `[-]`. Waiting: `[?]`. Custom: the type's marker (`[s]`).
 - Tags go in the text where they read naturally and stay part of the label. `#home/kitchen` is a nested tag: `? #home` finds it too.
-- A due date goes inline when short, as a field line when the node already has field lines.
+- A due date is a field line under the task, before its notes.
 - Notes about the task are child lines, not fields.
 - Open tasks anywhere: `? +task ![x]`.
 
@@ -100,7 +102,8 @@ Kitchen planning #home +meeting
 	Decisions
 		Keep the old cabinets #decision
 	Actions
-		[ ] Erik gets two quotes [due:: 2026-10-29] +task
+		[ ] Erik gets two quotes +task
+			due:: 2026-10-29
 			owner:: Erik Berg
 		[ ] Anna sends the drawings +task
 			owner:: Anna Smith

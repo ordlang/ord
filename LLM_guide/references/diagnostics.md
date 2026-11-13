@@ -69,7 +69,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 These read fine but mean something else. Check for them yourself; the Gotchas in the guide have more.
 
 - `due: 2026-10-10` (one colon) is a node, not a field.
-- `Call note:: two words` makes the whole line a field with the key `Call note`. Write `Call [note:: two words]`.
+- `Call note:: two words` makes the whole line a field with the key `Call note`. Write `Call` with `note:: two words` on a field line under it.
 - `Use std::vector` in prose is a field line; write ``Use `std::vector` ``.
 - `=$sum(x)` is text; write `=($sum(x))`.
 - `@anna` in a label is text.

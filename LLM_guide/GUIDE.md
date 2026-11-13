@@ -70,10 +70,10 @@ More detail, loaded when needed:
 
 **Choosing the shape:**
 - **Field or prose.** Fields are for values you would sort, filter or compare on: a date, an owner, a status, an amount, a project. Notes and details are child lines: under a meeting, `Ask about the budget`, not `note:: Ask about the budget`.
-- **Inline or field line.** Short values inline, `[due:: 2026-10-20]`; long values and several items as field lines.
+- **Field lines, not inline fields.** Write a new field as a field line under its node, before the node's other child lines: `due:: 2026-10-20`, even for a short value. An inline field, `[due:: 2026-10-20]`, means the same and is read as before, but long node lines are hard to read and edit, so don't write new ones. An inline field already in a file stays where it is: change its value there. A field with `tags:: true` is a tag instead (below).
 - **Type or tag.** A type (`+task`, "is a task") says what a node is and brings fields. A tag (`#urgent`) is a loose label. A nested tag (`#client/acme`) for a family of tags.
-- **Tags over fields.** When a field has `tags:: true`, write its value as a tag: `#apollo` rather than `[project:: apollo]`, `#bug` rather than `issue type:: bug`. If the workspace doesn't have `tags:: true` on that field yet, write the field, and suggest adding the setting.
-- **Project tag on typed nodes.** When a type has a `project` reference field with `tags:: true`, give each of its nodes the project's tag, even under the project node: `[ ] Send mapping draft #apollo [due:: 2026-10-26] +task`. Use the project's label or ID as written.
+- **Tags over fields.** When a field has `tags:: true`, write its value as a tag: `#apollo` rather than `project:: apollo`, `#bug` rather than `issue type:: bug`. If the workspace doesn't have `tags:: true` on that field yet, write the field, and suggest adding the setting.
+- **Project tag on typed nodes.** When a type has a `project` reference field with `tags:: true`, give each of its nodes the project's tag, even under the project node: `[ ] Send mapping draft #apollo +task`, with `due:: 2026-10-26` under it. Use the project's label or ID as written.
 - **Define types when fields repeat.** Several nodes with the same fields get a type. Don't invent a type for a single node.
 - **References, not copies.** Link to a node, or mirror it, rather than copying its text. Reference by label when it is unique; give the target an ID and reference that when it isn't, or may change.
 - **No IDs by default.** Add `^id` only when a reference by label wouldn't resolve or a tool must address the node by ID. Journal nodes always get their `^journal-…` ID.
@@ -128,7 +128,7 @@ Views, fields and the rest: [references/queries.md](references/queries.md).
 Things that read fine but mean something else, or that models get wrong. Add to this list, with the version, when a new one turns up.
 
 - `due: 2026-10-10` (one colon) is a node, not a field. (0.4)
-- `Call note:: two words` makes the whole line a field with the key `Call note`. Write `Call [note:: two words]`. (0.4)
+- `Call note:: two words` makes the whole line a field with the key `Call note`. Write `Call` with `note:: two words` on a field line under it. (0.4)
 - `summary:: we agreed X; then Y` is two items. Quote it, or make it a child line. (0.4)
 - `+urgent` is a type and `#task` a tag: the reverse of Ord before 0.5. (0.5)
 - `[defines:: task]`, `target::`, `claims::`, `sigil::`, `search::` and `?? query` are gone. Write `+ord-type` with `name::`, `options:: +type`, `tags:: true`, a link, `+search` with `query::`, and `? query`. (0.6)
@@ -140,7 +140,7 @@ Things that read fine but mean something else, or that models get wrong. Add to 
 
 ## Before you finish
 
-- Every new field line has `::` and a space, every inline field is in brackets, and no prose has a bare `::`.
+- Every new field is a field line or a tag, not an inline field; every new field line has `::` and a space, and no prose has a bare `::`.
 - Indentation matches the file's, and each new line sits under the right parent.
 - Node lines keep the fixed order: state, label with its tags, inline fields, types, ID.
 - Values with `tags:: true` are written as tags, and typed nodes with a project field carry their project's tag.
