@@ -234,7 +234,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 ## 6a. Mirrors
 
-- **M48.** A node with a `_mirror` field, from a mirror line `@ Label` ([Ord specification](Ord_Specification.md) L30), an inline field or a field line, is a **mirror** of the node its reference resolves to (M22), its **source**. A mirror adds nothing to its source: the source keeps its one owner (M13), its fields and its children. The mirror is a graph node of its own, owned where it is written, with an empty label. A mirror whose reference doesn't resolve has that reference's diagnostic and no source. A mirror can't itself be a source, since it has no label or ID to be named by.
+- **M48.** A node with a `_mirror` field, from a mirror line `@ Label` ([Ord specification](Ord_Specification.md) L30), an inline field or a field line, is a **mirror** of the node its reference resolves to (M22), its **source**. A mirror adds nothing to its source: the source keeps its one owner (M13), its fields and its children. The mirror is a graph node of its own, owned where it is written, with an empty label. A mirror whose reference doesn't resolve has that reference's diagnostic and no source. A mirror can't itself be a source, since it has no label or ID to be named by. A reference that ends in an Ord or CSV file's extension, `.ord`, `.txt` or `.csv`, ignoring letter case, is a **path** instead: the mirror's source is that file's root node (M13), so it shows the whole file, its top-level nodes as the source's children. The path is resolved as a path link is (L14), relative to the folder of the file the mirror is in, so `@ plan.ord` is a file beside it, `@ notes/plan.ord` one in a folder under it and `@ ../plan.ord` one in the folder above; the extension is required. A path that names no file of the workspace is the warning `M48.1`, and the mirror has no source. A file mirrored in itself, at any depth, is under its own source (M50.1). An editor shows the file's name in the mirror's place, and edits through it change the file's lines; it suggests the workspace's other files, by their paths, when `@` is typed.
 - **M49.** **A mirror stands for its source.** A mirror that is a field's node item (C13) is a reference (M21) from the field's node to the source, so `attendees::` with `@ Anna Smith` under it means what `attendees:: @Anna Smith` and `attendees:: [[Anna Smith]]` do, and a reference field's options (M24, M46) check the source. A mirror that is a child stands for its source in its owner's `_children` (M16), in formulas (M41) too: a project's `$sum(_children.hours)` counts the tasks it mirrors. A source mirrored more than once under one owner is one child, at its first place.
 - **M50.** A mirror under its own source, at any depth, is the warning `M50.1`. It stands for nothing in `_children`, and an editor shows the source's line but doesn't unfold it. Lines under a mirror are the warning `M50.2`, since a mirror's children are its source's. They are kept as the mirror's own, and an editor may offer to move them into the source.
 
@@ -349,8 +349,8 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 This section is a draft outline, like section 8.
 
 - **M60.** A node with the type `search` (M53) is a **search node**, whether written as `+search` or as an inline search `? query` ([Ord specification](Ord_Specification.md) L28). Its settings are `query` and the view settings (M64). Its query is the value of `query`, or, written as `query::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `query` field, such as `?` and a `query::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
-- **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, a formula `=(…)`, or a word, which matches labels.
-- **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), or, when a field of one of its types with `tags:: true` (M47) would take the tag, when that field's value is what the tag would give it (with `tags:: true` and `options:: +project` on `project`, `#LU` matches a task with `project:: LU` as well as one written `#LU`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a computed field's (M39) and a calculated field's (M87) values included, as the text their results are written as (a node by its ID or name), a formula when its result is true, and a word when its label contains it, ignoring letter case.
+- **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, a formula `=(…)`, or a word, which matches a node's text (M62).
+- **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), or, when a field of one of its types with `tags:: true` (M47) would take the tag, when that field's value is what the tag would give it (with `tags:: true` and `options:: +project` on `project`, `#LU` matches a task with `project:: LU` as well as one written `#LU`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a computed field's (M39) and a calculated field's (M87) values included, as the text their results are written as (a node by its ID or name), a formula when its result is true, and a word when its label contains it, ignoring letter case, or else its ID, one of its types, one of its tags, or one of its fields' keys or values as written does, system fields other than `_tags` left out: `be086` matches `Mentions be086`, `Event ^BE086` and a node with `ref:: BE086`. An editor that lists a search's results without a `sort` setting lists the nodes whose labels hold its words first, then the others, each in file order.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
 - **M64.** A search node's view settings (`view`, `fields`, `sort`, `group`, `footer`, `computed`) are implementation, like what they show. A `footer` holds `=expr`, evaluated with the list of the results' nodes as `$`. A `sort` holds conditions as items (C15), applied in turn, each a field key, then optionally `asc` or `desc` and then optionally `number` (or `num`), `text` or `date`; the defaults are `asc` and `text`. What `computed` holds is still to be specified here. Like a `footer`, it is shown with the results, nothing else reads it, and it is never written into a file (M86).
 - **M65.** A query matches a node in its own place, never a mirror (M48), so a node mirrored in three places is one result. The term `@` and a reference, written as in a mirror line (L30) but with no space after `@`, matches the node the reference resolves to. In a query scoped to a file or to a node's children, that node matches when it or one of its mirrors is in the scope. Scopes are still to be specified.
@@ -388,6 +388,7 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M44.2` | error | A computed field depends on a cycle | the formula |
 | `M44.3` | error | A formula fails to evaluate | the formula |
 | `M46` | warning | A value is none of the field's `options` | the value, or the node's line for a calculated field (M87) |
+| `M48.1` | warning | A mirror's path names no file of the workspace | the mirror's `_mirror` value |
 | `M50.1` | warning | A mirror is under its own source | the mirror's `_mirror` value |
 | `M50.2` | warning | A line is under a mirror | the line |
 | `M55.1` | error | A field is defined by two field definition nodes | the second `key` field |
@@ -625,4 +626,24 @@ file "a.ord"
       node "Stray note" @5
 ! M50.1 a.ord:3:3
 ! M50.2 a.ord:5:3
+```
+
+A mirror of a file (M48): its source is the file's root, its path resolved from the mirror's folder.
+
+```example graph M48
+--- a.ord
+Today
+	@ notes/plan.ord
+	@ missing.ord
+--- notes/plan.ord
+Top
+.
+file "a.ord"
+  node "Today" @1
+    node "" @2
+      ref "_mirror" -> notes/plan.ord
+    node "" @3
+file "notes/plan.ord"
+  node "Top" @1
+! M48.1 a.ord:3:2
 ```
