@@ -22,6 +22,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M48: a mirror of a file. A mirror's reference that ends in `.ord`, `.txt` or `.csv` is a path, resolved as a path link (L14) from the mirror's folder, and its source is that file's root node: `@ notes/plan.ord` shows the whole file. The extension is required. A path to no file of the workspace is the new warning `M48.1`. Editors suggest files after `@`. LLM guide: GUIDE.md and diagnostics.md say so.
 - M53: the system types `type-def`, `tag-def` and `field-def` are renamed `ord-type`, `ord-tag` and `ord-field`: `Task +ord-type` with `name:: task`, `Urgent +ord-tag`, `Due +ord-field`. The old names are no longer system types. `search` keeps its name. Every spec and the LLM guide use the new names.
 - M53, M88: a new system type, `ord-workspace`. Its node in the workspace file names the workspace (`name`), shown by editors in place of its folder's name; a second one, or one in another file, is the new warning `M88.1`.
 - M89: workspace properties. `pinned files::` and `pinned nodes::` field lines anywhere in the workspace file list the files and nodes an editor shows first, as pinned, each value a child line: a path from the workspace folder, or a reference. They are not settings.

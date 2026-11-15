@@ -45,6 +45,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M44.1`, `M44.2` | A computed field is in, or depends on, a cycle | Break the cycle in the formulas, on the nodes and their types |
 | `M44.3` | A formula fails, e.g. a generator outside a `~` formula | Fix the formula |
 | `M46` | A value is none of the field's `options` | Use an option, or add it to `options` |
+| `M48.1` | A mirror's path names no file | Fix the path, relative to the file the mirror is in, with its extension |
 | `M50.1` | A mirror under its own source | Move or remove the mirror |
 | `M50.2` | Lines under a mirror | Move them into the source |
 | `M55.1` | Two `+ord-field` nodes for one key | Merge them |
