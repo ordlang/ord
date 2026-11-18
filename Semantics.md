@@ -359,6 +359,8 @@ This section is a draft outline, like section 8.
 
 Codes, severities and positions work as in the Spec (C35 to C37). Positions are in the file the diagnostic is about.
 
+- **M90.** **Paths are not checked for portability.** A path in a file, a path link (L14), a mirror's path (M48) or a `pinned files` value (M89), gets no diagnostic for being one that may not work on another machine: an absolute path (`/Users/anna/plan.ord`, `C:\notes`), one starting with `~/`, one with `\` between folders, one that leads outside the workspace, or one whose letter case differs from the file's name on a file system that ignores case. Whether a path names a file is decided where the workspace is read, as it is: a mirror's path that names no file there is still `M48.1`, and nothing else is given. An editor may offer to rewrite a path, but not as a problem.
+
 | Code | Severity | Given when | Position |
 |---|---|---|---|
 | `M10` | error | A node has a second `_label`, `_id`, `_state` or `_mirror` value | the second value |
