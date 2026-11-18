@@ -22,6 +22,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M90: paths aren't checked for portability. A path link, a mirror's path or a `pinned files` value gets no diagnostic for being absolute, starting with `~/`, using `\`, leading outside the workspace or differing in letter case from the file's name; only a mirror's path that names no file where the workspace is read is `M48.1`, as before.
 - M61, M62: a word in a query matches a node whose label contains it, as before, or whose ID, types, tags, or fields' keys or values do (system fields other than `_tags` left out), ignoring letter case, so `be086` finds `Event ^BE086` and a node with `ref:: BE086`. Editors list label matches first when the search has no `sort`.
 - M48: a mirror of a file. A mirror's reference that ends in `.ord`, `.txt` or `.csv` is a path, resolved as a path link (L14) from the mirror's folder, and its source is that file's root node: `@ notes/plan.ord` shows the whole file. The extension is required. A path to no file of the workspace is the new warning `M48.1`. Editors suggest files after `@`. LLM guide: GUIDE.md and diagnostics.md say so.
 - M53: the system types `type-def`, `tag-def` and `field-def` are renamed `ord-type`, `ord-tag` and `ord-field`: `Task +ord-type` with `name:: task`, `Urgent +ord-tag`, `Due +ord-field`. The old names are no longer system types. `search` keeps its name. Every spec and the LLM guide use the new names.
