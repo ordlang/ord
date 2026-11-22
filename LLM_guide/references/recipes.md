@@ -19,6 +19,7 @@ Task +ord-type
 		project::
 			options:: +project
 			tags:: true
+			initialize:: true
 		late:: =($exists(due) and due < $today() and _state != "done")
 Person +ord-type
 	name:: person
@@ -46,6 +47,7 @@ Urgent +ord-tag
 
 - `issue type` takes its options as tags: `Login fails #bug +issue` has `issue type:: bug`, not the tag `bug`.
 - `project` takes projects as tags: `[ ] Call Anna #apollo +task` refers to `Apollo +project`.
+- `project` has `initialize:: true`, so a task given `+task` under `Apollo +project` gets `project:: Apollo` written under it (M91). Elsewhere it gets `project::`, to fill in or replace with the project's tag.
 - `owner:: Anna Smith` is a reference to the `+person` node `Anna Smith`.
 - Add a `.txt` file per topic.
 

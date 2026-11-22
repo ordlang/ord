@@ -4,6 +4,12 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 **Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35, M38, J1.1.
 
+## Unreleased
+
+### Semantics
+
+- M91: a field definition's `initialize:: true` lets a field start with a value from the node's owners. When a tool writes the field on a node (M37) and the definition's `value`, or a one-time formula's result, leaves it without items, the field gets the value of the nearest owner (M13) that has the field's key, calculated fields (M87) included, or, on a reference field (M24), a reference to the nearest owner of one of its types. Written once as a field line, also with `tags:: true`, and then the node's own; mirrors don't count as owners. `initialize` on a calculated field is the new warning `M91.1`. M56 lists the setting. No test: the test format has no form for a tool's edits. LLM guide: GUIDE.md, recipes.md and diagnostics.md say so.
+
 ## 0.7.0-draft (2026-11-22)
 
 ### Spec
