@@ -1,6 +1,6 @@
 # Writing Ord: a guide for LLMs
 
-Version 0.6.0-draft, 2026-11-03.
+Version 0.7.0-draft, 2026-11-22.
 
 This guide is informative. It tells a language model, or a tool that writes for one, how to read and write Ord so that its edits look like something a careful person typed. It follows the specs of the same version: [Ord specification](../Ord_Specification.md) (rules C, L, F), [Semantics](../Semantics.md) (rules M), [CSV mapping](../CSV_mapping.md) (rules V) and [JSON mapping](../JSON_mapping.md). Rule IDs are given so you can look them up. Where this guide and a spec disagree, the spec wins, and the guide has a bug.
 

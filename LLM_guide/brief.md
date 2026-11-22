@@ -1,6 +1,6 @@
 # Ord in brief
 
-Version 0.6.0-draft, 2026-11-03.
+Version 0.7.0-draft, 2026-11-22.
 
 > Ord is a plain-text outline format. One line is one node, indentation makes the tree, and `key:: value` lines make the outline structured data. Files are UTF-8 text, usually `.txt` in a workspace (a folder with an `Ord.workspace` file) or `.ord` anywhere. This page is enough to read and write Ord correctly.
 
