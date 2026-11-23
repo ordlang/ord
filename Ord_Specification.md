@@ -809,7 +809,7 @@ root
 ## 17. Label and items
 
 - **L19.** A node's **label** is its line without the list marker, the `_state` trigger, inline fields, and the `_types` and `_id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `_label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it by its name, the label without the tags at its end ([Semantics](Semantics.md) M23): `Call #anna to decide on budget`. Editors may render them differently.
-- **L20.** A field item that is exactly one value trigger (L2), or a mirror value (L31), is that value. Any other item is text, and the triggers in it are read as in a label.
+- **L20.** A field item that is exactly one value trigger (L2), or a mirror value (L31), is that value; trailing spaces and tabs, which the item keeps (C8), don't count, so `=(a * 2) ` is a formula. Any other item is text, and the triggers in it are read as in a label.
 
 ```example labels C36 L3 L6 L7 L8 L11 L13 L16 L19
 - [-] Buy milk +errand #urgent ^m1lk
@@ -963,7 +963,7 @@ root
 
 ## 18. Value forms
 
-- **L21.** A text item, of a field or an inline field (L5), that is exactly one of the forms below is a value of that form. Value forms are read only there: never in labels, keys or quoted text (L1). The text stays as written; a form is only how it reads. There are no other forms.
+- **L21.** A text item, of a field or an inline field (L5), that is exactly one of the forms below, trailing spaces and tabs aside (C8), is a value of that form. Value forms are read only there: never in labels, keys or quoted text (L1). The text stays as written; a form is only how it reads. There are no other forms.
 - **L22.** `number`: an optional `-`, then `0` or a digit from 1 to 9 followed by any digits, then optionally `.` and one or more digits. So `-12`, `0` and `9.5` are numbers, and `007`, `+46`, `1e3`, `1.`, `.5` and `1 000` are text. A year such as `2026` is a number.
 - **L27.** `boolean`: `true` or `false`, in any letter case, so `True` and `FALSE` are booleans too. `yes` and `no` are text, and `1` and `0` are numbers.
 - **L23.** `date`: `YYYY-MM-DD`, a day that exists in the Gregorian calendar, e.g. `2026-10-15`.

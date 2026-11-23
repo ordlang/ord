@@ -6,7 +6,14 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ## Unreleased
 
+### Spec
+
+- L20, L21: trailing spaces and tabs, which a field item keeps (C8), don't stop it being one value trigger or value form: `b:: =(a * 2) `, `a:: 2 `, `due:: 2026-10-10 ` and `x:: [[Anna]] ` are a formula, a number, a date and a link, where before they were text.
+
 ### Semantics
+
+- M11: the system field `_file`, the path of the node's file, relative to the workspace folder. Writing it is the new error `M11.2`. Its system field definition is `File +ord-field`.
+- M41: a node is true wherever a value is tested for truth (`?:`, `? :`, `and`, `or`, predicates, `$boolean`, `$not`), whatever fields it has; JSONata alone counts an object without keys, such as a node without fields of its own, as false.
 
 - M61: a field term with no value, `[key::]`, is the formula `=($exists(key))`: the nodes that have the field.
 - M89: a workspace property's values, the node items under `pinned files::`, `pinned nodes::` and `pinned searches::` in the workspace file, are no query results and no suggestions for a reference or a mirror.
