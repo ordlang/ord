@@ -9,6 +9,7 @@ Version 0.7.0-draft, 2026-11-22.
 - One line is one node. A child is indented one tab deeper than its parent.
 - Blank lines don't affect the tree.
 - List markers at the start of a line (`-`, `*`, `+`, `#`, `1.` followed by a space) are decoration. The node is the same with or without them.
+- Markdown emphasis (`**bold**`, `_italic_`, `~~strike~~`, `==highlight==`) is formatting, not structure. Links match a label regardless of it.
 - There are no headings. A node with children is a section. `# Heading` is a node with the label `Heading`; the `#` is a list marker, which editors may draw as a heading.
 
 ```
