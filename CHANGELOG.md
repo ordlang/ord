@@ -8,6 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M89: a workspace property's values, the node items under `pinned files::`, `pinned nodes::` and `pinned searches::` in the workspace file, are no query results and no suggestions for a reference or a mirror.
 - M91: a field definition's `initialize:: true` lets a field start with a value from the node's owners. When a tool writes the field on a node (M37) and the definition's `value`, or a one-time formula's result, leaves it without items, the field gets the value of the nearest owner (M13) that has the field's key, calculated fields (M87) included, or, on a reference field (M24), a reference to the nearest owner of one of its types. Written once as a field line, also with `tags:: true`, and then the node's own; mirrors don't count as owners. `initialize` on a calculated field is the new warning `M91.1`. M56 lists the setting. No test: the test format has no form for a tool's edits. LLM guide: GUIDE.md, recipes.md and diagnostics.md say so.
 
 ## 0.7.0-draft (2026-11-22)
