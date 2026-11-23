@@ -49,6 +49,7 @@ A type's formula is calculated on its nodes without being written there (M87); e
 |---|---|
 | `$node(text)` | The node with that ID, else that label, like a link. `$node("^i42")` matches the ID only. `$node("i42").gross` |
 | `$nodes(under?)` | Every node, at any depth, in file order; with `under` (a node or its ID or label), the nodes under it. Filter on any field: `$nodes()["task" in _types and _state != "done"]` |
+| `$ancestors(node?)` | The node's ancestors, the nearest first, its file's root last; of the formula's node without `node`. `$ancestors()["project" in _types][0]` is the nearest project (M91) |
 | `$query(text, under?)` | The nodes an Ord query matches, by the query rules (queries.md): `$query("+task #project [ ]")`. No formula inside: filter the result instead |
 | `$today()` | Today's date, local: `2026-10-22` |
 | `$now()` | The date and time, local: `2026-10-22T14:30` |

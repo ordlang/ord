@@ -56,7 +56,6 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | `M87.2` | A calculated field's definition has a nested field, or a definition has a formula alone on a child line | Write the formula on the key's line; drop the nested field |
 | `M85.1` | A field definition's `value` is `auto expr` | Write `~(expr)` |
 | `M88.1` | A second `+ord-workspace` node, or one outside the workspace file | Keep one, in `Ord.workspace` |
-| `M91.1` | `initialize` on a calculated field | Remove `initialize`: a calculated field is never written on a node |
 
 ## CSV (CSV mapping)
 
