@@ -806,6 +806,18 @@ root
 - **L17.** Spans are literal (C25): no form starts inside one. An unmatched quote is plain text.
 - **L18.** A backslash before the first character of a form makes it plain text: `\+task`, `\^id`, `\#tag`, `\[[x]]`, `\=x`, `\[due:: x]`, `\[#x]`, `\@ x`. Part 2 reads the text without the backslash; Core keeps it.
 
+## 16a. Formatting
+
+- **L33.** **Formatting** is Markdown emphasis in a label or a text item, in any flavor: `**bold**`, `__bold__`, `*italic*`, `_italic_`, `~~strike~~`, `==highlight==` and the like. It is formatting, not structure: it reads as no field, the text keeps it as written, and it changes nothing about the tree or how other forms are read. Editors may draw it, or not. Inside a form or a span (L17), such as a link, URL or formula, it is part of that form.
+- **L34.** Two labels that differ only in formatting are equal wherever labels are compared, as references compare them ([Semantics](Semantics.md) M23). To compare, the delimiters of each pair are removed, outside forms and spans: `**`, `~~` and `==` around text that doesn't start or end with whitespace (or, for `==`, with `=`); `*`, `_` and `__` the same, with no letter, digit or the same character touching them outside; and the backticks of a code span. Pairs are read in that order, may nest, and don't share delimiters. A delimiter without a match stays. So `Ship **v2** now`, `Ship _v2_ now` and `Ship v2 now` are equal, and `snake_case_name` and `2 * 3 * 4` have no formatting.
+
+```example labels L33
+If _you_ use **Markdown**, you ~~don't~~ ==re-learn== much
+.
+root
+  node "If _you_ use **Markdown**, you ~~don't~~ ==re-learn== much"
+```
+
 ## 17. Label and items
 
 - **L19.** A node's **label** is its line without the list marker, the `_state` trigger, inline fields, and the `_types` and `_id` triggers. A removed form takes the spaces and tabs before it with it, or those after it when only the list marker and removed forms come before it. So `Send +task draft` and `+task Send draft` both have the label `Send draft`. The system field `_label` holds it. Links, URLs, formulas and tags are part of it, where they were written (L4): `Call #anna to decide on budget #projectX +task` has the label `Call #anna to decide on budget #projectX`, and references to it by label (L10) name it by its name, the label without the tags at its end ([Semantics](Semantics.md) M23): `Call #anna to decide on budget`. Editors may render them differently.
