@@ -158,7 +158,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
   	color:: white
   	fields::
   		query::
-  			description:: The query: terms joined by spaces for and, and by a bar for or.
+  			description:: The query, written after `?` (L28): terms joined by spaces for and, and by a bar for or.
   		view::
   			description:: How the results are shown.
   		fields::
@@ -352,7 +352,7 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 
 This section is a draft outline, like section 8.
 
-- **M60.** A node with the type `search` (M53) is a **search node**, whether written as `+search` or as an inline search `? query` ([Ord specification](Ord_Specification.md) L28). Its settings are `query` and the view settings (M64). Its query is the value of `query`, or, written as `query::` with child lines, each child line's label in parentheses, joined with spaces. When a node has more than one `query` field, such as `?` and a `query::` line under it, the queries are combined with and: each in parentheses, joined with spaces. This is allowed but not recommended. A search with an empty label is named by its query where a name is needed, such as its results document.
+- **M60.** A node with the type `search` (M53) is a **search node**. It is written only as an inline search, `? query` ([Ord specification](Ord_Specification.md) L28): its query is what follows the `?`, on one line, and its other settings, the view settings (M64), are its field lines. A filter too long for the line is better a calculated field on a type (M87), queried as `=(late)`. `search` written as a type any other way, as `+search`, `[_types:: search]` or a `_types::` line, is the error `M60.1`, and the node gets no type `search`; so is a `query` field line under a search node, which is not read. On any other node, `query::` is an ordinary field. A search has no label of its own (L28): where a name is needed, such as its results document, it is named by its query.
 - **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, or `[key::]` with no value, which is the formula `=($exists(key))`, a formula `=(…)`, or a word, which matches a node's text (M62).
 - **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), or, when a field of one of its types with `tags:: true` (M47) would take the tag, when that field's value is what the tag would give it (with `tags:: true` and `options:: +project` on `project`, `#LU` matches a task with `project:: LU` as well as one written `#LU`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, a computed field's (M39) and a calculated field's (M87) values included, as the text their results are written as (a node by its ID or name), a formula when its result is true, and a word when its label contains it, ignoring letter case, or else its ID, one of its types, one of its tags, or one of its fields' keys or values as written does, system fields other than `_tags` left out: `be086` matches `Mentions be086`, `Event ^BE086` and a node with `ref:: BE086`. An editor that lists a search's results without a `sort` setting lists the nodes whose labels hold its words first, then the others, each in file order.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
@@ -402,6 +402,7 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 | `M55.2` | error | A system field (M11) is defined again | the `key` value |
 | `M55.3` | warning | A field definition node has no `key` | the `+ord-field` trigger |
 | `M58.1` | error | A type gives a field definition node's key a value or child lines | the field line |
+| `M60.1` | error | `search` written as a type, not as `? query`, or a `query` field line under a search node | the type, or the field line's key |
 | `M87.1` | error | A node writes a field that one of its types calculates | the value |
 | `M87.2` | error | A calculated field's definition has a nested field, or a local field definition has a formula alone on a child line | the line |
 | `M85.1` | warning | A field definition's `value` is `auto expr`, now written `~(expr)` | the value |
@@ -648,6 +649,24 @@ file "a.ord"
       node "Stray note" @5
 ! M50.1 a.ord:3:3
 ! M50.2 a.ord:5:3
+```
+
+A search is written `? query` (M60); `+search` and a `query::` line under a search are errors.
+
+```example graph M60
+--- a.ord
+Open +search
+	query:: +task
+? +task
+	query:: #urgent
+	sort:: due
+.
+file "a.ord"
+  node "Open" @1
+  node "" @3
+    type "search"
+! M60.1 a.ord:1:6
+! M60.1 a.ord:4:2
 ```
 
 A mirror of a file (M48): its source is the file's root, its path resolved from the mirror's folder.

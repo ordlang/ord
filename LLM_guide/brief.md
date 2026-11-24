@@ -53,7 +53,7 @@ Marks are shorthand for system fields, whose keys start with `_`. They can be wr
 | `https://…`, `./file.pdf`, `[text](url)` | link to a URL or file | `[_url:: …]` |
 | `=(net * 1.25)` | a computed value | `[_result:: =(net * 1.25)]` |
 | `@ Label`, `@ Label^t9x1` | a mirror: shows that node here. Only at the start of the line | `[_mirror:: Label]` |
-| `? +task [ ]` | a search. Only at the start of the line | `+search [query:: +task [ ]]` |
+| `? +task [ ]` | a search, the only way to write one. Only at the start of the line | the type `search` and `query:: +task [ ]`, never written so |
 
 - The **label** is what is left after removing the list marker, state, inline fields, types and ID. Tags, links, URLs and formulas stay in the label.
 - `@anna` inside a line and `%apollo` are plain text. To refer to a node, link to it, `[[Anna]]`, or use a field whose definition has `options:: +person` (see below).

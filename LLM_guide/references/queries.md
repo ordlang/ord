@@ -4,28 +4,18 @@ Rules: Semantics M60 to M65.
 
 ## Search nodes
 
-A node with the type `search` is a saved search (M60). Its `query` setting is the query; its other settings configure how it is shown. Results are never written into the file.
-
-Three ways to write one:
+A search node is a saved search (M60), written one way: `? query` (L28), on its own line, after any list marker. The query is everything after `? `, on that one line. Its view settings go on field lines under it. Results are never written into the file.
 
 ```
-Open tasks +search
-	query:: +task ![x]
-? [ ] +task #apollo
-Late for Anna +search
+? +task ![x]
+? +task [[Anna]] =(late)
 	view:: table
 	sort:: due asc
-	query::
-		+task
-		[[Anna]]
-		=(late)
 ```
 
-- **Single line.** The whole query is the value of `query`.
-- **Multi-line.** `query::` with one condition per child line. Each line is put in parentheses and the lines are joined with and, so a line may hold `|` freely: `#red | #blue`.
-- **Inline (L28).** `? query` on its own line, after any list marker, is a search node with an empty label. Nothing after `? ` is read as a form, so the line gets no type, tags or ID. Good for quick searches in a journal day. View settings go on child lines. `?x`, `??` and `\?` are text. A search without a label is named by its query.
-
-Keep the form the file uses.
+- Nothing after `? ` is read as a form, so the line gets no type, tags or ID, and no label: a search is named by its query.
+- `?x`, `??` and `\?` are text.
+- Never write `+search` or a `query::` line: both are the error M60.1, and make no search. Older files used them; rewrite them as `? query`.
 
 ## Query terms (M61, M62, M65)
 
@@ -67,10 +57,9 @@ View settings are implementation-defined. Common ones:
 ### Fields
 
 ```
-Hours this month +search
+? +timelog =(date in $date("this-month"))
 	view:: table
 	sort:: date desc
-	query:: +timelog =(date in $date("this-month"))
 	fields::
 		_label::
 		date::

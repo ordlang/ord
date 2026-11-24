@@ -54,7 +54,7 @@ More detail, loaded when needed:
 - **Mirrors (M48 to M50).** `@ Label` on its own line shows that node, its source, in this place without moving it; the source keeps its one owner. Use it to list a node in a second place, not a line that is only `[[Label]]`. Write nothing under a mirror (M50.2): its children are its source's. `@ notes/plan.ord`, a path with its extension, relative to the file, mirrors a whole file.
 - **States (M26 to M31).** Built in: `new`, `in-progress`, `waiting`, `done`. A type's `state` setting adds custom states, `name [marker] > base`, with `|` between them. A node is done when its base is `done`.
 - **Ownership (M13 to M16).** A node's owner is the node it is indented under, or a CSV `_parent` cell. Ownership never loops.
-- **Searches (M60 to M65).** A `+search` node with a `query` setting, or a line `? query`. See [references/queries.md](references/queries.md).
+- **Searches (M60 to M65).** A line `? query`, with its view settings as field lines under it. See [references/queries.md](references/queries.md).
 - **Journal nodes.** Day nodes are ordinary nodes found by ID, not by place: `Monday 12, 2026 ^journal-2026-10-12`, under a week (`^journal-2026-W42`) or a month (`^journal-2026-10`). Which file holds them is up to the tool; see [references/recipes.md](references/recipes.md).
 - **One-time formulas (L32, M85).** `~$today()` or `~(expr)` is evaluated once and replaced in the file by its value. When you write a file yourself, write the value: `due:: 2026-10-23`. On a type, `~` makes a value each node gets once: `_id:: ~("BE" & $seq(3))`.
 
@@ -117,9 +117,9 @@ Full rules and functions: [references/formulas.md](references/formulas.md).
 A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Acme Corp]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
 
 ```
-Open tasks +search
-	query:: +task ![x]
+? +task ![x]
 ? [ ] +task #apollo
+	sort:: due
 ```
 
 Views, fields and the rest: [references/queries.md](references/queries.md).
@@ -132,7 +132,8 @@ Things that read fine but mean something else, or that models get wrong. Add to 
 - `Call note:: two words` makes the whole line a field with the key `Call note`. Write `Call` with `note:: two words` on a field line under it. (0.4)
 - `summary:: we agreed X; then Y` is two items. Quote it, or make it a child line. (0.4)
 - `+urgent` is a type and `#task` a tag: the reverse of Ord before 0.5. (0.5)
-- `[defines:: task]`, `target::`, `claims::`, `sigil::`, `search::` and `?? query` are gone. Write `+ord-type` with `name::`, `options:: +type`, `tags:: true`, a link, `+search` with `query::`, and `? query`. (0.6)
+- `[defines:: task]`, `target::`, `claims::`, `sigil::`, `search::` and `?? query` are gone. Write `+ord-type` with `name::`, `options:: +type`, `tags:: true`, a link, and `? query`. (0.6)
+- `+search` with `query::` is gone. Write `? query`, with the view settings under it. (Unreleased)
 - `@anna` in a label is text. `@ Anna` alone on a line is a mirror; `@Anna` as a field item is a reference. (0.6)
 - `state::`, `type::`, `id::` and `label::` are ordinary fields. The system fields are `_state` and the rest. In formulas, write `_children`, `_parent` and `_state`, not `children`. (0.6)
 - In `Ord.workspace`, a line that is only `+task` defines nothing. (0.6)

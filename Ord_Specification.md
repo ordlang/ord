@@ -665,7 +665,7 @@ root
       "https://example.com"
 ```
 
-- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: short for the `_types` trigger `+search` and the inline field `[query:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. Nothing in the rest is read as a form, so `+task` in it doesn't give the node the type `task`, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
+- **L28.** A label that starts with `?` followed by a space or tab, after any list marker (L16), is an **inline search**: it gives the node the type `search` and the inline field `[query:: …]` holding the rest of the label, with the spaces and tabs after `?` removed. It is the only way to write a search: `+search` written as a trigger makes none (Semantics M60). Nothing in the rest is read as a form, so `+task` in it doesn't give the node the type `task`, and the label (L19) is empty. `?` without a space or tab after it, as in `?x` or `??`, is text, as is `?` followed only by spaces and tabs, and `?` later in a line. `\?` is text (L18). What a search means is in [Semantics](Semantics.md) M60.
 
 ```example labels L28
 ? [ ] +task @anna

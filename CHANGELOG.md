@@ -9,10 +9,12 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 ### Spec
 
 - L33, L34: formatting. Markdown emphasis in any flavor, as `**bold**`, `_italic_`, `~~strike~~` and `==highlight==`, is formatting, not structure: it reads as no field and editors may draw it. Two labels that differ only in formatting are equal where labels are compared.
+- L28: an inline search, `? query`, is the only way to write a search. It gives the node the type `search` and the query, and is no longer short for `+search` with `[query:: …]`.
 - L20, L21: trailing spaces and tabs, which a field item keeps (C8), don't stop it being one value trigger or value form: `b:: =(a * 2) `, `a:: 2 `, `due:: 2026-10-10 ` and `x:: [[Anna]] ` are a formula, a number, a date and a link, where before they were text.
 
 ### Semantics
 
+- M60: a search is written only as `? query`, with its view settings as field lines under it. `+search` with a `query::` line, a multi-line `query::`, and `?` combined with `query::` lines under it are gone, with no migration: `search` written as a type is the new error `M60.1`, and the node is no search; a `query::` line under a search node is `M60.1` too, and isn't read. Elsewhere `query::` is an ordinary field.
 - M23: a label's name is without its formatting (L34), so `[[Ship v2]]` names `Ship **v2**`.
 - M11: the system field `_file`, the path of the node's file, relative to the workspace folder. Writing it is the new error `M11.2`. Its system field definition is `File +ord-field`.
 - M41: a node is true wherever a value is tested for truth (`?:`, `? :`, `and`, `or`, predicates, `$boolean`, `$not`), whatever fields it has; JSONata alone counts an object without keys, such as a node without fields of its own, as false.
