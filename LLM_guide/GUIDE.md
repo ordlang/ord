@@ -67,7 +67,7 @@ More detail, loaded when needed:
 - A new field goes after the node's last field, or right after the node line. A new child node goes after the node's last child and its lines.
 - Keep the file's line endings, BOM and final newline. A new file uses `\n`, ends with a newline and has no BOM.
 
-**Quote only when needed (C26, C27).** Quote a value or item when it must stay empty, starts or ends with whitespace, starts with `"` or a backtick, contains a backtick, `;` (outside a formula's parentheses) or a control character, or is a number, date or boolean that must stay text. Quote a key with `::` or `[`, or ending with `:`. Quote a label with `::` outside brackets.
+**Quote only when needed (C26, C27).** Quote a value or item when it must stay empty, starts or ends with whitespace, starts with `"`, contains a backtick, `;` (outside brackets and a formula's parentheses), a `[` without its `]`, or a control character, or is a number, date or boolean that must stay text. Quote a key with `::` or `[`, or ending with `:`. Quote a label with `::` outside brackets.
 
 **Choosing the shape:**
 - **Field or prose.** Fields are for values you would sort, filter or compare on: a date, an owner, a status, an amount, a project. Notes and details are child lines: under a meeting, `Ask about the budget`, not `note:: Ask about the budget`.

@@ -109,7 +109,7 @@ root
 
 - **V12.** Only a flat model can be written as CSV: the root has no fields, its children are nodes, and their children are fields with inline items only (C38). A writer rejects any other model.
 - **V13.** The header has a `_label` column first, when any node has a label that isn't empty, and then each key in the order it first appears, going through the nodes and their fields in order.
-- **V14.** A node's label is written as it is, without Ord quotes. A field's cell is its inline items, written as in a field line (C43) and quoted when C26 says so, with `` ` `` quotes when the text holds no `` ` `` and nothing C47 escapes, and with `"` quotes otherwise. Fields with the same key on one node share a cell: their items in order. A key the node doesn't have gives an empty cell.
+- **V14.** A node's label is written as it is, without Ord quotes. A field's cell is its inline items, written as in a field line (C43) and quoted with `"` when C26 says so. Fields with the same key on one node share a cell: their items in order. A key the node doesn't have gives an empty cell.
 - **V15.** A cell that holds `,`, `"`, `\r` or `\n` is written in `"` quotes, with each `"` doubled. Every record ends with `\n`, and a new file has no BOM. An edit keeps the file's line ending and BOM, as C45 says for text.
 
 ```example to-csv V3 V12 V13 V14 V15
@@ -126,7 +126,7 @@ Plain
 _label,_types,due,attendees,tags,note
 Send draft +task,task,2026-10-10,anna; erik,,
 "Book room, big",,,,a,
-Plain,,,,,`x; y`
+Plain,,,,,"""x; y"""
 ```
 
 ## 5. Known gaps
