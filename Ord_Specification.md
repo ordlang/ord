@@ -568,7 +568,8 @@ Key:: ends with \
 "Label: with:: sep"
 'single'
 a:: say `hi`; "x
-b:: "x [y"; "z] w"; "[[a; b]]"
+b:: x [y; z
+c:: [[a; b]]; d
 `code`
 .
 k:: x;
@@ -578,7 +579,8 @@ Key:: ends with \
 "Label: with:: sep"
 'single'
 a:: "say `hi`"; "\"x"
-b:: "x [y"; z] w; [[a; b]]
+b:: "x [y"; z
+c:: [[a; b]]; d
 `code`
 ```
 
