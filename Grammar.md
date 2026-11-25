@@ -54,7 +54,7 @@ value         = *line-char
 ; after a space or tab, and ends before the next one or at the end (L3).
 ; No form starts inside a span (L17) or right after a "\" (L18).
 
-name          = letter *( letter / DIGIT / "_" / "-" )      ; L3
+name          = [ "_" ] letter *( letter / DIGIT / "_" / "-" ) ; L3, reserved with "_" (Semantics M92)
 letter        = ALPHA / %x80-10FFFF ; a Unicode letter (S3), not every character in this range
 non-ws        = %x00-08 / %x0B-1F / %x21-10FFFF             ; not space, tab or LF
 
@@ -65,7 +65,7 @@ id            = "^" name            ; L8
 tag           = "#" name *( "/" name ) ; L13, ends after its last name
 
 inline-field  = "[" ( inline-key / quoted-string ) *WSP "::" *WSP inline-value *WSP "]"  ; L5, a bracket
-inline-key    = [ "_" ] name *( SP name )                    ; L5, names separated by single spaces
+inline-key    = name *( SP name )                            ; L5, names separated by single spaces, only the first with "_"
 inline-value  = 1*( bt-string / bracket / bracket-char ) ; not empty, split into items
 inline-search = "?" 1*WSP non-ws *line-char                 ; L28, first after any list marker
 mirror        = "@" *WSP non-ws *line-char                   ; L30, first after any list marker

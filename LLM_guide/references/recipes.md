@@ -7,7 +7,7 @@ Worked examples for common requests. Indentation is one tab per level.
 Create `Ord.workspace` at the folder's root. By convention it holds the definitions.
 
 ```
-Task +ord-type
+Task +_type
 	name:: task
 	color:: project
 	checkbox:: true
@@ -21,26 +21,26 @@ Task +ord-type
 			tags:: true
 			value:: ~($ancestors()["project" in _types][0])
 		late:: =($exists(due) and due < $today() and _state != "done")
-Person +ord-type
+Person +_type
 	name:: person
 	fields::
 		_id:: ~$slug(_label)
 		email::
 		phone::
-Project +ord-type
+Project +_type
 	name:: project
 	color:: purple
 	fields::
 		status::
 			options:: active; paused; closed
 		open:: =($count(_children[("task" in _types) and _state != "done"]))
-Issue +ord-type
+Issue +_type
 	name:: issue
 	fields::
 		issue type::
 			options:: bug; feature
 			tags:: true
-Urgent +ord-tag
+Urgent +_tag
 	name:: urgent
 	color:: red
 ```
@@ -166,7 +166,7 @@ Monstera
 When the same fields repeat, define the type and give it to the nodes, `Monstera +plant`:
 
 ```
-Plant +ord-type
+Plant +_type
 	name:: plant
 	fields::
 		watered::
