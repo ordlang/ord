@@ -114,7 +114,7 @@ Full rules and functions: [references/formulas.md](references/formulas.md).
 
 ## Searches in brief
 
-A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Acme Corp]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
+A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Acme Corp]]`, `[due:: 2026-10-10]`, `=(late)`, plain words (`jour*` for what starts with `jour`, `^journal*` for IDs only). Space is and, `|` or, `!` not, parentheses group.
 
 ```
 ? +task ![x]

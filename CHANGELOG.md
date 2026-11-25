@@ -19,6 +19,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M62: a query word with `*`, outside quotes, is a pattern a text must match whole, `*` standing for any characters: `jour*` matches what starts with `jour`. A word written `^word` matches a node's ID only, so `^journal*` finds the nodes whose IDs start with `journal`. A quoted word is still literal.
 - M92: a leading `_` means built in, everywhere. A name or key that starts with `_` and names no system field or system type, whether a field's key, a type, a tag, an ID, a custom state or a definition's `name` or `key`, is the new error `M92`. M11 no longer leaves other `_` keys free for a workspace.
 - M53: the system types are `_type`, `_tag`, `_field` and `_workspace` (and `search`), in place of `ord-type`, `ord-tag`, `ord-field` and `ord-workspace`, with no migration: `+ord-type` is now an ordinary type and defines nothing. Every rule, example and test that wrote them follows.
 - M60: a search is written only as `? query`, with its view settings as field lines under it. `+search` with a `query::` line, a multi-line `query::`, and `?` combined with `query::` lines under it are gone, with no migration: `search` written as a type is the new error `M60.1`, and the node is no search; a `query::` line under a search node is `M60.1` too, and isn't read. Elsewhere `query::` is an ordinary field.
