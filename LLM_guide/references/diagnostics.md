@@ -9,7 +9,7 @@ Fix every error you caused. Fix warnings you caused unless the user wants the te
 | Code | Means | Usual fix |
 |---|---|---|
 | `C3.1`, `C3.2` | An odd whitespace character starts a line or touches `::` | Replace it with a space or tab |
-| `C22` | `\` in `"…"` not followed by an escape | Write `\\`, or use backticks |
+| `C22` | `\` in `"…"` not followed by an escape | Write `\\` |
 | `C29` | A block is never closed | Add the closing fence, as long as the opening one |
 | `C49` | Bytes that aren't UTF-8 | Re-save the file as UTF-8 |
 | `L8` | Two `^id` on one node line | Keep one |

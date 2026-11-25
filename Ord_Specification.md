@@ -28,7 +28,7 @@ These goals are informative. They explain the rules and decide new ones.
 - **Every file reads.** There are no syntax errors. Every file is read into a tree, and anything doubtful is a diagnostic (C35).
 - **Punctuation decides.** Whether a line is a field or a node, and where its key, value and items are, is decided by `::`, `;`, quotes and indentation, never by words or letter case.
 - **Lines read on their own.** A line's key, value and inline items depend only on that line, except inside a block or a formula over several lines (C52). Nothing in Core depends on other files or an index. Part 2 takes the one fact it needs from types, their custom state markers, as an option.
-- **Quoting turns syntax off.** Any text can be written literally by quoting it, with `"` or `` ` ``.
+- **Quoting turns syntax off.** Any text can be written literally by quoting it with `"`. Backticks mark a literal part of a text, as code does in Markdown, and stay in it.
 - **Writing is stable.** Writing twice changes nothing (C33), and an edit leaves the lines it doesn't touch as they were (C41).
 - **Light syntax.** Single symbols and rules that let prose stay prose, instead of heavy delimiters.
 
@@ -145,7 +145,7 @@ root
 
   Part 2 reads labels and items after these steps and changes nothing they found.
 
-So a quote can hide `::` and `;`, and a bracket can hide `::` (both come before the separator), but neither hides a block's delimiters (blocks come first).
+So a quote and a bracket can hide `::` and `;` (both come before the separator), but neither hides a block's delimiters (blocks come first).
 
 ## 4. Blocks
 
@@ -209,23 +209,26 @@ root
 
 ## 5. Quoting and spans
 
-- **C21.** The **quote characters** are `"` and `` ` ``. Quotes mark text that is taken literally. A **quoted string** is a quote character, content, and the same quote character. In a `"` string, the content holds `"` only escaped (C22). In a `` ` `` string, the content can't hold a backtick. A key, label, value or item is **quoted** when it is exactly one quoted string. The quotes are removed and the content is taken literally, whitespace included. Anything else is literal: `"a" and "b"` is unchanged, and so is `'a'`, since `'` is not a quote character.
-- **C22.** Inside `"` quotes, JSON string escapes apply: `\"`, `\\`, `\/`, `\b`, `\f`, `\n`, `\r`, `\t`, `\uXXXX`. A backslash followed by anything else is not an escape: it is kept, with the next character, and gives a warning. `\u` without four hex digits after it is not an escape either. So `"\q"` reads as `\q`. Inside backticks there are no escapes, and outside quoted strings a backslash is ordinary text in Core.
-- **C23.** Inside quotes, `::` and `;` are content.
+- **C21.** The **quote character** is `"`. A **quoted string** is a `"`, content, and a `"`, and the content holds `"` only escaped (C22). A key, label, value or item is **quoted** when it is exactly one quoted string. The quotes are removed and the content is taken literally, whitespace included. Anything else is literal: `"a" and "b"` is unchanged, and so is `'a'`, since `'` is not a quote character. A backtick doesn't quote: `` `a` `` is the text `` `a` ``, backticks included, and only hides what is inside it (C25).
+- **C22.** Inside `"` quotes, JSON string escapes apply: `\"`, `\\`, `\/`, `\b`, `\f`, `\n`, `\r`, `\t`, `\uXXXX`. A backslash followed by anything else is not an escape: it is kept, with the next character, and gives a warning. `\u` without four hex digits after it is not an escape either. So `"\q"` reads as `\q`. Outside quoted strings, backtick spans included, a backslash is ordinary text in Core.
+- **C23.** Inside quotes and backtick spans, `::` and `;` are content.
 - **C24.** Spaces and tabs after a closing quote at the end of a line are ignored. This is the only exception to C8.
-- **C25.** A **span** is a quoted string that hides `::` and `;`: they are content inside it (C5, C15). A span keeps its quotes in the text.
-  - A backtick opens a span anywhere. The span ends at the next backtick; a backtick without one is ordinary text.
-  - A `"` opens a span only where a key, label, value or item starts: at the start of the text after the indent, right after the separator (C5), or right after a `;` that separates items and the spaces and tabs touching it (C15). The span ends at the next `"` that isn't escaped (C22). Anywhere else, and without such an end, `"` is ordinary text.
+- **C25.** A **span** hides `::` and `;`: they are content inside it (C5, C15). There are two kinds.
+  - A **backtick span** is a backtick, content without a backtick, and a backtick. A backtick opens one anywhere, and it ends at the next backtick; a backtick without one is ordinary text. It has no escapes, and it always keeps its backticks in the text, even when it is the whole key, label, value or item. It also hides `[` and `]` (C51) and every form of Part 2 (L17).
+  - A **quoted string** (C21) is a span where a key, label, value or item starts: at the start of the text after the indent, right after the separator (C5), or right after a `;` that separates items and the spaces and tabs touching it (C15). It ends at the next `"` that isn't escaped (C22). Anywhere else, and without such an end, `"` is ordinary text. When the span is the whole key, label, value or item, it is quoted (C21); otherwise it keeps its quotes in the text.
 
   So `say "hi" now` and `5" screen` are unchanged, `'` never quotes, as in `Anna's`, and `` `a:: b` is a field `` is a node.
-- **C51.** A **bracket** is a `[` and its matching `]` on the same line, outside spans. Brackets nest, and a backtick span inside one (C25) hides `[` and `]`; `"` is ordinary text there. A `::` inside a bracket is content, so it doesn't separate (C5). A `[` without a matching `]` is ordinary text and hides nothing. A bracket doesn't hide `;`. So `Send draft [due:: 2026-10-10]` and `See [[a::b]]` are nodes, and inline fields (L5) are written in brackets.
+- **C51.** A **bracket** is a `[` and its matching `]` on the same line, outside spans. Brackets nest, and a backtick span inside one (C25) hides `[` and `]`; `"` is ordinary text there. A bracket hides `::` and `;`: inside it they are content, so they don't separate (C5, C15). A `[` without a matching `]` is ordinary text and hides nothing. A bracket hides nothing from Part 2: links, dates and other forms in it are read. So `Send draft [due:: 2026-10-10]` and `See [[a::b]]` are nodes, `links:: [[a; b]]` has one item, and inline fields (L5) are written in brackets.
 
-```example C5 C51
+```example C5 C15 C51
 Send draft [due:: 2026-10-10]
 See [[a::b]] now
 a [b [c:: d] e:: f] g:: h
 a [b:: c
 [x] Call:: Anna
+links:: [[a; b]]; c
+note:: Call [due:: x; y]
+d:: a [b; c
 .
 root
   node "Send draft [due:: 2026-10-10]"
@@ -236,6 +239,14 @@ root
     "c"
   field "[x] Call"
     "Anna"
+  field "links"
+    "[[a; b]]"
+    "c"
+  field "note"
+    "Call [due:: x; y]"
+  field "d"
+    "a [b"
+    "c"
 ```
 
 ```example C21 C22 C25
@@ -263,7 +274,7 @@ root
     "'x"
     "y'"
   field "g"
-    quoted "C:\\temp"
+    "`C:\\temp`"
   field "h"
     "say \"hi\" now"
 ```
@@ -416,7 +427,7 @@ root
 
 ## 9. Items in a field's value
 
-- **C15.** In a field's own value, a `;` that is not inside a span (C25) separates items. Spaces and tabs touching a `;` belong to it. In a **formula item**, one that starts with `=` or `~` (L12, L32), a `;` inside a **group** is content too: a `(` outside spans opens a group that ends at its matching `)`, counting nested parentheses and skipping spans and **strings**: a `"` or `'` inside a group starts a string that ends at the next same character not escaped by `\`, as in JSONata. A `(` without a match is ordinary text. So `=$f(a; b); c` has two items, `=($a & "x; y")` one, and `x(a; b)` two, since it is not a formula.
+- **C15.** In a field's own value, a `;` that is not inside a span (C25) or a bracket (C51) separates items. Spaces and tabs touching a `;` belong to it. In a **formula item**, one that starts with `=` or `~` (L12, L32), a `;` inside a **group** is content too: a `(` outside spans opens a group that ends at its matching `)`, counting nested parentheses and skipping spans and **strings**: a `"` or `'` inside a group starts a string that ends at the next same character not escaped by `\`, as in JSONata. A `(` without a match is ordinary text. So `=$f(a; b); c` has two items, `=($a & "x; y")` one, and `x(a; b)` two, since it is not a formula.
 - **C16.** Each part between separators, and before and after them, is an item unless it is empty. So an empty value gives no item, `a;;b` has two items, and `a;`, `;a` and `;` have one, one and none. A value with a separator and fewer than two items is a **list**: the field's `list` is true, so `a;` is a list of one item and `;` an empty list, where `a` is one item and an empty value none. A field with two or more items is a list without it. A writer writes a list's `;` after its inline items, as `key:: a;` and `key:: ;`.
 - **C19.** `;` splits only a field's own value. Node labels are never split.
 
@@ -451,7 +462,7 @@ root
     "b"
     "c"
   field "i"
-    quoted "a;b"
+    "`a;b`"
     "c"
 ```
 
@@ -489,14 +500,15 @@ root
   - is empty, where an empty text must be kept
   - is a label or item that is quoted in the model (section 1), so it stays quoted and Part 2 still skips it (L1)
   - starts or ends with whitespace (any Unicode whitespace), except trailing spaces and tabs that C34 drops
-  - starts with `"`, or starts and ends with `` ` ``, so it would read as quoted (C21) or open a span (C25)
+  - starts with `"`, so it would read as quoted (C21) or open a span (C25)
   - contains a backtick (keys, field values and items), which could otherwise open a span that hides a `::` or `;` written after it (C25); in a formula item (C15), only a span that doesn't close within the item counts
   - starts with three backticks (keys and labels), which would otherwise open a block (C29), unless C32 applies
   - contains a newline or another control character, except tab
   - contains `::` (keys)
   - contains `[` (keys), which could otherwise open a bracket that hides the `::` written after it (C51)
   - is a label with a `::` outside spans and brackets (C5, C51)
-  - contains `;` (field values and items), except inside a group in a formula item (C15)
+  - contains `;` (field values and items), except inside a bracket (C51) or, in a formula item, a group (C15)
+  - contains a `[` without a matching `]` after it (field values and items), which could otherwise pair with a `]` in a later item and hide the `;` between them (C51)
   - is a key that ends with `:`, which would otherwise merge into the `::` after it
 - **C27.** Everything else is written bare.
 - **C47.** Inside `"` quotes, a writer escapes in one canonical form, so equal text is always written the same:
@@ -556,6 +568,9 @@ Key:: ends with \
 "Label: with:: sep"
 'single'
 a:: say `hi`; "x
+b:: x [y; z
+c:: [[a; b]]; d
+`code`
 .
 k:: x;
 "a:b:":: v
@@ -564,6 +579,9 @@ Key:: ends with \
 "Label: with:: sep"
 'single'
 a:: "say `hi`"; "\"x"
+b:: "x [y"; z
+c:: [[a; b]]; d
+`code`
 ```
 
 ```example fmt C41 C45

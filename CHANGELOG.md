@@ -8,6 +8,9 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
+- C21, C25: `"` is the only quote character. A backtick span hides `::`, `;`, brackets and Part 2 forms as before, but always keeps its backticks, even when it is a whole key, label, value or item: ``g:: `C:\temp` `` is the text `` `C:\temp` ``, where before it was the quoted `C:\temp`. So `"` quotes a whole value and backticks mark a literal part of a text, as code does in Markdown. C26 no longer quotes text for starting and ending with a backtick. The Grammar's `quoted-string` is `"` only, and its `bt-string` is `bt-span`. The design goal on quoting says so.
+- C51, C15: a bracket hides `;` as well as `::`, so `links:: [[a; b]]` and `note:: Call [due:: x; y]` have one item, where before the `;` split them. A `[` without a matching `]` still hides nothing. C26 quotes an item with a `;` only outside brackets and formula groups, and quotes one with a `[` that has no matching `]` after it, so items don't pair brackets across a `;`.
+- V14: a CSV cell quotes an item with `"`, which CSV doubles, `"""x; y"""`, not with backticks, which would now stay in the text. LLM guide: csv.md, GUIDE.md, brief.md and diagnostics.md say so.
 - L3, L5: a name can start with `_` followed by a letter, and one that does is reserved for what the specs build in (Semantics M92). So `+_type`, `#_x` and `^_x` are a type, a tag and an ID, where before they were text. An inline key's later names can't start with `_`. The grammar's `name` and `inline-key` follow.
 - J1: a key that starts with `_` is still an ordinary field to the JSON mapping, which doesn't check M92.
 - L33, L34: formatting. Markdown emphasis in any flavor, as `**bold**`, `_italic_`, `~~strike~~` and `==highlight==`, is formatting, not structure: it reads as no field and editors may draw it. Two labels that differ only in formatting are equal where labels are compared.

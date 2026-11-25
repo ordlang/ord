@@ -16,7 +16,7 @@ l1,timelog,Design work,i42,2026-10-20,3.5,
 - **`_label` column.** Its cell is the node's label, taken literally (V8): `Review +task #urgent` in a label cell is that text, with no type and no tag.
 - **System columns.** `_id`, `_types`, `_state`, `_tags`, `_parent` and `_children` are read as the system fields (V1, M11). Types come only from the `_types` column, tags only from the `_tags` column. A column `type` or `state` is an ordinary field. All columns are optional.
 - **Other cells** are read like a field value in a text file: split into items at `;`, with value forms (numbers, dates, booleans, weeks, months). Links, mirrors, URLs and formulas in cells are text (V10); use a reference column instead.
-- **Quotes inside a cell are backticks**, since `"` is CSV's own quote: `` `x; y` `` is one item.
+- **Ord quotes inside a cell** are `"`, doubled as CSV does: `"""x; y"""` is the one item `x; y`. Backticks stay in the text: `` `x; y` `` is one item that keeps its backticks.
 - **References.** `_parent`, `_children` and reference columns (a field with `options:: +type`) hold IDs, without brackets. A label still resolves, but write IDs.
 - **Hierarchy (M14 to M16).** A `_parent` cell places the row under that node; a `_children` cell lists the rows a node owns, in order. Only a file's top-level nodes can be placed this way, and the two must not disagree or loop.
 - **Missing cells** are empty; extra cells are dropped, with a warning.
@@ -28,7 +28,7 @@ l1,timelog,Design work,i42,2026-10-20,3.5,
 - **New columns** go at the end of the header, with an empty cell in every existing row.
 - **Several values** in one cell are joined with `; `.
 - **IDs are lazy.** A row needs an `_id` only when something refers to it.
-- **Quoting.** Quote a cell in `"…"` (doubling inner quotes) when it holds `,`, `"` or a line break. Use backticks around an item that holds `;`.
+- **Quoting.** Quote a cell in `"…"` (doubling inner quotes) when it holds `,`, `"` or a line break. Write an item that holds `;` in Ord's `"` quotes, which CSV doubles: `"""x; y"""`.
 - **Computed fields** are never columns.
 - **Delete means archive** when the user means "remove from views": add `archived` to the row's `_tags` cell.
 

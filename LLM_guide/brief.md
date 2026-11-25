@@ -25,7 +25,7 @@ Project Apollo
 - A **field line** is a key, `::`, a space and a value: `rate:: 1200`. It belongs to the node above it, one level up.
 - Any key works, spaces included: `Project lead:: Anna`.
 - `key::` with nothing after it is an empty field. Its child lines are its values.
-- A line with `::` is a field line: the first `::` splits it into key and value, with or without a space after it, so `due::2026-10-15` is a field too. A `::` inside `[…]`, quotes or backticks doesn't count. A single colon is text, so `Note: remember this` is a node.
+- A line with `::` is a field line: the first `::` splits it into key and value, with or without a space after it, so `due::2026-10-15` is a field too. A `::` inside `[…]`, quotes or backticks doesn't count, and neither does a `;` in a field's value. A single colon is text, so `Note: remember this` is a node.
 - `;` separates values: `tags:: red; blue`. It only splits field values, never node labels.
 - An **inline field** sits on the node line in brackets: `Call Anna [due:: 2026-10-15]`. It means the same as a field line under the node. The value runs to the `]`, so it can have spaces: `[note:: two words]`. The key can be several words with single spaces between them, `[due date:: 2026-10-15]`; any other key is quoted, `["Project lead (2026)":: Anna]`.
 
@@ -122,7 +122,7 @@ Quote a value to keep it text: `"2026-10-15"`.
 ## Turning syntax off
 
 - `"…"` around a whole key, label or value makes it literal. JSON escapes apply inside: `\"`, `\\`, `\n`.
-- Backticks around a word or phrase make it literal anywhere: `` `a::b; c` ``.
+- Backticks around a word or phrase make it literal anywhere, like code in Markdown, and stay in the text: `` `a::b; c` ``. To quote a whole value, use `"`.
 - A backslash before a mark makes it text: `\#tag`, `\+type`, `\^id`, `\[[x]]`, `\=x`, `\[due:: x]`.
 - Three or more backticks on their own line open a raw block, closed by as many backticks. Nothing inside is read.
 - `;` inside a value must be quoted: `title:: "Fish; chips"`.
