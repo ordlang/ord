@@ -53,7 +53,7 @@ Marks are shorthand for system fields, whose keys start with `_`. They can be wr
 | `https://…`, `./file.pdf`, `[text](url)` | link to a URL or file | `[_url:: …]` |
 | `=(net * 1.25)` | a computed value | `[_result:: =(net * 1.25)]` |
 | `@ Label`, `@ Label^t9x1` | a mirror: shows that node here. Only at the start of the line | `[_mirror:: Label]` |
-| `? +task [ ]` | a search. Only at the start of the line | `+search [query:: +task [ ]]` |
+| `? +task [ ]` | a search, the only way to write one. Only at the start of the line | the type `search` and `query:: +task [ ]`, never written so |
 
 - The **label** is what is left after removing the list marker, state, inline fields, types and ID. Tags, links, URLs and formulas stay in the label.
 - `@anna` inside a line and `%apollo` are plain text. To refer to a node, link to it, `[[Anna]]`, or use a field whose definition has `options:: +person` (see below).
@@ -67,10 +67,10 @@ State `done`, label `Send mapping draft to [[Anna]] #urgent`, field `due`, type 
 
 ## Types and references
 
-A type is defined by a `+ord-type` node with a `name` field, in any file, usually the workspace file. Its `fields::` list the type's fields, and a field whose `options` name a type, as `+person`, holds references to nodes of that type: a plain value is enough.
+A type is defined by a `+_type` node with a `name` field, in any file, usually the workspace file. Its `fields::` list the type's fields, and a field whose `options` name a type, as `+person`, holds references to nodes of that type: a plain value is enough.
 
 ```
-Task +ord-type
+Task +_type
 	name:: task
 	fields::
 		owner::
@@ -87,9 +87,9 @@ Call the venue +task
 - A field on the type with a formula, `total:: =(a + b)`, is calculated: every node of the type has it, and it is never written on them. Editors show it under the node as `total = 2050`. Don't write it on a node.
 - `checkbox:: true` on a type definition gives its nodes a checkbox: a tool that adds the type to a node without a state adds `[ ]`.
 - `nodes::` on a type definition is a template: a tool that adds the type to a node copies the nodes under `nodes::` under it.
-- A field that several types share is defined once, as a `+ord-field` node with a `key` field and the field's settings, and listed by its key under each type's `fields::`. It applies on every node that has the field.
-- A tag's color is set by a `+ord-tag` node: `Urgent +ord-tag` with `name:: urgent` and `color:: red` under it.
-- Keys that start with `_` are system fields, which the marks are short for, such as `_types`, `_id` and `_state`. `type::`, `state::` and `id::` are ordinary fields.
+- A field that several types share is defined once, as a `+_field` node with a `key` field and the field's settings, and listed by its key under each type's `fields::`. It applies on every node that has the field.
+- A tag's color is set by a `+_tag` node: `Urgent +_tag` with `name:: urgent` and `color:: red` under it.
+- Names that start with `_` are built in: the system fields, which the marks are short for, such as `_types`, `_id` and `_state`, and the system types `+_type`, `+_tag`, `+_field` and `+_workspace`. Never use a leading `_` for your own field, type, tag or ID: it is the error `M92`. `type::`, `state::` and `id::` are ordinary fields.
 
 ## Mirrors and searches
 

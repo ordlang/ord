@@ -11,11 +11,17 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 - C21, C25: `"` is the only quote character. A backtick span hides `::`, `;`, brackets and Part 2 forms as before, but always keeps its backticks, even when it is a whole key, label, value or item: ``g:: `C:\temp` `` is the text `` `C:\temp` ``, where before it was the quoted `C:\temp`. So `"` quotes a whole value and backticks mark a literal part of a text, as code does in Markdown. C26 no longer quotes text for starting and ending with a backtick. The Grammar's `quoted-string` is `"` only, and its `bt-string` is `bt-span`. The design goal on quoting says so.
 - C51, C15: a bracket hides `;` as well as `::`, so `links:: [[a; b]]` and `note:: Call [due:: x; y]` have one item, where before the `;` split them. A `[` without a matching `]` still hides nothing. C26 quotes an item with a `;` only outside brackets and formula groups, and quotes one with a `[` that has no matching `]` after it, so items don't pair brackets across a `;`.
 - V14: a CSV cell quotes an item with `"`, which CSV doubles, `"""x; y"""`, not with backticks, which would now stay in the text. LLM guide: csv.md, GUIDE.md, brief.md and diagnostics.md say so.
+- L3, L5: a name can start with `_` followed by a letter, and one that does is reserved for what the specs build in (Semantics M92). So `+_type`, `#_x` and `^_x` are a type, a tag and an ID, where before they were text. An inline key's later names can't start with `_`. The grammar's `name` and `inline-key` follow.
+- J1: a key that starts with `_` is still an ordinary field to the JSON mapping, which doesn't check M92.
 - L33, L34: formatting. Markdown emphasis in any flavor, as `**bold**`, `_italic_`, `~~strike~~` and `==highlight==`, is formatting, not structure: it reads as no field and editors may draw it. Two labels that differ only in formatting are equal where labels are compared.
+- L28: an inline search, `? query`, is the only way to write a search. It gives the node the type `search` and the query, and is no longer short for `+search` with `[query:: …]`.
 - L20, L21: trailing spaces and tabs, which a field item keeps (C8), don't stop it being one value trigger or value form: `b:: =(a * 2) `, `a:: 2 `, `due:: 2026-10-10 ` and `x:: [[Anna]] ` are a formula, a number, a date and a link, where before they were text.
 
 ### Semantics
 
+- M92: a leading `_` means built in, everywhere. A name or key that starts with `_` and names no system field or system type, whether a field's key, a type, a tag, an ID, a custom state or a definition's `name` or `key`, is the new error `M92`. M11 no longer leaves other `_` keys free for a workspace.
+- M53: the system types are `_type`, `_tag`, `_field` and `_workspace` (and `search`), in place of `ord-type`, `ord-tag`, `ord-field` and `ord-workspace`, with no migration: `+ord-type` is now an ordinary type and defines nothing. Every rule, example and test that wrote them follows.
+- M60: a search is written only as `? query`, with its view settings as field lines under it. `+search` with a `query::` line, a multi-line `query::`, and `?` combined with `query::` lines under it are gone, with no migration: `search` written as a type is the new error `M60.1`, and the node is no search; a `query::` line under a search node is `M60.1` too, and isn't read. Elsewhere `query::` is an ordinary field.
 - M23: a label's name is without its formatting (L34), so `[[Ship v2]]` names `Ship **v2**`.
 - M11: the system field `_file`, the path of the node's file, relative to the workspace folder. Writing it is the new error `M11.2`. Its system field definition is `File +ord-field`.
 - M41: a node is true wherever a value is tested for truth (`?:`, `? :`, `and`, `or`, predicates, `$boolean`, `$not`), whatever fields it has; JSONata alone counts an object without keys, such as a node without fields of its own, as false.
@@ -25,6 +31,10 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 - M91: `$ancestors(node?)` gives a node's ancestors, the nearest first, its file's root last, without mirrors; M42 lists it. As a field's `value`, a one-time formula over it lets a field start with a value from the node's ancestors: `project:: ~($ancestors()["project" in _types][0])`.
 - M85: a node in a field's one-time result is written as a reference to it, by its name, or `Label^id` when the name alone doesn't name it, given an ID when it has none.
 - M56: `initialize` is not a setting. It was added in this version and is replaced by `$ancestors()` in `value`, so `M91.1` is gone too.
+
+### LLM guide
+
+- The system types are written `+_type`, `+_tag`, `+_field` and `+_workspace`; the brief, the guide and the diagnostics list say a leading `_` is only for what is built in (M92).
 
 ## 0.7.0-draft (2026-11-22)
 

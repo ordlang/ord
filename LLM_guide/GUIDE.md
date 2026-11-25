@@ -18,9 +18,9 @@ More detail, loaded when needed:
 ## What a workspace means
 
 - **Files (F1 to F5).** A folder with an `Ord.workspace` file is a workspace. In it, `.txt`, `.ord` and extensionless files are Ord, and `.csv` files are nodes, one row each. Name new files `.txt`. The workspace file usually holds the definitions, by convention only; a definition works in any file.
-- **Type definitions (M17, M19, M53).** A `+ord-type` node with a `name` defines a type:
+- **Type definitions (M17, M19, M53).** A `+_type` node with a `name` defines a type:
   ```
-  Task +ord-type
+  Task +_type
   	name:: task
   	color:: blue
   	checkbox:: true
@@ -34,8 +34,8 @@ More detail, loaded when needed:
   			tags:: true
   ```
   Settings: `name`, `fields`, `state`, `color` (a color name, `#rrggbb`, or a field's name such as `color:: project`), `checkbox`, `nodes` (a template copied under new nodes of the type, M51), `icon` and `description`. Prose children are documentation. There is no inheritance; a node can have several types, and a type without a definition is allowed.
-- **Tag definitions (M59).** `Urgent +ord-tag` with `name:: urgent` and `color:: red` under it.
-- **The workspace node (M88) and workspace properties (M89).** In the workspace file, `Notes +ord-workspace` with `name:: My notes` under it names the workspace. `pinned files::` and `pinned nodes::` field lines, anywhere in that file, list the files (paths from the workspace folder) and nodes (`[[^id]]` or `[[Label]]`) an editor shows first, one child line each.
+- **Tag definitions (M59).** `Urgent +_tag` with `name:: urgent` and `color:: red` under it.
+- **The workspace node (M88) and workspace properties (M89).** In the workspace file, `Notes +_workspace` with `name:: My notes` under it names the workspace. `pinned files::` and `pinned nodes::` field lines, anywhere in that file, list the files (paths from the workspace folder) and nodes (`[[^id]]` or `[[Label]]`) an editor shows first, one child line each.
 - **Field definitions (M36 to M47, M55 to M58, M84).** Each field line under `fields::` defines a field for the type. A type's fields are written on its nodes (M37): when a node gets the type, each field it lacks is written under it, with the `value` setting as written, so the file holds what the node has. Nothing comes from the type at read time, except calculated fields.
   - `~expr` is written as is, then replaced once by its result (M85); any other value as text; none as `key::`.
   - `=expr` makes a **calculated field** (M87): every node of the type has it, with the result, and it is never written on the nodes. Editors show it first under the node, as `total = 2050`, not editable. Write the formula on the key's line (`total:: =(a + b)`, continued on the lines under it when it is long); a formula alone on a child line of a definition is the error M87.2. Never write a calculated field on a node: that is the error M87.1, and the value is ignored. Its settings (`valid`, `options`, `tags`, `icon`, `description`) apply to its result; it has no nested fields.
@@ -45,16 +45,16 @@ More detail, loaded when needed:
   - `tags:: true` lets the options be written as tags (M47): with `options:: bug; feature`, `Crash +issue #bug` has `issue type:: bug`. On a reference field, a tag names a node of the type by its label as written, then by its name (the label without the tags at its end), then by ID: `#apollo` on a task refers to `Apollo +project`.
   - `valid` is a check, `=expr` with `$value`; a failure is the error M40.
   - A field can start with a value from the node's ancestors: give it a one-time formula over `$ancestors()` (M91), which lists them nearest first. `project:: ~($ancestors()["project" in _types][0])` with `options:: +project` gives a task under `Apollo +project` the field line `project:: Apollo`; `client:: ~($ancestors()[client][0].client)` copies the nearest ancestor's client. A node in the result is written by its name, or `Label^id` when the name isn't its alone (M85). When you give a node the type yourself, write the value this way.
-  - A field used by several types can be a `+ord-field` node with a `key`, defined once for the workspace; a type then lists it by key with no value (M58).
+  - A field used by several types can be a `+_field` node with a `key`, defined once for the workspace; a type then lists it by key with no value (M58).
 - **Value types are never declared.** They are inferred from the values.
-- **System fields (M11).** `_label`, `_name` (the label without the tags at its end, with each formula replaced by its result; links match it; read-only, writing it is the error M11.1), `_types`, `_id`, `_state`, `_tags`, `_link`, `_mirror`, `_result`, `_url`, `_parent`, `_children`, `_file` (the path of the node's file; read-only, writing it is the error M11.2). `_label`, `_id`, `_state` and `_mirror` hold one value each; two is the error M10. A type may give `_id` a one-time formula (`_id:: ~("BE" & $seq(3))`), and nothing else about them; it can't calculate them.
+- **System fields (M11).** `_label`, `_name` (the label without the tags at its end, with each formula replaced by its result; links match it; read-only, writing it is the error M11.1), `_types`, `_id`, `_state`, `_tags`, `_link`, `_mirror`, `_result`, `_url`, `_parent`, `_children`, `_file` (the path of the node's file; read-only, writing it is the error M11.2). `_label`, `_id`, `_state` and `_mirror` hold one value each; two is the error M10. Every other key or name that starts with `_` is reserved (M92). A type may give `_id` a one-time formula (`_id:: ~("BE" & $seq(3))`), and nothing else about them; it can't calculate them.
 - **IDs (M20).** Unique in the workspace, matched ignoring case. Short and readable: `acme`, `i42`. Nodes only need one when something refers to them by ID.
 - **References (M21 to M24).** Links, `_link` and `_mirror` values, mirror values (`attendees:: @Anna Smith`), plain values of a reference field, tags on a reference field with `tags:: true`, and CSV `_parent`/`_children` cells. Plain values of any other field are text, even when they name a node.
 - **Resolving (M22, M23).** Text that could be either matches an ID first, then a label by its name: the label without the tags at its end, ignoring case. Tags in the prose are part of the name, so `Send proof #mail #teams` is named `Send proof` and `Call #anna about budget #projectX` is named `Call #anna about budget`. Write links with the name: `[[Send proof^p1]]`. A label that matches no node, or several, doesn't resolve (warnings M23.1, M23.2). `[[^id]]` is ID only, `[["Label"]]` label only, `[[Label^id]]` both, and the ID wins. A plain reference value reads the same way: `follows:: Send proof^p1` is `[[Send proof^p1]]`.
 - **Mirrors (M48 to M50).** `@ Label` on its own line shows that node, its source, in this place without moving it; the source keeps its one owner. Use it to list a node in a second place, not a line that is only `[[Label]]`. Write nothing under a mirror (M50.2): its children are its source's. `@ notes/plan.ord`, a path with its extension, relative to the file, mirrors a whole file.
 - **States (M26 to M31).** Built in: `new`, `in-progress`, `waiting`, `done`. A type's `state` setting adds custom states, `name [marker] > base`, with `|` between them. A node is done when its base is `done`.
 - **Ownership (M13 to M16).** A node's owner is the node it is indented under, or a CSV `_parent` cell. Ownership never loops.
-- **Searches (M60 to M65).** A `+search` node with a `query` setting, or a line `? query`. See [references/queries.md](references/queries.md).
+- **Searches (M60 to M65).** A line `? query`, with its view settings as field lines under it. See [references/queries.md](references/queries.md).
 - **Journal nodes.** Day nodes are ordinary nodes found by ID, not by place: `Monday 12, 2026 ^journal-2026-10-12`, under a week (`^journal-2026-W42`) or a month (`^journal-2026-10`). Which file holds them is up to the tool; see [references/recipes.md](references/recipes.md).
 - **One-time formulas (L32, M85).** `~$today()` or `~(expr)` is evaluated once and replaced in the file by its value. When you write a file yourself, write the value: `due:: 2026-10-23`. On a type, `~` makes a value each node gets once: `_id:: ~("BE" & $seq(3))`.
 
@@ -97,7 +97,7 @@ More detail, loaded when needed:
 A formula is a JSONata 2.x expression written `=(…)` (M41, L12). Always wrap it in parentheses: `=$sum(x)` is text. `$` is the current node, bare names are its fields, and system fields have their `_` keys: `_children`, `_parent`, `_state`, `_types`, `_label`. Dates are ISO text: compare with `<`, shift with `$date(due, 7)`, count with `$days(a, b)`, never `due + 7`.
 
 ```
-Invoice +ord-type
+Invoice +_type
 	name:: invoice
 	fields::
 		client::
@@ -117,9 +117,9 @@ Full rules and functions: [references/formulas.md](references/formulas.md).
 A query looks like the node lines it matches: `+task`, `#urgent`, `[ ]`, `[[Acme Corp]]`, `[due:: 2026-10-10]`, `=(late)`, plain words. Space is and, `|` or, `!` not, parentheses group.
 
 ```
-Open tasks +search
-	query:: +task ![x]
+? +task ![x]
 ? [ ] +task #apollo
+	sort:: due
 ```
 
 Views, fields and the rest: [references/queries.md](references/queries.md).
@@ -132,7 +132,9 @@ Things that read fine but mean something else, or that models get wrong. Add to 
 - `Call note:: two words` makes the whole line a field with the key `Call note`. Write `Call` with `note:: two words` on a field line under it. (0.4)
 - `summary:: we agreed X; then Y` is two items. Quote it, or make it a child line. (0.4)
 - `+urgent` is a type and `#task` a tag: the reverse of Ord before 0.5. (0.5)
-- `[defines:: task]`, `target::`, `claims::`, `sigil::`, `search::` and `?? query` are gone. Write `+ord-type` with `name::`, `options:: +type`, `tags:: true`, a link, `+search` with `query::`, and `? query`. (0.6)
+- `[defines:: task]`, `target::`, `claims::`, `sigil::`, `search::` and `?? query` are gone. Write `+_type` with `name::`, `options:: +type`, `tags:: true`, a link, and `? query`. (0.6)
+- The system types are `+_type`, `+_tag`, `+_field` and `+_workspace`; `+ord-type` and the others are ordinary types now. A name that starts with `_` is built in, and one you make up (`_due::`, `+_task`, `#_x`, `^_x`) is the error M92. (Unreleased)
+- `+search` with `query::` is gone. Write `? query`, with the view settings under it. (Unreleased)
 - `@anna` in a label is text. `@ Anna` alone on a line is a mirror; `@Anna` as a field item is a reference. (0.6)
 - `state::`, `type::`, `id::` and `label::` are ordinary fields. The system fields are `_state` and the rest. In formulas, write `_children`, `_parent` and `_state`, not `children`. (0.6)
 - In `Ord.workspace`, a line that is only `+task` defines nothing. (0.6)
@@ -145,7 +147,7 @@ Things that read fine but mean something else, or that models get wrong. Add to 
 - Indentation matches the file's, and each new line sits under the right parent.
 - Node lines keep the fixed order: state, label with its tags, inline fields, types, ID.
 - Values with `tags:: true` are written as tags, and typed nodes with a project field carry their project's tag.
-- Types are `+name`, tags `#name`; definitions are `+ord-type`, `+ord-tag` and `+ord-field` nodes; nothing from the Gotchas list slipped in.
+- Types are `+name`, tags `#name`; definitions are `+_type`, `+_tag` and `+_field` nodes; nothing from the Gotchas list slipped in.
 - New references resolve: the label is unique, or you used an ID. New IDs are unused.
 - No formula sits on a setting (other than a field definition's `value` or `valid`), and no computed result was written.
 - Lines you didn't need to change are unchanged.
