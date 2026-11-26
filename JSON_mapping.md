@@ -18,10 +18,9 @@ Version 0.7.0-draft, 2026-11-22. A companion spec to [Ord specification](Ord_Spe
 - **J19.** The field `_json` ([Semantics](Semantics.md) M11), with its key unquoted, says what a node is in JSON where the other rules would read it as something else. It is written as a field line, the node's first, and its value is one of:
   - `array`: the node is a JSON array of its child nodes, each as J4 and J6 say. It has no label and no other fields.
   - `object`: the node is a JSON object (J3) even when it has no fields or child nodes, `{}`, or only a label, `{"_label": "x"}`.
-  - `number` or `boolean`: the node is its label as a JSON number or boolean (J7), as in an array item `5` with `_json:: number` under it. It has no fields or child nodes other than `_json`, and a label that isn't one (L22, L27) is written as a string.
   - `value`, on the root only: the file is the JSON value of its one root line, for a scalar root (J15).
 
-  On the root, `_json:: array` makes the file a JSON array of its root lines. Under a field, `_json:: object` is a line of the field's anonymous node (C13): `x::` with `_json:: object` under it is `"x": {}`. `_json` is never written as a JSON key. One with another value, where its kind doesn't allow it, twice, or with a label, fields or lines its kind doesn't have, is the warning `J19.1`, and what doesn't fit is left out or, for a label that isn't a number or boolean, written as a string. Writers write `_json` only where it is needed: a file of objects and arrays of plain values maps without it, and nothing else in this spec reads label syntax or tricks of layout to tell JSON types apart.
+  On the root, `_json:: array` makes the file a JSON array of its root lines. Under a field, `_json:: object` is a line of the field's anonymous node (C13): `x::` with `_json:: object` under it is `"x": {}`. `_json` is never written as a JSON key. One with another value, where its kind doesn't allow it, twice, or with a label, fields or lines its kind doesn't have, is the warning `J19.1`, and what doesn't fit is left out. Writers write `_json` only where it is needed: a file of objects and arrays of plain values maps without it, and nothing else in this spec reads label syntax or tricks of layout to tell JSON types apart.
 
 ## 3. Reading JSON
 
@@ -30,7 +29,7 @@ JSON is read by writing it as Ord, as these rules say, and reading the result (S
 - **J8.** An object becomes a node. `_label` becomes its label, and an object without one a node with an empty label, `::`. Its other members become field lines, and `_children` child node lines. An object that would otherwise read as something else gets `_json:: object` as its first line (J19): one without members, `{}`, which would be `null`, and one with only `_label`, which would be a string (J4).
 - **J9.** A string becomes the field's value, quoted (C26) when it is a number (L22) or a boolean (L27) as written, so that it stays text: `"6"` gives `hours:: "6"`. A number becomes its text as written in the JSON, and a boolean `true` or `false`, so each reads back as its value form: `6`, `9.50` and `true` give `hours:: 6`, `9.50` and `true`. A number written with an exponent or a capital `E`, which L22 doesn't read, becomes its value in plain decimal: `1e21` gives `1000000000000000000000`, and `1e-7` gives `0.0000001`. `null` becomes an empty value. An object with only ordinary members becomes the field's field children (C13), and one with no members `_json:: object` under the field (J19). Any other object becomes one child node following J8.
 - **J10.** An array of strings, numbers and booleans becomes the field's items, `key:: a; b`, quoted as C26 says. So does an array whose such items all come before its objects; the objects then follow J11, except that one object with only ordinary members becomes the field's field children (C13), as in J9. Any other array, one with `null`, a nested array, an item after an object, or text with a line break, becomes the field's node children, one per item. An array of one item or none is a list (C16), with a `;` after its items: `key:: a;`, `key:: ;`, and `key:: ;` with the object's fields under it for one object, or `_json:: object` when it has none.
-- **J11.** Within an array that becomes node children (J10), `null` becomes `::`, a string a node line, a number or boolean a node line with `_json:: number` or `_json:: boolean` under it (J19), an object follows J8, and an array J14.
+- **J11.** Within an array that becomes node children (J10), `null` becomes `::`, a string, number or boolean a node line, written as J9 writes an item, so a string that is a number or boolean as written is quoted, `"5"`, an object follows J8, and an array J14.
 - **J12.** Text is quoted according to C26.
 - **J14.** A nested array becomes `::` with `_json:: array` as its first line and one child node per item, following J11 (J19). An empty one is `::` with `_json:: array` alone.
 - **J15.** A root array becomes `_json:: array` as the file's first line, then its items as root lines, following J11 (J19). A scalar root becomes `_json:: value` as the file's first line, then the value as one root line, following J11. A `_label` on the root object gives a warning and is kept as an ordinary field.
@@ -234,12 +233,8 @@ root
   field "mixed"
     node empty
     node "5"
-      field "_json"
-        "number"
     node "true"
-      field "_json"
-        "boolean"
-    node "5"
+    node quoted "5"
 ```
 
 ```example from-json J15 J19
@@ -249,8 +244,6 @@ root
   field "_json"
     "value"
   node "5"
-    field "_json"
-      "number"
 ```
 
 ## 4. Writing JSON
@@ -261,7 +254,7 @@ root
   - `_json` is not a key (J19).
   - Each field becomes a key.
   - `_children` is an array of its child nodes. It is omitted when there are none.
-- **J4.** A node without children becomes its label as a string, or `null` when the label is empty and unquoted (`::`). A node with `_json` follows J19.
+- **J4.** A node without children becomes its label, read as a field's text item is (J6, J7): an unquoted number or boolean is a JSON number or boolean, any other label a string, and `null` when the label is empty and unquoted (`::`). So in JSON, a line alone and an item are read alike, though elsewhere labels have no value forms (L21). A node with `_json` follows J19.
 - **J5.** A field's JSON value is:
   - an array of its items, if it is a list of one item or none (C16): `a;` gives `["a"]` and `;` gives `[]`
   - `null`, if it has no items
@@ -370,20 +363,18 @@ v:: 007; 1e3
 }
 ```
 
-```example to-json J2 J19
+```example to-json J2 J4 J19
 _json:: value
 ::
 →_json:: array
 →1.50
-→→_json:: number
+→TRUE
+→"7"
 →yes
-→→_json:: boolean
 .
-[
-  1.50,
-  "yes"
-]
+[1.50, true, "7", "yes"]
 ```
+
 
 ## 5. Known gaps
 
@@ -403,4 +394,4 @@ Codes and severities work as in the Spec (C35 to C37). Positions are in the inpu
 | `J1.2` | warning | A `_label` isn't a string, or a `_children` isn't an array | the key |
 | `J15` | warning | The root object has a `_label` | the key |
 | `J16` | warning | An Ord field's key is `_label` or `_children` | the field's key |
-| `J19.1` | warning | A `_json` isn't a kind J19 names, isn't its node's first field line, comes twice, is on a node that has what its kind doesn't allow, or is `number` or `boolean` on a label that isn't one | the field's key, or the line |
+| `J19.1` | warning | A `_json` isn't a kind J19 names, isn't its node's first field line, comes twice, or is on a node that has what its kind doesn't allow | the field's key, or the line |
