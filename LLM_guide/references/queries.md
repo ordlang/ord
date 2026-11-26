@@ -43,7 +43,7 @@ A query looks like the node lines it matches.
 
 ## View settings (M64)
 
-View settings are implementation-defined. Common ones:
+View settings (Semantics M64); how they look is up to the editor:
 
 | Setting | Value |
 |---|---|
@@ -52,7 +52,6 @@ View settings are implementation-defined. Common ones:
 | `sort` | conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, asc and text by default: `sort:: flow; due desc date` |
 | `group` | a field to group by: `group:: project` |
 | `footer` | `=expr` over the results, with their nodes as `$`: `=($sum(hours))`. Shown with each group, or board column |
-| `computed` | what a tool writes from the results, such as a read-only CSV block |
 
 ### Fields
 
@@ -66,11 +65,10 @@ View settings are implementation-defined. Common ones:
 		client::
 		hours::
 		daysago:: =($days(date, $today()))
-			header:: Days ago
 ```
 
 - `key::` shows a field. System fields keep their `_` keys: `_label::`, `_id::`, `_state::`, `_tags::`. `key:: =expr` is a template field, computed per row, output only.
-- A field line's child lines are its settings, such as `header` and `width`.
+- Nothing else goes under `fields::`: no `header`, `width` or `format`. Name a template column by its key.
 - `columns::` is the old name of `fields::`.
 
 ## Writing searches well
