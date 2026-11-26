@@ -8,6 +8,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Spec
 
+- L21, L35: `text` is a value form, the fallback: a value that is none of the other forms, quoted or not, is of the form `text`. Nothing reads differently. A dump still writes no name after a text item (D13).
 - C21, C25: `"` is the only quote character. A backtick span hides `::`, `;`, brackets and Part 2 forms as before, but always keeps its backticks, even when it is a whole key, label, value or item: ``g:: `C:\temp` `` is the text `` `C:\temp` ``, where before it was the quoted `C:\temp`. So `"` quotes a whole value and backticks mark a literal part of a text, as code does in Markdown. C26 no longer quotes text for starting and ending with a backtick. The Grammar's `quoted-string` is `"` only, and its `bt-string` is `bt-span`. The design goal on quoting says so.
 - C51, C15: a bracket hides `;` as well as `::`, so `links:: [[a; b]]` and `note:: Call [due:: x; y]` have one item, where before the `;` split them. A `[` without a matching `]` still hides nothing. C26 quotes an item with a `;` only outside brackets and formula groups, and quotes one with a `[` that has no matching `]` after it, so items don't pair brackets across a `;`.
 - V14: a CSV cell quotes an item with `"`, which CSV doubles, `"""x; y"""`, not with backticks, which would now stay in the text. LLM guide: csv.md, GUIDE.md, brief.md and diagnostics.md say so.

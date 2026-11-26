@@ -993,15 +993,16 @@ root
 
 ## 18. Value forms
 
-- **L21.** A text item, of a field or an inline field (L5), that is exactly one of the forms below, trailing spaces and tabs aside (C8), is a value of that form. Value forms are read only there: never in labels, keys or quoted text (L1). The text stays as written; a form is only how it reads. There are no other forms.
+- **L21.** A text item, of a field or an inline field (L5), that is exactly one of the forms below, trailing spaces and tabs aside (C8), is a value of that form. Value forms are read only there: never in labels, keys or quoted text (L1). The text stays as written; a form is only how it reads. Every other value is of the fallback form `text` (L35).
 - **L22.** `number`: an optional `-`, then `0` or a digit from 1 to 9 followed by any digits, then optionally `.` and one or more digits. So `-12`, `0` and `9.5` are numbers, and `007`, `+46`, `1e3`, `1.`, `.5` and `1 000` are text. A year such as `2026` is a number.
 - **L27.** `boolean`: `true` or `false`, in any letter case, so `True` and `FALSE` are booleans too. `yes` and `no` are text, and `1` and `0` are numbers.
 - **L23.** `date`: `YYYY-MM-DD`, a day that exists in the Gregorian calendar, e.g. `2026-10-15`.
 - **L24.** `datetime`: a date, then `T` or a space, then `HH:MM`, optionally followed by `:SS` and a fraction of a second after `.`, and optionally an offset: `Z`, or `+` or `-` followed by `HH:MM`. Hours run from 00 to 23, minutes and seconds from 00 to 59. Without an offset, the time is local. E.g. `2026-10-15T14:30`, `2026-10-15 14:30:05` and `2026-10-15T12:30Z`.
 - **L25.** `week`: `YYYY-Www`, with a week from 01 to 53, e.g. `2026-W42`. `month`: `YYYY-MM`, with a month from 01 to 12, e.g. `2026-10`. Weeks are ISO 8601 weeks, which start on Monday, so a year has a week 53 when it starts on a Thursday, or is a leap year that starts on a Wednesday.
+- **L35.** `text`: the fallback form, of a value that is none of the forms L22 to L27, quoted text included. So `007`, `yes`, `"true"` and `2026-02-30` are text. Text compares as written, ignoring letter case where a rule says so, as M62 does.
 - **L26.** Text with the digits and separators of a date, datetime, week or month, but a part out of range, is text, with a warning: `2026-02-30`, `2026-13-01`, `2026-W54`, `2026-10-15T24:00`.
 
-```example labels L21 L22 L23 L24 L25 L26 L27
+```example labels L21 L22 L23 L24 L25 L26 L27 L35
 a:: -12; 0; 9.5; 2026
 b:: 007; +46; 1e3; 1.; .5
 c:: 2026-10-15; 2026-W42; 2026-10
