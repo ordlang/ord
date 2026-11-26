@@ -339,7 +339,7 @@ Tests in Appendix A cover each rule of this section. The rules run from definiti
 - **M42.** The function library adds `$node(text)`, `$nodes(under?)`, `$query(text, under?)`, `$ancestors(node?)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text?)`, `$first(x)` and `$last(x)`, which M74 to M83 and M91 define, and, in one-time formulas only, the generators `$seq(n)`, `$uuid()`, `$id()` and `$sid()`, which M93 defines. Dates are ISO text.
 - **M74.** `$node(text)` gives the node that `text` names, as a link does: the node whose ID (M20) is `text`, ignoring letter case and spaces and tabs at either end, else the node whose label matches it (M23). Text that starts with `^` names a node by its ID only: `$node("^i42")`, and `Label^id` by its ID, as in a link (M22). Text that is one node's ID and another node's label gives the ID's node, with a warning. Text that names no node, or a label that matches several, gives nothing, with a warning. Unlike a reference field (M24), it matches nodes of any type. A number is read as its text, and a list gives the nodes its items name, leaving out those that name none; any other value gives nothing. Any text works, so `$node("journal-" & $today())` is today's journal node.
 - **M75.** `$nodes()` gives every node in the workspace, other than each file's root node (M13), field items (C13) and mirrors (M48): depth first, each node before the nodes it owns, in file order. Archived nodes (M63) are included. `$nodes(under)` gives only the nodes `under` owns, at any depth, in the same order; `under` is a node, or text naming one as `$node()` does, with its warnings, or a list of them, giving each node once. When it names no node, or the node owns none, the result is empty. The result is a list of nodes, filtered with JSONata on any field, system fields included: `$nodes()["task" in _types and _state != "done"]`.
-- **M76.** `$query(text, under?)` gives the nodes the query `text` matches, by the query rules (M61 to M63, M65), in file order: `$query("+task #project [ ]")`. With `under`, as in M75, only those `under` owns. A query that doesn't parse, or that holds a formula, is an evaluation error (M44.3); a formula's result is filtered instead: `$query("+task")[due < $today()]`. A formula that uses `$query()` depends on every node's types, tags, states and fields.
+- **M76.** `$query(text, under?)` gives the nodes the query `text` matches, by the query rules (M61 to M63, M65), in file order: `$query("+task #project [ ]")`. With `under`, as in M75, only those `under` owns, or that a mirror it owns stands for (M65). A query that doesn't parse, or that holds a formula, is an evaluation error (M44.3); a formula's result is filtered instead: `$query("+task")[due < $today()]`. A formula that uses `$query()` depends on every node's types, tags, states and fields.
 - **M91.** `$ancestors(node?)` gives the node's ancestors, the nearest first: its owner (M13), its owner's owner, and so on, its file's root (C14) last, each once. Without `node` it is the formula's node (M41); `node` is a node, or text naming one as `$node()` does (M74). Mirrors (M48) are never ancestors, so the places a node is mirrored to don't count. A filter picks the nearest that matches: `$ancestors()["project" in _types][0]` is the nearest project, and `$ancestors()[client][0].client` the nearest ancestor's client. As a field's `value` (M37), a one-time formula over it lets a field start with a value from the node's ancestors: with `project:: ~($ancestors()["project" in _types][0])` and `options:: +project` on the type `task`, `[ ] Send mapping draft +task` under `Apollo +project` gets `project:: Apollo`. A formula that uses `$ancestors()` depends on the ownership of the nodes above its node.
 - **M77.** `$today()` gives today's date in local time, as a date (L23): `2026-10-22`. `$now()` gives the local date and time, as a datetime (L24) with seconds and without an offset: `2026-10-22T14:30:05`. Local time is the time zone of the tool that evaluates the formula.
 - **M78.** A **date name** is one of these, in any letter case: `today`, `tomorrow`, `yesterday` (or `yday`) and `now`; a weekday, `monday` to `sunday`, which is the next one, today included; and `this-`, `next-` or `last-` followed by a weekday, which is that day in this, the next or the last week, or by `week`, `month` or `year`, which is that period (M79). Weeks start on Monday (L25). `now` is a datetime, the periods are lists of dates, and the others are dates.
@@ -360,14 +360,14 @@ Tests in Appendix A cover each rule of this section. The rules run from definiti
 
 ## 9. Queries
 
-This section is a draft outline, like section 8.
+Tests in Appendix A cover each rule of this section.
 
 - **M60.** A node with the type `search` (M53) is a **search node**. It is written only as an inline search, `? query` ([Ord specification](Ord_Specification.md) L28): its query is what follows the `?`, on one line, and its other settings, the view settings (M64), are its field lines. A filter too long for the line is better a calculated field on a type (M87), queried as `=(late)`. `search` written as a type any other way, as `+search`, `[_types:: search]` or a `_types::` line, is the error `M60.1`, and the node gets no type `search`; so is a `query` field line under a search node, which is not read. On any other node, `query::` is an ordinary field. A search has no label of its own (L28): where a name is needed, such as its results document, it is named by its query.
 - **M61.** A query is terms, joined by spaces for and, `|` for or, and grouped by parentheses; `!` before a term or group negates it. A term is `+type`, `#tag`, a state trigger, a link, a mirror term `@` and a reference (M65), a field `[key:: value]`, or `[key::]` with no value, which is the formula `=($exists(key))`, a formula `=(…)`, or a word, which matches a node's text (M62).
 - **M62.** A node matches `+type` when it has the type, `#tag` when it has the tag or a tag nested under it, ignoring letter case (`#project` matches `#project/apollo`), or, when a field of one of its types with `tags:: true` (M47) would take the tag, when that field's value is what the tag would give it (with `tags:: true` and `options:: +project` on `project`, `#LU` matches a task with `project:: LU` as well as one written `#LU`), `[x]` and the other triggers when its state or its base is that state, a link when one of its fields refers to the node it resolves to, `[key:: value]` when one of its `key` values equals the text, ignoring letter case, or, when the text is a value form (L21) other than `text` (L35), is a value of the same form with the same value: numbers as numbers, so `[n:: 1.5]` matches `n:: 1.50`, and datetimes as the same time, so `[at:: 2026-10-15T14:30]` matches `at:: 2026-10-15 14:30` (a datetime with an offset matches one with the same moment, one without an offset only one without), a computed field's (M39) and a calculated field's (M87) values included, as the text their results are written as (a node by its ID or name), a formula when its result is true, and a word when its label contains it, ignoring letter case, or else its ID, one of its types, one of its tags, or one of its fields' keys or values as written does, system fields other than `_tags` left out: `be086` matches `Mentions be086`, `Event ^BE086` and a node with `ref:: BE086`. A word written with `*`, outside quotes, is a pattern that one of these texts must match whole, each `*` standing for any characters, none too, ignoring letter case: `jour*` matches a label, ID, type, tag, key or value that starts with `jour`, `*notes` one that ends with `notes`, and a label also matches when its name (M23) does. A word written `^word` matches a node's ID only, and `^journal*` the nodes whose IDs start with `journal`; `^` alone is a word. A quoted word is literal: `"jo*"` holds a `*`. An editor that lists a search's results without a `sort` setting lists the nodes whose labels hold its words (not its `^` words) first, then the others, each in file order.
 - **M63.** Nodes tagged `archived` match only queries that name `#archived`.
-- **M64.** A search node's view settings are `view`, `fields`, `sort`, `group` and `footer`. What they show, and how, is implementation; what they hold is specified here. A `view` holds how the results are shown, such as `list`, `table`, `board` or `calendar`. A `fields` setting holds the **columns**, one field line each under it, on its anonymous node (C13), in order: `key::` with no value is the field `key` of each result, a system field (M11) included, as `_label::` or `_state::`, and `key:: =expr` is a **template column** named `key`, the formula's result evaluated on each result (M41), shown and never written. A column's child lines are the implementation's own, and nothing in this spec reads them. Without `fields`, an editor chooses the columns, such as the label and the fields of the results' types. A `sort` holds conditions as items (C15), applied in turn, each a field key, then optionally `asc` or `desc` and then optionally `number` (or `num`), `text` or `date`; the defaults are `asc` and `text`. A `group` holds a field key; the results are grouped by its value. A `footer` holds `=expr`, evaluated with the list of the results' nodes as `$`, and is shown with the results, and with each group's; nothing else reads it, and it is never written into a file (M86).
-- **M65.** A query matches a node in its own place, never a mirror (M48), so a node mirrored in three places is one result. The term `@` and a reference, written as in a mirror line (L30) but with no space after `@`, matches the node the reference resolves to. In a query scoped to a file or to a node's children, that node matches when it or one of its mirrors is in the scope. Scopes are still to be specified.
+- **M64.** A search node's view settings are `view`, `fields`, `sort`, `group` and `footer`. What they show, and how, is implementation; what they hold is specified here. A `view` holds how the results are shown, such as `list`, `table`, `board` or `calendar`. A `fields` setting holds the **columns**, one field line each under it, on its anonymous node (C13), in order: `key::` with no value is the field `key` of each result, a system field (M11) included, as `_label::` or `_state::`, and `key:: =expr` is a **template column** named `key`, the formula's result evaluated on each result (M41), shown and never written. A column's child lines are the implementation's own, and nothing in this spec reads them. Without `fields`, an editor chooses the columns, such as the label and the fields of the results' types. A `sort` holds conditions as items (C15), applied in turn, each a field key, then optionally `asc` or `desc` and then optionally `number` (or `num`), `text` or `date`; the defaults are `asc` and `text`. Text compares as people read it, ignoring letter case and with each run of digits as a number, so `30` comes before `120`, and `Item 9` before `Item 10`. A `group` holds a field key; the results are grouped by its value. A `footer` holds `=expr`, evaluated with the list of the results' nodes as `$`, and is shown with the results, and with each group's; nothing else reads it, and it is never written into a file (M86).
+- **M65.** A query matches a node in its own place, never a mirror (M48), so a node mirrored in three places is one result. The term `@` and a reference, written as in a mirror line (L30) but with no space after `@`, matches the node the reference resolves to. A query is scoped by `$query(text, under)` (M76) to the nodes `under` owns, at any depth, and a node is in the scope when it or one of its mirrors is: a mirror owned by `under`, or by a node in the scope, puts its source in, so `$query("@anna", "Team")` finds `Anna` when `Team` holds `@ Anna`. A query has no terms of its own for a scope. A search node (M60) never matches a query: it is a query, not a result.
 
 ## 10. Diagnostics
 
@@ -427,7 +427,7 @@ Tests work as in the [Test format](Test_format.md), part B, with one more option
 
 - **M70.** With the `graph` option, the input is a workspace and the expected output is its graph dump. The input holds one or more files, each starting with a line `--- ` and the file's path, e.g. `--- tasks.ord`. A path ending in `.csv` is a CSV file. Formulas see 2026-10-15T14:30 as the date and time now (M77), or 14:30 on the date of a test option `today:YYYY-MM-DD`.
 - **M71.** The graph dump lists each file, in the order of M5, as `file` and its path, and under it, indented two spaces per level, its nodes by ownership (M16), starting with the root's children. A node is `node` and its label as a string (D8), or `node` alone when it has none, then `@` and its line when it has one, as `@path:line` when it is in another file than the one listed, and for a node item (C13), `in` and the field's key, e.g. `node "Erik" @12 in "contacts"`.
-- **M72.** Under a node, before its children, come only the facts this spec decides, in this order, each when present: `id`, `type` (one line per type), `state`, `base` when it differs from the state, `ref` lines: `ref`, the key, `->`, and the target's file and line as `path:line`, e.g. `ref "client" -> a.ord:1`, and `calc` lines, one for each of its calculated (M87) and computed (M39) fields, sorted by key: `calc`, the key, and each item of its value as a string, as an editor shows it (M39), e.g. `calc "total" "2050"`; a field with no items, or whose formula fails, is its key alone. A nested calculated field's key is its path, as `parts.double`. A label's formulas (`_result`, M11) aren't listed.
+- **M72.** Under a node, before its children, come only the facts this spec decides, in this order, each when present: `id`, `type` (one line per type), `state`, `base` when it differs from the state, `ref` lines: `ref`, the key, `->`, and the target's file and line as `path:line`, e.g. `ref "client" -> a.ord:1`, and `calc` lines, one for each of its calculated (M87) and computed (M39) fields, sorted by key: `calc`, the key, and each item of its value as a string, as an editor shows it (M39), e.g. `calc "total" "2050"`; a field with no items, or whose formula fails, is its key alone. A nested calculated field's key is its path, as `parts.double`. A label's formulas (`_result`, M11) aren't listed. A search node (M60) has, after them, a `result` line for each of its results, in the order an editor lists them (M62, M64): `result`, its group as a string with a `group` setting, `->` and the node's file and line, e.g. `result "travel" -> a.ord:4`; and with a `footer`, `footer` and its value, then for each group, in the order of its first result, `footer`, the group's value, `in` and the group, e.g. `footer "150" in "travel"`. A query that doesn't parse has no `result` lines.
 - **M73.** Diagnostics follow, one per line, sorted by file, line, column and code: `!`, the code, and `path:line:column`.
 - **M94.** With the `change` option, the input is a workspace, as for `graph` (M70), and then the files a person's edit changed, each starting with a line `=== ` and its path, as the file is after the edit. The expected output is every file, in the order of the input, each starting with a line `--- ` and its path, after the edits tools make once the person's edits have settled, in this order: on each node line the edit gave a type, a checkbox (M19), the content template (M51) and the types' fields (M37); a change to types' field definitions, written on their nodes (M84); and one-time formulas written over and IDs given (M85, M93), pass after pass until a pass writes nothing. Formulas see the date and time as in M70. Generators whose results are random (M93) aren't tested.
 
@@ -1183,4 +1183,148 @@ Plan
 	n:: 2; 6; keep
 	bad:: ~$uuid(
 	Ship 2026-10-15
+```
+
+```example graph M60 M61 M62 M63
+--- a.ord
+Task +_type
+	name:: task
+	fields::
+		project::
+			options:: +project
+			tags:: true
+LU +project
+[x] Write journal notes +task #area/home
+	due:: 2026-10-20
+	n:: 1.50
+[ ] Mentions be086 +task #LU
+Event ^BE086
+Old journal +task #archived
+Journal day ^journal-2026-10-15
+	ref:: journal
+? +task
+? journal
+? #area
+? #LU
+? [n:: 1.5] | [due::]
+? ![x] +task
+? ^journal*
+? jour*
+? #archived journal
+Bad +search
+	query:: +task
+.
+file "a.ord"
+  node "Task" @1
+    type "_type"
+  node "LU" @7
+    type "project"
+  node "Write journal notes #area/home" @8
+    type "task"
+    state "done"
+  node "Mentions be086 #LU" @11
+    type "task"
+    state "new"
+    ref "project" -> a.ord:7
+  node "Event" @12
+    id "BE086"
+  node "Old journal #archived" @13
+    type "task"
+  node "Journal day" @14
+    id "journal-2026-10-15"
+  node "" @16
+    type "search"
+    result -> a.ord:8
+    result -> a.ord:11
+  node "" @17
+    type "search"
+    result -> a.ord:8
+    result -> a.ord:14
+  node "" @18
+    type "search"
+    result -> a.ord:8
+  node "" @19
+    type "search"
+    result -> a.ord:11
+  node "" @20
+    type "search"
+    result -> a.ord:8
+  node "" @21
+    type "search"
+    result -> a.ord:11
+  node "" @22
+    type "search"
+    result -> a.ord:14
+  node "" @23
+    type "search"
+    result -> a.ord:14
+  node "" @24
+    type "search"
+    result -> a.ord:13
+  node "Bad" @25
+! M60.1 a.ord:25:5
+```
+
+```example graph M64
+--- a.ord
+Taxi +expense
+	amount:: 30
+	kind:: travel
+Hotel +expense
+	amount:: 120
+	kind:: travel
+Lunch +expense
+	amount:: 15
+	kind:: food
+? +expense
+	sort:: amount desc number
+	group:: kind
+	footer:: =($sum(amount))
+? +expense
+	sort:: kind; amount
+.
+file "a.ord"
+  node "Taxi" @1
+    type "expense"
+  node "Hotel" @4
+    type "expense"
+  node "Lunch" @7
+    type "expense"
+  node "" @10
+    type "search"
+    result "travel" -> a.ord:4
+    result "travel" -> a.ord:1
+    result "food" -> a.ord:7
+    footer "165"
+    footer "150" in "travel"
+    footer "15" in "food"
+  node "" @14
+    type "search"
+    result -> a.ord:7
+    result -> a.ord:1
+    result -> a.ord:4
+```
+
+```example graph M65 M76
+--- a.ord
+Anna ^anna
+Team
+	@ Anna^anna
+	in team:: =($query("@anna", "Team")._label)
+Elsewhere
+	in elsewhere:: =($count($query("@anna", "Elsewhere")))
+? @anna
+.
+file "a.ord"
+  node "Anna" @1
+    id "anna"
+  node "Team" @2
+    calc "in team" "Anna"
+    node "" @3
+      ref "_mirror" -> a.ord:1
+  node "Elsewhere" @5
+    calc "in elsewhere" "0"
+  node "" @7
+    type "search"
+    result -> a.ord:1
 ```
