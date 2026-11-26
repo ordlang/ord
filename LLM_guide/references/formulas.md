@@ -58,10 +58,10 @@ A type's formula is calculated on its nodes without being written there (M87); e
 | `$date(period)` | A period name gives all its dates: `due in $date("this-week")` |
 | `$days(a, b?)` | Whole days from a to b, or from today to a: `$days(due)` |
 | `$format(x, picture)` | A number or date with a JSONata picture: `$format(1234.5, "#,##0.00")` gives `1,234.50` |
-| `$slug(text)` | A slug (M45): lowercase, accents removed, other runs to `-`, leading digits dropped. `"Åsa Öberg!"` gives `asa-oberg` |
+| `$slug(text)` | A slug (M45): lowercase, accents removed, other runs to `-`, leading digits dropped. `"Åsa Öberg!"` gives `asa-oberg`. `$slug()`, no argument: the slug of the node's name (M82) |
 | `$first(x)`, `$last(x)` | The first or last value |
-| `$seq(n)` | Auto only: the type's next number, padded to n digits |
-| `$uuid()`, `$id()`, `$sid()` | Auto only: a UUID, six random characters, the label's slug plus a short random suffix (`buy-milk-y7k`) |
+| `$seq(n)` | `~` only (M93): the next number of the field on the type's nodes, at least n digits |
+| `$uuid()`, `$id()`, `$sid()` | `~` only (M93): a UUID, six random characters, the name's slug plus three random characters (`buy-milk-y7k`) |
 
 Date names: `today`, `tomorrow`, `yesterday`, `monday` to `sunday` (the next one, today included), `this-monday`, `next-monday`, `last-monday` and so on, and the periods `this-week`, `next-week`, `last-week`, and the same for `month` and `year`. Weeks start on Monday (ISO 8601).
 
@@ -74,7 +74,7 @@ JSONata's built-ins work as usual: text (`$uppercase`, `$lowercase`, `$substring
 - **Generators only in `~`.** `$seq`, `$uuid`, `$id` and `$sid` would change on every evaluation, so they are errors in `=` formulas and queries (M43).
 - **`~` writes once.** `~$today()` becomes the date once the cursor leaves it; `=$today()` stays a formula and follows the clock. A result is written as any field is: `~(["a"])` gives `a;`, text with `;` or a line break is quoted. `auto expr` is gone: write `~(expr)` (M85.1).
 - **Errors and cycles (M44).** A failing formula (M44.3), a cycle (M44.1) or a dependency on a cycle (M44.2) leaves the field empty with a diagnostic. Cycles are per node, so `hours:: =($sum(_children.hours))` on a tree is fine.
-- **`valid` checks (M40).** `$value` is the field's value, a list when it has several.
+- **`valid` checks (M40).** Each written value is checked on its own as `$value`, with all of the field's values as `$values`; a calculated field's result is checked once.
 
 ## Examples
 
