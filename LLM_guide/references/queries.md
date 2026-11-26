@@ -4,7 +4,7 @@ Rules: Semantics M60 to M65.
 
 ## Search nodes
 
-A search node is a saved search (M60), written one way: `? query` (L28), on its own line, after any list marker. The query is everything after `? `, on that one line. Its view settings go on field lines under it. Results are never written into the file.
+A search node is a saved search (M60), written one way: `? query` (L28), on its own line, after any list marker. The query is everything after `? `, on that one line. Its view settings go on field lines under it. Results are never written into the file, and a search node is never a result of a query (M65).
 
 ```
 ? +task ![x]
@@ -29,7 +29,7 @@ A query looks like the node lines it matches.
 | `[ ]`, `[-]`, `[?]`, `[x]` | in that built-in state, or with that base: `[x]` also matches custom states based on done |
 | `[r]` | in the custom state whose marker is `r` |
 | `[[Acme Corp]]`, `[[acme]]` | with a field referring to that node, by label or ID |
-| `@Acme Corp` | the node itself; in a scoped query, when it or one of its mirrors is in scope |
+| `@Acme Corp` | the node itself; in `$query(text, under)`, when it or one of its mirrors is under `under` (M65) |
 | `[key:: value]` | with a `key` value equal to the text, ignoring case: `[client:: acme]`, `[due:: 2026-10-10]`. A calculated or computed field's value counts: `[total:: 2050]`. Compare with a formula: `=(total > 1000)` |
 | `=(expr)` | where the JSONata formula is true for the node |
 | `word`, `"two words"` | whose label contains it, ignoring case |
@@ -49,7 +49,7 @@ View settings (Semantics M64); how they look is up to the editor:
 |---|---|
 | `view` | `table`, `list`, `board` or `calendar` |
 | `fields` | one child field line per field shown (below) |
-| `sort` | conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, asc and text by default: `sort:: flow; due desc date` |
+| `sort` | conditions separated by `;`, each `field <asc|desc> <number|num|text|date>`, asc and text by default, text comparing digits as numbers (`30` before `120`): `sort:: flow; due desc date` |
 | `group` | a field to group by: `group:: project` |
 | `footer` | `=expr` over the results, with their nodes as `$`: `=($sum(hours))`. Shown with each group, or board column |
 
