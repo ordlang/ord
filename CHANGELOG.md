@@ -19,6 +19,9 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M36: when several of a node's types define the same key, the last of them in type order wins, whole, with no settings merged; a field definition node applies only where none does. M26, M37, M47 and M87 follow: the last type's custom state, written value, tag field and calculated field, where before the first type's.
+- M62: `[key:: value]` with a value form (L21) compares by value as well as by text: `[n:: 1.5]` matches `n:: 1.50`, and `[at:: 2026-10-15T14:30]` matches `at:: 2026-10-15 14:30`.
+- M64: the `computed` setting is gone. `view`, `fields`, `sort`, `group` and `footer` are specified: `fields` holds one field line per column, `key::` or a template column `key:: =expr`, and a column's child lines are the implementation's own. The LLM guide no longer shows `header` under a column.
 - M62: a query word with `*`, outside quotes, is a pattern a text must match whole, `*` standing for any characters: `jour*` matches what starts with `jour`. A word written `^word` matches a node's ID only, so `^journal*` finds the nodes whose IDs start with `journal`. A quoted word is still literal.
 - M92: a leading `_` means built in, everywhere. A name or key that starts with `_` and names no system field or system type, whether a field's key, a type, a tag, an ID, a custom state or a definition's `name` or `key`, is the new error `M92`. M11 no longer leaves other `_` keys free for a workspace.
 - M53: the system types are `_type`, `_tag`, `_field` and `_workspace` (and `search`), in place of `ord-type`, `ord-tag`, `ord-field` and `ord-workspace`, with no migration: `+ord-type` is now an ordinary type and defines nothing. Every rule, example and test that wrote them follows.
