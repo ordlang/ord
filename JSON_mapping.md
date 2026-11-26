@@ -28,7 +28,16 @@ JSON is read by writing it as Ord, as these rules say, and reading the result (S
 
 - **J8.** An object becomes a node. `_label` becomes its label, and an object without one a node with an empty label, `::`. Its other members become field lines, and `_children` child node lines. An object that would otherwise read as something else gets `_json:: object` as its first line (J19): one without members, `{}`, which would be `null`, and one with only `_label`, which would be a string (J4).
 - **J9.** A string becomes the field's value, quoted (C26) when it is a number (L22) or a boolean (L27) as written, so that it stays text: `"6"` gives `hours:: "6"`. A number becomes its text as written in the JSON, and a boolean `true` or `false`, so each reads back as its value form: `6`, `9.50` and `true` give `hours:: 6`, `9.50` and `true`. A number written with an exponent or a capital `E`, which L22 doesn't read, becomes its value in plain decimal: `1e21` gives `1000000000000000000000`, and `1e-7` gives `0.0000001`. `null` becomes an empty value. An object with only ordinary members becomes the field's field children (C13), and one with no members `_json:: object` under the field (J19). Any other object becomes one child node following J8.
-- **J10.** An array of strings, numbers and booleans becomes the field's items, `key:: a; b`, quoted as C26 says. So does an array whose such items all come before its objects; the objects then follow J11, except that one object with only ordinary members becomes the field's field children (C13), as in J9. Any other array, one with `null`, a nested array, an item after an object, or text with a line break, becomes the field's node children, one per item. An array of one item or none is a list (C16), with a `;` after its items: `key:: a;`, `key:: ;`, and `key:: ;` with the object's fields under it for one object, or `_json:: object` when it has none.
+- **J10.** An array of strings, numbers and booleans becomes the field's items, `key:: a; b`, quoted as C26 says. An array of such items and objects with only ordinary members, with two or more objects or an item after an object, becomes one field line with the key per object. Its items are the array's items between the previous object and this one, and its field children (C13) are the object's fields, or `_json:: object` when it has none. Items after the last object are one more field line. These field lines read back as one array (J7a):
+
+  ```
+  rows:: x
+  →a:: 1
+  rows::
+  →a:: 3
+  ```
+
+  is `"rows": ["x", {"a": 1}, {"a": 3}]`. Any other array whose items all come before its objects becomes the field's items too; the objects then follow J11, except that one object with only ordinary members becomes the field's field children (C13), as in J9. Any other array, one with `null`, a nested array, text with a line break, or an item after an object that isn't one with only ordinary members, becomes the field's node children, one per item. An array of one item or none is a list (C16), with a `;` after its items: `key:: a;`, `key:: ;`, and `key:: ;` with the object's fields under it for one object, or `_json:: object` when it has none.
 - **J11.** Within an array that becomes node children (J10), `null` becomes `::`, a string, number or boolean a node line, written as J9 writes an item, so a string that is a number or boolean as written is quoted, `"5"`, an object follows J8, and an array J14.
 - **J12.** Text is quoted according to C26.
 - **J14.** A nested array becomes `::` with `_json:: array` as its first line and one child node per item, following J11 (J19). An empty one is `::` with `_json:: array` alone.
@@ -113,7 +122,9 @@ root
   "tags": ["a", "b; c"],
   "one": ["x", { "p": 1 }],
   "rows": ["x", { "a": 1, "n": { "b": 2 } }, { "a": 3 }],
-  "deep": [{ "n": { "b": 2 } }, { "a": 3 }]
+  "deep": [{ "n": { "b": 2 } }, { "a": 3 }],
+  "mixed": [{ "a": 1 }, {}, "y", "z"],
+  "named": [{ "a": 1 }, { "_label": "N" }]
 }
 .
 root
@@ -127,25 +138,45 @@ root
         "1"
   field "rows"
     "x"
-    node empty
+    node
       field "a"
         "1"
       field "n"
         node
           field "b"
             "2"
-    node empty
+  field "rows"
+    node
       field "a"
         "3"
   field "deep"
-    node empty
+    node
       field "n"
         node
           field "b"
             "2"
-    node empty
+  field "deep"
+    node
       field "a"
         "3"
+  field "mixed"
+    node
+      field "a"
+        "1"
+  field "mixed"
+    node
+      field "_json"
+        "object"
+  field "mixed"
+    "y"
+    "z"
+  field "named"
+    node empty
+      field "a"
+        "1"
+    node "N"
+      field "_json"
+        "object"
 ```
 
 ```example from-json J15
@@ -210,10 +241,11 @@ root
   field "v"
     "007"
   field "rows"
-    node empty
+    node
       field "k"
         quoted "1"
-    node empty
+  field "rows"
+    node
       field "k"
         "1"
 ```
@@ -262,7 +294,7 @@ root
   - an array of its items, if it has several
 - **J6.** A text item becomes a string. A node item follows J3 and J4.
 - **J7.** An unquoted text item that is a number (L22) becomes a JSON number, written as it is written in Ord, and one that is a boolean (L27) `true` or `false`: `n:: 1.50; TRUE` gives `"n": [1.50, true]`. A number keeps all its digits, whatever a JSON reader can hold. Every other value is a string, quoted text (`"3"`), other value forms such as dates, and labels included.
-- **J7a.** Fields with the same key on one node become one JSON key. Their items are concatenated in file order, and the result is always an array: `tag:: a` and `tag:: b` give `"tag": ["a", "b"]`.
+- **J7a.** Fields with the same key on one node become one JSON key. Their items are concatenated in file order, and the result is always an array: `tag:: a` and `tag:: b` give `"tag": ["a", "b"]`. So a field line per record is an array of objects: `rows::` with `a:: 1` under it, then `rows::` with `a:: 3` under it, gives `"rows": [{"a": 1}, {"a": 3}]` (J10).
 - **J16.** A field whose key is `_label` or `_children` is written as that JSON key, with a warning, since it reads back as the label or the child nodes (J1).
 
 ```example to-json J19 J5
@@ -349,6 +381,19 @@ Acme
 }
 ```
 
+```example to-json J7a J10
+rows:: x
+→a:: 1
+→n:: 2
+rows::
+→a:: 3
+rows:: y
+.
+{
+  "rows": ["x", { "a": 1, "n": 2 }, { "a": 3 }, "y"]
+}
+```
+
 ```example to-json J7
 n:: 1.50; -2; TRUE
 s:: "3"
@@ -381,7 +426,7 @@ _json:: value
 JSON read as Ord and written back is the same JSON value, with every number as written except those J9 writes in plain decimal. What is lost is Ord's layout, which JSON has no place for:
 
 - An Ord field whose key is `_label` or `_children` becomes the label or the child nodes in JSON, since JSON has one set of keys. Writers give a warning (J16).
-- Fields with the same key on one node come back from JSON as one field (J7a).
+- Fields with the same key on one node come back from JSON as one field, or as one field line per object for an array of objects (J7a, J10).
 - The order between a node's fields and its child nodes is lost in JSON.
 - How a field's items were written (inline, as children, or mixed) is lost in JSON.
 
