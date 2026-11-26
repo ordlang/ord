@@ -28,6 +28,7 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ### Semantics
 
+- M94: tests with the `change` option give a workspace and a person's edit, and expect every file after the tools' edits (M19, M37, M51, M84, M85, M93). M70: graph and change tests see 2026-10-15T14:30 as now, or the date of `today:YYYY-MM-DD`. New tests cover the rest of section 8 (M37, M42, M43, M45, M56, M58, M75 to M81, M84, M85, M91, M93), which is no longer a draft. LLM guide: no change.
 - Section 8 is ordered by topic: definitions, what tools write, options and tags, formulas, the function library, one-time formulas. M37's example, which stood under M91, is back under M37. The rules with tests in Appendix A are settled.
 - M40: a `valid` check runs once per written value, `$value` that value and `$values` all of the node's values for the field; a calculated field's result is checked once. Before, `value` was the whole value. Only where the definition applies (M36).
 - M93: the generators `$seq(n)`, `$uuid()`, `$id()` and `$sid()` are defined. `$seq` counts on the type whose definition of the field applies (M36), where before the node's first type; `$sid` uses the node's name. M42 lists them, and M43 and M85 refer to M93.

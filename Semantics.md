@@ -254,7 +254,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 ## 8. Field definitions and formulas
 
-This section is a draft. Its rules are numbered so they can be referred to. The ones that tests cover (Appendix A) are settled; the others need tests before 1.0. The rules run from definitions, through what tools write, options and tags, and formulas, to the function library and one-time formulas.
+Tests in Appendix A cover each rule of this section. The rules run from definitions, through what tools write, options and tags, and formulas, to the function library and one-time formulas.
 
 - **M36.** A type definition's `fields` setting holds **field definitions**: **local field definitions**, its field lines under its anonymous node (C13), and field definition nodes (M55, M58). The two are one thing written two ways, with the same settings (M56), and differ only in scope: a local definition applies on the type's nodes, a field definition node on every node (M57). A local definition's key is the field it defines, what is written after it on its line is its `value` setting, and its child field lines are its other settings. A formula must start on the key's line (M87). A child field line whose key isn't a setting (M56) is a **nested field definition**: it defines a field written under that field, as a field line of its anonymous node (C13), and has the same settings and nested field definitions of its own, at any depth. When several of a node's types define the same key, the last of them in type order (M18) wins: its definition applies, whole, with its settings, and the others' don't, none of their settings merged in. So with `+task +bug`, where both define `priority`, `+bug`'s `options` and `value` apply. A field definition node applies only where none of the node's types defines the key (M57). The same holds wherever a node's types disagree: the last type's custom state (M26), calculated field (M87) and tag field (M47).
 - **M55.** A node with the type `_field` (M53) is a **field definition node**. It defines the field whose key is its `key` value, for the whole workspace:
@@ -425,10 +425,11 @@ Codes, severities and positions work as in the Spec (C35 to C37). Positions are 
 
 Tests work as in the [Test format](Test_format.md), part B, with one more option.
 
-- **M70.** With the `graph` option, the input is a workspace and the expected output is its graph dump. The input holds one or more files, each starting with a line `--- ` and the file's path, e.g. `--- tasks.ord`. A path ending in `.csv` is a CSV file.
+- **M70.** With the `graph` option, the input is a workspace and the expected output is its graph dump. The input holds one or more files, each starting with a line `--- ` and the file's path, e.g. `--- tasks.ord`. A path ending in `.csv` is a CSV file. Formulas see 2026-10-15T14:30 as the date and time now (M77), or 14:30 on the date of a test option `today:YYYY-MM-DD`.
 - **M71.** The graph dump lists each file, in the order of M5, as `file` and its path, and under it, indented two spaces per level, its nodes by ownership (M16), starting with the root's children. A node is `node` and its label as a string (D8), or `node` alone when it has none, then `@` and its line when it has one, as `@path:line` when it is in another file than the one listed, and for a node item (C13), `in` and the field's key, e.g. `node "Erik" @12 in "contacts"`.
 - **M72.** Under a node, before its children, come only the facts this spec decides, in this order, each when present: `id`, `type` (one line per type), `state`, `base` when it differs from the state, `ref` lines: `ref`, the key, `->`, and the target's file and line as `path:line`, e.g. `ref "client" -> a.ord:1`, and `calc` lines, one for each of its calculated (M87) and computed (M39) fields, sorted by key: `calc`, the key, and each item of its value as a string, as an editor shows it (M39), e.g. `calc "total" "2050"`; a field with no items, or whose formula fails, is its key alone. A nested calculated field's key is its path, as `parts.double`. A label's formulas (`_result`, M11) aren't listed.
 - **M73.** Diagnostics follow, one per line, sorted by file, line, column and code: `!`, the code, and `path:line:column`.
+- **M94.** With the `change` option, the input is a workspace, as for `graph` (M70), and then the files a person's edit changed, each starting with a line `=== ` and its path, as the file is after the edit. The expected output is every file, in the order of the input, each starting with a line `--- ` and its path, after the edits tools make once the person's edits have settled, in this order: on each node line the edit gave a type, a checkbox (M19), the content template (M51) and the types' fields (M37); a change to types' field definitions, written on their nodes (M84); and one-time formulas written over and IDs given (M85, M93), pass after pass until a pass writes nothing. Formulas see the date and time as in M70. Generators whose results are random (M93) aren't tested.
 
 ```example graph M8 M18 M20 M21 M22 M23
 --- a.ord
@@ -906,4 +907,280 @@ file "a.ord"
     calc "n" "Åsa Öberg! #team"
     calc "s" "asa-oberg"
     calc "t" "hej-da"
+```
+
+```example graph M24 M40 M42 M43 M44 M45 M46 M56 M58 M75 M76 M82 M91
+--- a.ord
+Person +_type
+	name:: person
+Task +_type
+	name:: task
+	fields::
+		Owner +_field
+			key:: owner
+			options:: +person
+			description:: Who does it.
+		due::
+			description:: When it is due.
+		size:: small
+			valid:: =($value in ["small", "large"])
+		priority::
+Priority +_field
+	key:: priority
+	options:: low; high
+Anna +person
+Apollo
+	Draft +task
+		owner:: Anna
+		size:: huge
+		priority:: urgent
+		up:: =($ancestors()[0]._label)
+		all:: =($count($nodes("Apollo")))
+		tasks:: =($count($query("+task")))
+		slug:: =($slug("Åsa Öberg!"))
+		g:: =($uuid())
+.
+file "a.ord"
+  node "Person" @1
+    type "_type"
+  node "Task" @3
+    type "_type"
+    node "Owner" @6 in "fields"
+      type "_field"
+  node "Priority" @15
+    type "_field"
+  node "Anna" @18
+    type "person"
+  node "Apollo" @19
+    node "Draft" @20
+      type "task"
+      ref "owner" -> a.ord:18
+      calc "all" "1"
+      calc "g"
+      calc "slug" "asa-oberg"
+      calc "tasks" "1"
+      calc "up" "Apollo"
+! M40 a.ord:22:10
+! M46 a.ord:23:14
+! M44.3 a.ord:28:7
+```
+
+```example graph M79 M80 M81 M83
+--- a.ord
+Dates
+	num:: =($format(1234.5, "#,##0.00"))
+	day:: =($format("2026-10-22", "[D1] [MNn] [Y]"))
+	week:: =($count($date("2026-W43")))
+	month:: =($first($date("2026-02")) & " " & $last($date("2026-02")))
+	shift:: =($date("2026-10-22T09:00", 7))
+	between:: =($days("2026-10-20", "2026-10-22"))
+	back:: =($days("2026-10-22T23:00", "2026-10-20T01:00"))
+.
+file "a.ord"
+  node "Dates" @1
+    calc "back" "-2"
+    calc "between" "2"
+    calc "day" "22 October 2026"
+    calc "month" "2026-02-01 2026-02-28"
+    calc "num" "1,234.50"
+    calc "shift" "2026-10-29T09:00"
+    calc "week" "7"
+```
+
+```example graph M77 M78 M79 M80
+--- a.ord
+Clock
+	today:: =($today())
+	now:: =($now())
+	tomorrow:: =($date("tomorrow"))
+	yday:: =($date("YDAY"))
+	friday:: =($date("friday"))
+	thursday:: =($date("thursday"))
+	next:: =($date("next-friday"))
+	last:: =($date("last-monday"))
+	week:: =($first($date("this-week")) & " " & $last($date("this-week")))
+	left:: =($days("2026-10-20"))
+	name:: =($days("tomorrow"))
+.
+file "a.ord"
+  node "Clock" @1
+    calc "friday" "2026-10-16"
+    calc "last" "2026-10-05"
+    calc "left" "5"
+    calc "name"
+    calc "next" "2026-10-23"
+    calc "now" "2026-10-15T14:30:00"
+    calc "thursday" "2026-10-15"
+    calc "today" "2026-10-15"
+    calc "tomorrow" "2026-10-16"
+    calc "week" "2026-10-12 2026-10-18"
+    calc "yday" "2026-10-14"
+```
+
+```example change M19 M36 M37 M47 M51
+--- t.ord
+Todo +_type
+	name:: todo
+	checkbox:: true
+	fields::
+		client::
+			options:: ACME; Initech
+			tags:: true
+		due::
+		vat:: =(1 + 1)
+	nodes::
+		Notes
+Invoice +_type
+	name:: invoice
+	fields::
+		due:: 30 days
+		amount::
+--- a.ord
+Call Anna
+Pay
+	amount:: 100
+=== a.ord
+Call Anna +todo #ACME
+Pay +todo +invoice
+	amount:: 100
+.
+--- t.ord
+Todo +_type
+	name:: todo
+	checkbox:: true
+	fields::
+		client::
+			options:: ACME; Initech
+			tags:: true
+		due::
+		vat:: =(1 + 1)
+	nodes::
+		Notes
+Invoice +_type
+	name:: invoice
+	fields::
+		due:: 30 days
+		amount::
+--- a.ord
+[ ] Call Anna +todo #ACME
+	due::
+	Notes
+[ ] Pay +todo +invoice
+	amount:: 100
+	client::
+	due:: 30 days
+	Notes
+```
+
+```example change M84 M87
+--- t.ord
+Invoice +_type
+	name:: invoice
+	fields::
+		vat:: 0.25
+		status:: open
+		total:: 0
+Local +_type
+	name:: local
+	fields::
+		vat:: 0.25
+--- a.ord
+March +invoice
+	vat:: 0.25
+	status:: open
+	total:: 0
+April +invoice
+	vat:: 0.06
+	status:: open
+	total:: 5
+May +invoice +local
+	vat:: 0.25
+	status:: open
+	total:: 0
+=== t.ord
+Invoice +_type
+	name:: invoice
+	fields::
+		vat:: 0.12
+		state:: open
+		total:: =(1 + 1)
+		paid::
+Local +_type
+	name:: local
+	fields::
+		vat:: 0.25
+.
+--- t.ord
+Invoice +_type
+	name:: invoice
+	fields::
+		vat:: 0.12
+		state:: open
+		total:: =(1 + 1)
+		paid::
+Local +_type
+	name:: local
+	fields::
+		vat:: 0.25
+--- a.ord
+March +invoice
+	vat:: 0.12
+	state:: open
+	paid::
+April +invoice
+	vat:: 0.06
+	state:: open
+	total:: 5
+	paid::
+May +invoice +local
+	vat:: 0.25
+	state:: open
+	paid::
+```
+
+```example change M39 M85 M93
+--- t.ord
+Bug +_type
+	name:: bug
+	fields::
+		_id:: ~("BE" & $seq(3))
+		code:: ~("C-" & $seq(2))
+--- a.ord
+Old +bug ^BE006
+	code:: C-09
+=== a.ord
+Old +bug ^BE006
+	code:: C-09
+New +bug
+Newer +bug
+Plan
+	due:: ~$date("tomorrow")
+	x:: ~([{"a": 1}, {"a": 2}])
+	n:: ~(1 + 1); ~("6"); keep
+	bad:: ~$uuid(
+	Ship ~$today()
+.
+--- t.ord
+Bug +_type
+	name:: bug
+	fields::
+		_id:: ~("BE" & $seq(3))
+		code:: ~("C-" & $seq(2))
+--- a.ord
+Old +bug ^BE006
+	code:: C-09
+New +bug ^BE007
+	code:: C-10
+Newer +bug ^BE008
+	code:: C-11
+Plan
+	due:: 2026-10-16
+	x::
+		::
+			a:: 1
+		::
+			a:: 2
+	n:: 2; 6; keep
+	bad:: ~$uuid(
+	Ship 2026-10-15
 ```
