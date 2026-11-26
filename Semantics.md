@@ -251,7 +251,7 @@ Journal nodes, where tools put things for a date, are ordinary nodes found by th
 
 ## 8. Field definitions and formulas
 
-This section is a draft outline. Its rules are numbered so they can be referred to, and need tests before 1.0.
+This section is a draft. Its rules are numbered so they can be referred to. The ones that tests cover (Appendix A) are settled; the others need tests before 1.0. The rules run from definitions, through what tools write, options and tags, and formulas, to the function library and one-time formulas.
 
 - **M36.** A type definition's `fields` setting holds **field definitions**: **local field definitions**, its field lines under its anonymous node (C13), and field definition nodes (M55, M58). The two are one thing written two ways, with the same settings (M56), and differ only in scope: a local definition applies on the type's nodes, a field definition node on every node (M57). A local definition's key is the field it defines, what is written after it on its line is its `value` setting, and its child field lines are its other settings. A formula must start on the key's line (M87). A child field line whose key isn't a setting (M56) is a **nested field definition**: it defines a field written under that field, as a field line of its anonymous node (C13), and has the same settings and nested field definitions of its own, at any depth. When several of a node's types define the same key, the last of them in type order (M18) wins: its definition applies, whole, with its settings, and the others' don't, none of their settings merged in. So with `+task +bug`, where both define `priority`, `+bug`'s `options` and `value` apply. A field definition node applies only where none of the node's types defines the key (M57). The same holds wherever a node's types disagree: the last type's custom state (M26), calculated field (M87) and tag field (M47).
 - **M55.** A node with the type `_field` (M53) is a **field definition node**. It defines the field whose key is its `key` value, for the whole workspace:
@@ -285,7 +285,6 @@ This section is a draft outline. Its rules are numbered so they can be referred 
 
   Here `owner` and `priority` are defined for the whole workspace, and `due` only for `task`.
 - **M37.** **A type's fields are written on its nodes.** When an editor or a tool gives a node a type, on a new node or an existing one, it writes a field line for each of the type's field definitions (M36, M58), other than calculated fields (M87), whose key the node doesn't have, where C48 puts a new field, in definition order. When a node has several types, each type's fields follow in type order (M18), and a key that several of them define is written once, where the first of them puts it, from the definition that applies (M36), the last type's. The line holds the definition's `value` as written: `~expr` as a one-time formula, which is then replaced with its result (M85), any other value as text, and no value as `key::`. Nested field definitions (M36) are written as field lines under their field, the same way. `_id` isn't written as a field line: a `~expr` for it gives each node of the type without an ID one, once: the result, when it is a name (L3) that no other node has as its ID, else an ID the tool makes up. A reader never gives a node a field or a value from its types, except a calculated field (M87): a node has what is written on it, and a type's `value` is what tools write.
-- **M91.** `$ancestors(node?)` gives the node's ancestors, the nearest first: its owner (M13), its owner's owner, and so on, its file's root (C14) last, each once. Without `node` it is the formula's node (M41); `node` is a node, or text naming one as `$node()` does (M74). Mirrors (M48) are never ancestors, so the places a node is mirrored to don't count. A filter picks the nearest that matches: `$ancestors()["project" in _types][0]` is the nearest project, and `$ancestors()[client][0].client` the nearest ancestor's client. As a field's `value` (M37), a one-time formula over it lets a field start with a value from the node's ancestors: with `project:: ~($ancestors()["project" in _types][0])` and `options:: +project` on the type `task`, `[ ] Send mapping draft +task` under `Apollo +project` gets `project:: Apollo`. A formula that uses `$ancestors()` depends on the ownership of the nodes above its node.
 
   ```
   Invoice +_type
@@ -303,7 +302,18 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   	amount::
   	status:: open
   ```
-- **M84.** **A type definition edits its nodes.** A change to a type's field definitions is a change to its nodes, as an edit through a mirror is a change to its source (M48), except that it is written into each node's file. When a type gains a field definition, nested ones included, tools write it on each node of the type that doesn't have its key, as M37 does. When a field definition's `value` changes, tools rewrite the field on each node whose value is still the old one as written, ignoring spaces and tabs at either end, and leave it where the node writes another value: that node has changed it. A field definition renamed in place, its key changed and nothing else in the type's fields, renames the field on each node that has it, keeping the node's value. A field definition that is removed leaves its fields on the nodes as they are. A calculated field (M87) isn't written, so a change to its formula changes no file. When a `value` becomes a formula, tools remove the field from each node whose value is still the old one as written; a node that writes another value has the error `M87.1` until it is removed. When a formula becomes a plain value or none, tools write the field on each node as M37 does. Tools write these edits once the change to the type definition is done, not while it is being typed, as one edit of all the files, so one undo takes them back.
+- **M84.** **A type definition edits its nodes.** A change to a type's field definitions is a change to its nodes, as an edit through a mirror is a change to its source (M48), except that it is written into each node's file. When a type gains a field definition, nested ones included, tools write it on each node of the type that doesn't have its key, as M37 does. When a field definition's `value` changes, tools rewrite the field on each node whose value is still the old one as written, ignoring spaces and tabs at either end, and leave it where the node writes another value: that node has changed it. A field definition renamed in place, its key changed and nothing else in the type's fields, renames the field on each node that has it, keeping the node's value. A field definition that is removed leaves its fields on the nodes as they are. A change reaches only the nodes the definition applies to (M36): on a node with a later type that defines the same key, the field is that type's, and stays as it is. A calculated field (M87) isn't written, so a change to its formula changes no file. When a `value` becomes a formula, tools remove the field from each node whose value is still the old one as written; a node that writes another value has the error `M87.1` until it is removed. When a formula becomes a plain value or none, tools write the field on each node as M37 does. Tools write these edits once the change to the type definition is done, not while it is being typed, as one edit of all the files, so one undo takes them back.
+- **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. An item `+name` names a type instead, whose nodes the field refers to (M24); it is not an option. A value written for the field, other than a formula, on a node the definition applies to (M36), or the result of a calculated field (M87), that equals none of the options of the definition that applies (M36), ignoring letter case, is the warning `M46`, and the value stays. On a reference field such a value is a reference instead, and not the warning. Options say how a field is meant to be used, not its value type, and tools offer them first when a value is typed.
+- **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node the definition applies to (M36), a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its name (M23), and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the last type's field has it (M36). The text stays as written.
+
+- **M39.** A formula (L12) can be written wherever a field's value goes, and is then a **formula item**: on a field line, alone or among other items (`total:: =(a + b)`, `tags:: draft; =(project._tags)`), in an inline field (`[total:: =(a + b)]`), or as a child line of a field line that holds only the formula and has no child lines of its own, which is the same item as the formula written on the field line:
+
+  ```
+  total::
+  	=(a + b)
+  ```
+
+  means what `total:: =(a + b)` does. On an ordinary node, a formula item stands for its result: one item, one item per element when the result is a list, and none when it is empty. A field with formula items is a **computed field**, written on the node, unlike a calculated field (M87): its value is its items in order, each formula item replaced by its result, so formulas and plain values can be mixed, and a field can have several formulas. A result with objects is the field the [JSON mapping](JSON_mapping.md) reads it as (J9 to J11), each member a field: plain elements are items, one object is the field's anonymous node (C13), as `contact::` with `primary:: anna` under it reads as `{"primary": "anna"}` (M41), and several are node lines, each holding its first plain member as an inline field, `[a:: 1]`, with its other members under it (J8). A node with only inline fields and no label of its own reads back as an object of its fields. An editor shows each formula item's result after the formula, where it is written, the items joined by `; `. A result with objects it shows under the formula's line instead, as it shows calculated fields (M87): a row for each field, `key = items`, a field whose value is an object as `key::` with its fields on the rows under it, one level in, and first a row `= items` for the items that aren't objects, so `=({"a": 1, "b": {"c": 2}})` shows `a = 1`, then `b::` with `c = 2` under it. Each object of several shows on a row of its own, its first plain field, with its other fields on the rows under it. Where a result is text in one line, as in a name (M11), an object is its fields as `key:: items`, separated by `, `: `a:: 1, b.c:: 2`. A `=expr` value of a setting of a node of a system type (M12), other than a field definition node's `value` and `valid` and a search node's `footer` (M64), is the error `M39`; the formula isn't evaluated.
 - **M87.** **Calculated fields.** A field definition (M36, M55) whose `value` is a formula, `=expr` (L12), defines a **calculated field**. Every node the definition's value applies to (M37, M57) has the field, with the formula's result as its value, evaluated on the node (M41) as a formula item is (M39), so a list gives one item per element and nothing gives none. The field is never written on the nodes, and a file read as plain text doesn't hold it (M86). On a local field definition, the formula is written after the key on its line and must start there; one over several lines (C52) continues under it:
 
   ```
@@ -319,33 +329,31 @@ This section is a draft outline. Its rules are numbered so they can be referred 
   An editor shows a calculated field first under the node line, before what is written under the node, as its key, ` = ` and its result, separated by `; ` when there are several: `by a boat +expense`, with `line_a:: 2000` and `line_b:: 50` under it, shows `total = 2050` above them. It is drawn apart from field lines, and can't be edited there; an evaluation error shows in its place (M44). Formulas, queries and mirrors read it as they read any field (M86). Its other settings apply to its result: `valid` checks it (M40), `options` (M46) says what it is meant to hold, `tags` (M47) lets a query match its value by a tag, though a tag on a node never sets it, and `icon` and `description` are as in M52. A diagnostic about a calculated field's result is on the node's line. A node that has a calculated field from several types has the last type's (M36). A nested field definition (M36) with a formula is calculated the same way, on the field's anonymous node (C13) but evaluated on the node (M41), and shown first under that field's line. A field line with nothing on it or under it, as `parts::`, counts as having an anonymous node with no lines, so its nested calculated fields are there too: with `parts::` and `double:: =(line_a * 2)` under it on the type, a node with `line_a:: 10` and an empty `parts::` has `parts.double`, 20, shown under its `parts::` line.
 
   A node can't write a field it calculates: a value for that key on the node, in any form, is the error `M87.1`, and is ignored. A child field line under a calculated field's definition whose key isn't a setting (M56) is the error `M87.2`, since a calculated field has no nested fields, and so is a formula alone on a child line of a local field definition, which isn't its value; both are left out.
-- **M39.** A formula (L12) can be written wherever a field's value goes, and is then a **formula item**: on a field line, alone or among other items (`total:: =(a + b)`, `tags:: draft; =(project._tags)`), in an inline field (`[total:: =(a + b)]`), or as a child line of a field line that holds only the formula and has no child lines of its own, which is the same item as the formula written on the field line:
-
-  ```
-  total::
-  	=(a + b)
-  ```
-
-  means what `total:: =(a + b)` does. On an ordinary node, a formula item stands for its result: one item, one item per element when the result is a list, and none when it is empty. A field with formula items is a **computed field**, written on the node, unlike a calculated field (M87): its value is its items in order, each formula item replaced by its result, so formulas and plain values can be mixed, and a field can have several formulas. A result with objects is the field the [JSON mapping](JSON_mapping.md) reads it as (J9 to J11), each member a field: plain elements are items, one object is the field's anonymous node (C13), as `contact::` with `primary:: anna` under it reads as `{"primary": "anna"}` (M41), and several are node lines, each holding its first plain member as an inline field, `[a:: 1]`, with its other members under it (J8). A node with only inline fields and no label of its own reads back as an object of its fields. An editor shows each formula item's result after the formula, where it is written, the items joined by `; `. A result with objects it shows under the formula's line instead, as it shows calculated fields (M87): a row for each field, `key = items`, a field whose value is an object as `key::` with its fields on the rows under it, one level in, and first a row `= items` for the items that aren't objects, so `=({"a": 1, "b": {"c": 2}})` shows `a = 1`, then `b::` with `c = 2` under it. Each object of several shows on a row of its own, its first plain field, with its other fields on the rows under it. Where a result is text in one line, as in a name (M11), an object is its fields as `key:: items`, separated by `, `: `a:: 1, b.c:: 2`. A `=expr` value of a setting of a node of a system type (M12), other than a field definition node's `value` and `valid` and a search node's `footer` (M64), is the error `M39`; the formula isn't evaluated.
-- **M40.** A `valid` setting holds `=expr`, evaluated per node with `value` bound to the field's value, a list when it has several. A result that isn't true is the error `M40`, and the value stays.
+- **M40.** A `valid` setting holds `=expr`, a check. Each value written for the field on a node the definition applies to (M36), other than a formula, is checked on its own: the expression is evaluated on the node (M41), with `$value` bound to that value and `$values` to all the node's written values for the field, as a list. A calculated field's (M87) result is checked once, `$value` and `$values` both its value. A check whose result isn't true is the error `M40`, on the value, or on the node's line for a calculated field, and the value stays. A check that fails to evaluate is the error `M44.3`, on the definition.
 - **M41.** **Formula language.** A formula's expression is JSONata 2.x, written `=(…)` so that `$` is allowed (L12). The current node is `$`, the graph root `$root`, and a node is an object with its fields as members, system fields included: `_parent` is its owner (M13) and `_children` the nodes it owns (M16). A reference field's value is the node it refers to, and a field with field children (C13) is an object of them. A field's value is its item when it has one and an array when it has several, and always an array when it is a list (C16): with `x:: a;` or `[x:: a;]`, `$type(x)` is `array`, and with `x:: ;`, `$count(x)` is 0. A formula in a field line under another field, at any depth, is evaluated on the node that owns the outermost field, not on the anonymous node it is written in: with `first:: =(sublevel.second & _tags)` and `sublevel::` with `second:: =(_label)` under it on the node `Test #tag`, `$`, `_label`, `_parent`, `_children`, `_id` and the other fields are the same in both formulas, and `second` is `Test #tag`. A node is true wherever a value is tested for truth, as in `a ?: b`, `a ? b : c`, `and`, `or`, a predicate `[…]`, `$boolean` and `$not`, whatever fields it has: `_parent ?: "none"` gives the owner even when it has no fields of its own. Nine system fields also have one-letter aliases: `L` is `_label`, `N` `_name`, `P` `_parent`, `C` `_children`, `S` `_state`, `G` `_tags`, `Y` `_types`, `I` `_id` and `R` `_result`. A node's own field with the same key as an alias comes before it. A formula's result can be a function, `function($x){ $x * 2 }`, alone or as a member of an object, and other formulas call it where they read the field: with `double:: =(function($x){ $x * 2 })` on `Lib`, `$node("Lib").double(21)` is 42. A function reads the nodes and variables where it is written, so in its body `$` and bare names are its node's, not the caller's: pass the caller's node in, as `$node("Lib").label($$)`, where `$$` is the node the formula runs on and `$`, inside the path, would be `Lib`. An editor shows a function as `ƒ` and its parameters, `ƒ($x)`. A function can't be written in a file: a one-time formula (M85) whose result holds one is an evaluation error (M44.3). **Workspace formulas.** A `formulas::` field line in the workspace file (Spec F5), at any depth, under a node or not, holds fields that every formula in the workspace reads as `$` names: with `formulas::` and `double:: =(function($x){ $x * 2 })` and `rate:: 0.25` under it, any formula can write `$double(21)` and `100 * $rate`. They are evaluated on the workspace, wherever they are written: `$` in them is `$root`, so `files:: =($count($.C))` counts the files. They can read each other, and their dependencies and cycles are those of fields (M44). A binding in a formula comes before them: in `($double := 3; $double)`, `$double` is 3. A key that can't be written after `$` (a letter or `_`, then letters, digits and `_`), or that is the name of a JSONata or Ord function, such as `sum` or `node`, is the error `M41.1` and binds nothing; a key that another `formulas::` field already gave, in file order, is the error `M41.2`, and the first counts. `formulas::` in any other file is an ordinary field.
-- **M42.** The function library adds `$node(text)`, `$nodes(under?)`, `$query(text, under?)`, `$ancestors(node?)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text)`, `$first(x)` and `$last(x)`. Dates are ISO text. M74 to M83 and M91 define them.
+- **M43.** Formulas are pure, except `$today()`, `$now()`, `$date()` with a date name (M78) such as `"tomorrow"` and `$days()` with one argument, whose results follow the clock. One-time formulas (M85) may also use the generators (M93), whose results differ on each call; elsewhere they are an evaluation error (M44.3).
+- **M44.** Dependencies are per node and field, calculated fields (M87) included. Fields in a cycle are empty, with the error `M44.1` naming the whole path; fields that depend on a cycle are empty, with the error `M44.2`. An evaluation error leaves its formula item without a result, with the error `M44.3`; the field's other items stay.
+- **M42.** The function library adds `$node(text)`, `$nodes(under?)`, `$query(text, under?)`, `$ancestors(node?)`, `$today()`, `$now()`, `$date(text, days?)`, `$days(a, b?)`, `$format(x, picture)`, `$slug(text?)`, `$first(x)` and `$last(x)`, which M74 to M83 and M91 define, and, in one-time formulas only, the generators `$seq(n)`, `$uuid()`, `$id()` and `$sid()`, which M93 defines. Dates are ISO text.
 - **M74.** `$node(text)` gives the node that `text` names, as a link does: the node whose ID (M20) is `text`, ignoring letter case and spaces and tabs at either end, else the node whose label matches it (M23). Text that starts with `^` names a node by its ID only: `$node("^i42")`, and `Label^id` by its ID, as in a link (M22). Text that is one node's ID and another node's label gives the ID's node, with a warning. Text that names no node, or a label that matches several, gives nothing, with a warning. Unlike a reference field (M24), it matches nodes of any type. A number is read as its text, and a list gives the nodes its items name, leaving out those that name none; any other value gives nothing. Any text works, so `$node("journal-" & $today())` is today's journal node.
 - **M75.** `$nodes()` gives every node in the workspace, other than each file's root node (M13), field items (C13) and mirrors (M48): depth first, each node before the nodes it owns, in file order. Archived nodes (M63) are included. `$nodes(under)` gives only the nodes `under` owns, at any depth, in the same order; `under` is a node, or text naming one as `$node()` does, with its warnings, or a list of them, giving each node once. When it names no node, or the node owns none, the result is empty. The result is a list of nodes, filtered with JSONata on any field, system fields included: `$nodes()["task" in _types and _state != "done"]`.
 - **M76.** `$query(text, under?)` gives the nodes the query `text` matches, by the query rules (M61 to M63, M65), in file order: `$query("+task #project [ ]")`. With `under`, as in M75, only those `under` owns. A query that doesn't parse, or that holds a formula, is an evaluation error (M44.3); a formula's result is filtered instead: `$query("+task")[due < $today()]`. A formula that uses `$query()` depends on every node's types, tags, states and fields.
+- **M91.** `$ancestors(node?)` gives the node's ancestors, the nearest first: its owner (M13), its owner's owner, and so on, its file's root (C14) last, each once. Without `node` it is the formula's node (M41); `node` is a node, or text naming one as `$node()` does (M74). Mirrors (M48) are never ancestors, so the places a node is mirrored to don't count. A filter picks the nearest that matches: `$ancestors()["project" in _types][0]` is the nearest project, and `$ancestors()[client][0].client` the nearest ancestor's client. As a field's `value` (M37), a one-time formula over it lets a field start with a value from the node's ancestors: with `project:: ~($ancestors()["project" in _types][0])` and `options:: +project` on the type `task`, `[ ] Send mapping draft +task` under `Apollo +project` gets `project:: Apollo`. A formula that uses `$ancestors()` depends on the ownership of the nodes above its node.
 - **M77.** `$today()` gives today's date in local time, as a date (L23): `2026-10-22`. `$now()` gives the local date and time, as a datetime (L24) with seconds and without an offset: `2026-10-22T14:30:05`. Local time is the time zone of the tool that evaluates the formula.
 - **M78.** A **date name** is one of these, in any letter case: `today`, `tomorrow`, `yesterday` (or `yday`) and `now`; a weekday, `monday` to `sunday`, which is the next one, today included; and `this-`, `next-` or `last-` followed by a weekday, which is that day in this, the next or the last week, or by `week`, `month` or `year`, which is that period (M79). Weeks start on Monday (L25). `now` is a datetime, the periods are lists of dates, and the others are dates.
 - **M79.** `$date(text, days?)` reads `text` without spaces and tabs at either end. A date (L23) or a datetime (L24) gives itself. A week or a month (L25), or a year written as four digits, gives a **period**: the list of its dates, in order, so `due in $date("2026-W42")` works. A date name (M78) gives what it names. A number is read as its text, so `$date(2026)` is that year. Anything else, a week that doesn't exist included, gives nothing, with a warning. With `days`, a number, each date is shifted by that many whole days, the number truncated toward zero, and a datetime keeps its time and offset: `$date("2026-10-22T09:00", 7)` gives `2026-10-29T09:00`. A `days` that isn't a number is ignored.
 - **M80.** `$days(a, b)` gives the whole days from the date of `a` to the date of `b`, negative when `b` is earlier, ignoring the times of datetimes: `$days("2026-10-20", "2026-10-22")` is `2`. `$days(a)` counts from today to `a`. `a` and `b` are dates or datetimes; anything else, a date name or a period included, gives nothing.
 - **M81.** `$format(x, picture)` writes a number or a date with a JSONata picture. A number is written as JSONata's `$formatNumber` does: `$format(1234.5, "#,##0.00")` gives `1,234.50`. A date or a datetime is written as `$fromMillis` does: `$format("2026-10-22", "[D1] [MNn] [Y]")` gives `22 October 2026`. A date is read as its midnight, a datetime without an offset at its time as written, and one with an offset is written in UTC. Any other value, or a `picture` that isn't text, gives the value as text, and nothing gives nothing.
-- **M82.** `$slug(text)` gives the slug of the text (M45): `$slug("Åsa Öberg!")` gives `asa-oberg`. A number is read as its text, and a list gives the slug of each item; any other value gives nothing. A slug can be empty: `$slug("2026")` gives `""`.
-- **M83.** `$first(x)` and `$last(x)` give the first and the last item of a list, and nothing for an empty list. Any other value gives itself, so a field with one value or several reads the same way: `$first(owner)`.
-- **M85.** **One-time formulas.** A one-time formula, `~(…)` or `~expr` (L32), on an ordinary node, in a label or as a field's item, is evaluated as a `=` formula there would be (M39, M41), and a tool writes its result in its place, so the file holds the value, not the formula: in a field, the result written as the field the [JSON mapping](JSON_mapping.md) reads it as (J9 to J11), by the writer that writes every field (C16, C26): `due:: ~$today()` becomes `due:: 2026-11-06`, `~(["a", "b"])` gives `a; b`, `~(["a"])` gives `a;`, and text with a `;` or a line break is quoted, as `"x\ny"`; in a label, the result's text, a list's items joined by `; ` and a line break written as a space. A node in a field's result is written as a reference to it (M21): its name (M23), or `Label^id` when the name alone doesn't name it (M22), the tool giving it an ID when it has none. Objects in the result (M39) are written as their field's lines under the field's line, one level deeper, after its other lines: `x:: ~({"a": 1, "b": {"c": [2, 3]}})` becomes `x::` with `a:: 1` and `b::` under it, and `c:: 2; 3` under `b::`, and `x:: ~([{"a": 1}, {"a": 2}])` becomes `x::` with the node lines `[a:: 1]` and `[a:: 2]` under it; the formula goes from the line with the `;` next to it. Objects can't be written in a label, an inline field or a formula alone on a child line, nor one object when the field already has field lines under it, since a field has one anonymous node (C13): the formula stays, with that error. A tool does this once the formula is no longer being edited, in a file it edits or shows. An editor that knows its cursor writes it once the cursor is neither in it nor right before or after it, as after a space, a line break or a tap elsewhere, and until then shows its result, as for a `=` formula (M39). When a character typed right after it turns it into another formula that fails, or into text, as `~$today()x`, the result it showed takes its place and the character stays after it. A tool without a cursor writes a formula that ends where the person is typing once a space or a line break follows it, and one elsewhere once edits pause. A result that is an error, or nothing, isn't written: the formula stays, and an editor shows the error after it, as for a `=` formula (M39). Until a tool replaces it, a one-time formula has no value: as a field's item, it adds no item. `$seq(n)` gives the next number, `n` digits wide, after the largest number at the end of a value of the field (of the ID, for `_id`) on the nodes of the node's first type, or of every node when it has none. A `value` of `auto expr`, the form this replaces, is the warning `M85.1`, and isn't evaluated: write `~(expr)`.
-- **M43.** Formulas are pure, except `$today()`, `$now()`, `$date()` with a date name (M78) such as `"tomorrow"` and `$days()` with one argument, whose results follow the clock. One-time formulas (M85) may also use `$seq(n)`, `$uuid()`, `$id()` and `$sid()`; elsewhere they are an evaluation error (M44.3).
-- **M44.** Dependencies are per node and field, calculated fields (M87) included. Fields in a cycle are empty, with the error `M44.1` naming the whole path; fields that depend on a cycle are empty, with the error `M44.2`. An evaluation error leaves its formula item without a result, with the error `M44.3`; the field's other items stay.
+- **M82.** `$slug(text)` gives the slug of the text (M45): `$slug("Åsa Öberg!")` gives `asa-oberg`. A number is read as its text, and a list gives the slug of each item; any other value gives nothing. A slug can be empty: `$slug("2026")` gives `""`. `$slug()`, with no argument, gives the slug of the formula's node's name (M23): on `Åsa Öberg! #team`, `asa-oberg`, and nothing on a node without a label. An argument that is nothing, as a field the node doesn't have, still gives nothing: `$slug(missing)` isn't `$slug()`.
 - **M45.** A **slug** is the text in lowercase, accents removed, each run of characters other than letters and digits turned into one `-`, with leading digits and `-` and trailing `-` removed.
-- **M46.** An `options` setting lists the values a field is meant to hold, as its items or as the labels of its node items without child lines (C13), in order. An item `+name` names a type instead, whose nodes the field refers to (M24); it is not an option. A value written for the field, other than a formula, on a node the definition applies to (M36), or the result of a calculated field (M87), that equals none of the options of the definitions that apply, ignoring letter case, is the warning `M46`, and the value stays. On a reference field such a value is a reference instead, and not the warning. Options say how a field is meant to be used, not its value type, and tools offer them first when a value is typed.
-- **M47.** A `tags` setting of `true` (L27) lets the field's options (M46) be written as tags. On a node the definition applies to (M36), a tag that equals one of the options, ignoring letter case, is a value of that field instead, spelled as the option is, and the node doesn't have that tag: with `options:: bug; feature` and `tags:: true` on the `issue type` field, `Crash +issue #bug` has `issue type:: bug`. On other nodes the tag is a tag. An option is matched as written: `tech-debt` by `#tech-debt`, and `Tech Debt` by `[#Tech Debt]` (L29), never by `#tech-debt`. On a reference field (M24), a tag also names a node of its types, the value then referring to that node: first by its label as written, then by its name (M23), and last by its ID. With `options:: +project` and `tags:: true`, `#ord-notes` on a task refers to `Ord-notes +project ^abc123`, `#ord` to `Ord #new +project`, before a node whose ID is `ord`, and `[#Ord Notes]` (L29) to `Ord Notes +project`. A tag is matched only against what is written, never against a slug: `#ord-notes` doesn't name `Ord Notes +project`. When fields of two of a node's types take one tag, the last type's field has it (M36). The text stays as written.
+- **M83.** `$first(x)` and `$last(x)` give the first and the last item of a list, and nothing for an empty list. Any other value gives itself, so a field with one value or several reads the same way: `$first(owner)`.
+- **M85.** **One-time formulas.** A one-time formula, `~(…)` or `~expr` (L32), on an ordinary node, in a label or as a field's item, is evaluated as a `=` formula there would be (M39, M41), and a tool writes its result in its place, so the file holds the value, not the formula: in a field, the result written as the field the [JSON mapping](JSON_mapping.md) reads it as (J9 to J11), by the writer that writes every field (C16, C26): `due:: ~$today()` becomes `due:: 2026-11-06`, `~(["a", "b"])` gives `a; b`, `~(["a"])` gives `a;`, and text with a `;` or a line break is quoted, as `"x\ny"`; in a label, the result's text, a list's items joined by `; ` and a line break written as a space. A node in a field's result is written as a reference to it (M21): its name (M23), or `Label^id` when the name alone doesn't name it (M22), the tool giving it an ID when it has none. Objects in the result (M39) are written as their field's lines under the field's line, one level deeper, after its other lines: `x:: ~({"a": 1, "b": {"c": [2, 3]}})` becomes `x::` with `a:: 1` and `b::` under it, and `c:: 2; 3` under `b::`, and `x:: ~([{"a": 1}, {"a": 2}])` becomes `x::` with the node lines `[a:: 1]` and `[a:: 2]` under it; the formula goes from the line with the `;` next to it. Objects can't be written in a label, an inline field or a formula alone on a child line, nor one object when the field already has field lines under it, since a field has one anonymous node (C13): the formula stays, with that error. A tool does this once the formula is no longer being edited, in a file it edits or shows. An editor that knows its cursor writes it once the cursor is neither in it nor right before or after it, as after a space, a line break or a tap elsewhere, and until then shows its result, as for a `=` formula (M39). When a character typed right after it turns it into another formula that fails, or into text, as `~$today()x`, the result it showed takes its place and the character stays after it. A tool without a cursor writes a formula that ends where the person is typing once a space or a line break follows it, and one elsewhere once edits pause. A result that is an error, or nothing, isn't written: the formula stays, and an editor shows the error after it, as for a `=` formula (M39). Until a tool replaces it, a one-time formula has no value: as a field's item, it adds no item. A `value` of `auto expr`, the form this replaces, is the warning `M85.1`, and isn't evaluated: write `~(expr)`.
+- **M93.** **Generators.** A one-time formula (M85) can use four functions that make a new value each time:
+  - `$seq(n)` gives the next number, written with at least `n` digits, leading zeros added: one more than the largest number at the end of a value of the field (of the ID, for `_id`) on the nodes of a type, ignoring formulas, and 1 when there is none. The type is the one whose definition of the field applies to the node (M36), else the node's last type, and with no types every node counts. One tool run gives each call the next number, so several nodes written at once get 7, 8, 9: with `_id:: ~("BE" & $seq(3))` on `bug`, and bugs up to `^BE006`, a new bug gets `^BE007`. `n` is truncated toward zero, and one that isn't a number above 0 means no padding.
+  - `$uuid()` gives a random UUID, as `6f1c2a4e-9b0d-4c1e-8f3a-2d7b5e9c1a40`.
+  - `$id()` gives six random characters, a lowercase letter, then lowercase letters and digits, as `k3x9pq`.
+  - `$sid()` gives the slug of the node's name (M23, M45), `-` and three random lowercase letters and digits, as `send-proof-k3x`, or, for a name with no slug, what `$id()` gives.
+
+  A tool that writes an ID from a type's formula (M37) tries again, a few times, while the result is no name (L3) or another node's ID, and then makes one up.
 
 ## 9. Queries
 
@@ -416,7 +424,7 @@ Tests work as in the [Test format](Test_format.md), part B, with one more option
 
 - **M70.** With the `graph` option, the input is a workspace and the expected output is its graph dump. The input holds one or more files, each starting with a line `--- ` and the file's path, e.g. `--- tasks.ord`. A path ending in `.csv` is a CSV file.
 - **M71.** The graph dump lists each file, in the order of M5, as `file` and its path, and under it, indented two spaces per level, its nodes by ownership (M16), starting with the root's children. A node is `node` and its label as a string (D8), or `node` alone when it has none, then `@` and its line when it has one, as `@path:line` when it is in another file than the one listed, and for a node item (C13), `in` and the field's key, e.g. `node "Erik" @12 in "contacts"`.
-- **M72.** Under a node, before its children, come only the facts this spec decides, in this order, each when present: `id`, `type` (one line per type), `state`, `base` when it differs from the state, and `ref` lines: `ref`, the key, `->`, and the target's file and line as `path:line`, e.g. `ref "client" -> a.ord:1`.
+- **M72.** Under a node, before its children, come only the facts this spec decides, in this order, each when present: `id`, `type` (one line per type), `state`, `base` when it differs from the state, `ref` lines: `ref`, the key, `->`, and the target's file and line as `path:line`, e.g. `ref "client" -> a.ord:1`, and `calc` lines, one for each of its calculated (M87) and computed (M39) fields, sorted by key: `calc`, the key, and each item of its value as a string, as an editor shows it (M39), e.g. `calc "total" "2050"`; a field with no items, or whose formula fails, is its key alone. A nested calculated field's key is its path, as `parts.double`. A label's formulas (`_result`, M11) aren't listed.
 - **M73.** Diagnostics follow, one per line, sorted by file, line, column and code: `!`, the code, and `path:line:column`.
 
 ```example graph M8 M18 M20 M21 M22 M23
@@ -709,4 +717,190 @@ file "a.ord"
 file "notes/plan.ord"
   node "Top" @1
 ! M48.1 a.ord:3:2
+```
+
+```example graph M36 M46 M55 M57 M87
+--- a.ord
+Task +_type
+	name:: task
+	fields::
+		priority::
+			options:: low; high
+		score:: =(1)
+Bug +_type
+	name:: bug
+	fields::
+		priority::
+			options:: p1; p2
+		score:: =(2)
+Note +_field
+	key:: note
+	options:: ok
+A +task +bug
+	priority:: p1
+	note:: ok
+B +bug +task
+	priority:: p1
+	note:: bad
+.
+file "a.ord"
+  node "Task" @1
+    type "_type"
+  node "Bug" @7
+    type "_type"
+  node "Note" @13
+    type "_field"
+  node "A" @16
+    type "task"
+    type "bug"
+    calc "score" "2"
+  node "B" @19
+    type "bug"
+    type "task"
+    calc "score" "1"
+! M46 a.ord:20:13
+! M46 a.ord:21:9
+```
+
+```example graph M40 M87
+--- a.ord
+Expense +_type
+	name:: expense
+	fields::
+		line_a::
+		line_b::
+		total:: =(line_a + line_b)
+			valid:: =($value >= 0)
+		parts::
+			double:: =(line_a * 2)
+By boat +expense
+	line_a:: 2000
+	line_b:: 50
+	parts::
+Refund +expense
+	line_a:: -100
+	line_b:: 20
+	total:: 5
+.
+file "a.ord"
+  node "Expense" @1
+    type "_type"
+  node "By boat" @10
+    type "expense"
+    calc "parts.double" "4000"
+    calc "total" "2050"
+  node "Refund" @14
+    type "expense"
+    calc "total" "-80"
+! M40 a.ord:14:1
+! M87.1 a.ord:17:10
+```
+
+```example graph M39 M44
+--- a.ord
+Sums
+	a:: 2
+	b:: =(a * 3); 7; =([1, 2])
+	c:: =(d)
+	d:: =(c)
+	e:: =(c + 1)
+	f:: =($undefinedFn(1))
+.
+file "a.ord"
+  node "Sums" @1
+    calc "b" "6" "7" "1" "2"
+    calc "c"
+    calc "d"
+    calc "e"
+    calc "f"
+! M44.1 a.ord:4:6
+! M44.1 a.ord:5:6
+! M44.2 a.ord:6:6
+! M44.3 a.ord:7:6
+```
+
+```example graph M47 M24
+--- a.ord
+Issue +_type
+	name:: issue
+	fields::
+		kind::
+			options:: bug; feature
+			tags:: true
+		project::
+			options:: +project
+			tags:: true
+		label:: =(_tags)
+Ord-notes +project ^on1
+Ord Notes +project
+Crash +issue #bug #ord-notes #other
+Wish +issue [#Ord Notes]
+Elsewhere #bug
+	label:: =(_tags)
+.
+file "a.ord"
+  node "Issue" @1
+    type "_type"
+  node "Ord-notes" @11
+    id "on1"
+    type "project"
+  node "Ord Notes" @12
+    type "project"
+  node "Crash #bug #ord-notes #other" @13
+    type "issue"
+    ref "project" -> a.ord:11
+    calc "label" "other"
+  node "Wish" @14
+    type "issue"
+    ref "project" -> a.ord:12
+    calc "label"
+  node "Elsewhere #bug" @15
+    calc "label" "bug"
+```
+
+```example graph M40
+--- a.ord
+Item +_type
+	name:: item
+	fields::
+		qty::
+			valid:: =($value > 0 and $count($values) <= 2)
+Good +item
+	qty:: 3
+Bad +item
+	qty:: 0; 2; 5
+.
+file "a.ord"
+  node "Item" @1
+    type "_type"
+  node "Good" @6
+    type "item"
+  node "Bad" @8
+    type "item"
+! M40 a.ord:9:8
+! M40 a.ord:9:11
+! M40 a.ord:9:14
+```
+
+```example graph M41 M74 M82 M83
+--- a.ord
+Åsa Öberg! #team ^asa
+	s:: =($slug())
+	t:: =($slug("Hej då"))
+	m:: =($slug(missing))
+	n:: =($node("^asa")._label)
+	f:: =($first([3, 4]))
+	l:: =($last(9))
+	k:: =(N)
+.
+file "a.ord"
+  node "Åsa Öberg! #team" @1
+    id "asa"
+    calc "f" "3"
+    calc "k" "Åsa Öberg!"
+    calc "l" "9"
+    calc "m"
+    calc "n" "Åsa Öberg! #team"
+    calc "s" "asa-oberg"
+    calc "t" "hej-da"
 ```
