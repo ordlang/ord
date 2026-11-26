@@ -5,7 +5,7 @@ Version 0.7.0-draft, 2026-11-22. A companion spec to [Ord specification](Ord_Spe
 ## 1. Scope
 
 - **J17.** This spec maps JSON to the Core data model (Spec, section 1) and back. Its conventions exist so that JSON → Ord → JSON keeps what it can; section 5 lists what it can't.
-- **J1a.** The mapping is syntactic. It doesn't read label syntax (Spec Part 2) or resolve references, so a reference is the text written, e.g. `client:: acme` gives `"client": "acme"`.
+- **J1a.** The mapping is syntactic. It doesn't read label syntax (Spec Part 2) or resolve references, so a reference is the text written, e.g. `client:: acme` gives `"client": "acme"`. It reads only two value forms, numbers (L22) and booleans (L27), which JSON has types for (J7, J9), and lines of inline fields (J3a, J8).
 - **J18.** A **JSON mapper** reads and writes JSON as this spec says, and passes the tests with the `from-json` and `to-json` options (T4).
 
 ## 2. System keys
@@ -19,8 +19,8 @@ Version 0.7.0-draft, 2026-11-22. A companion spec to [Ord specification](Ord_Spe
 
 JSON is read by writing it as Ord, as these rules say, and reading the result (Spec, Part 1).
 
-- **J8.** An object becomes a node. `_label` becomes its label, other members become field lines, and `_children` become child node lines. An object without `_label` becomes a node line that holds its first member that can be written as an inline field (L5) as one, `[key:: items]`, with its other members as children: a member whose key is names separated by single spaces and whose value is a string, number or boolean, or an array of them, with each item written bare in the inline field, without `;`, `[`, `]`, backticks, quotes or line breaks (C26). Without such a member it becomes a node with an empty label, `""`, with its members as children. An array of one item is written with its `;`, `[key:: a;]` (C16). Writing JSON reads such a line back as the object (J3a).
-- **J9.** A string becomes the field's value. `null` becomes an empty value. An object with only ordinary members becomes the field's field children (C13). Any other object becomes one child node following J8.
+- **J8.** An object becomes a node. `_label` becomes its label, other members become field lines, and `_children` become child node lines. An object without `_label` becomes a node line that holds its first member that can be written as an inline field (L5) as one, `[key:: items]`, with its other members as children: a member whose key is names separated by single spaces and whose value is a string, number or boolean, or an array of them, with each item written bare in the inline field, without `;`, `[`, `]`, backticks, quotes or line breaks (C26), and no string that J9 quotes. Without such a member it becomes a node with an empty label, `""`, with its members as children. An array of one item is written with its `;`, `[key:: a;]` (C16). Writing JSON reads such a line back as the object (J3a).
+- **J9.** A string becomes the field's value, quoted (C26) when it is a number (L22) or a boolean (L27) as written, so that it stays text: `"6"` gives `hours:: "6"`. A number becomes its shortest decimal form, as JSON writes it, and a boolean `true` or `false`, so each reads back as its value form: `6`, `9.5` and `true` give `hours:: 6`, `9.5` and `true`. A number whose shortest form has an exponent, as `1e21`, becomes that text. `null` becomes an empty value. An object with only ordinary members becomes the field's field children (C13). Any other object becomes one child node following J8.
 - **J10.** An array of strings, numbers and booleans becomes the field's items, `key:: a; b`, quoted as C26 says. So does an array whose such items all come before its objects; the objects then follow J11, except that one object with only ordinary members becomes the field's field children (C13), as in J9. Any other array, one with `null`, a nested array, an item after an object, or text with a line break, becomes the field's node children, one per item. An array of one item or none is a list (C16), with a `;` after its items: `key:: a;`, `key:: ;`, and `key:: ;` with the object's fields under it for one object.
 - **J11.** Within an array that becomes node children (J10), `null` becomes `::`, a string, number or boolean a node line, and an object follows J8.
 - **J12.** Text is quoted according to C26.
@@ -32,8 +32,8 @@ JSON is read by writing it as Ord, as these rules say, and reading the result (S
   "client": "Acme Corp",
   "contacts": ["Anna", "Erik"],
   "lines": [
-    { "_label": "Workshop", "hours": "6" },
-    { "_label": "Spec review", "hours": "9.5" }
+    { "_label": "Workshop", "hours": 6 },
+    { "_label": "Spec review", "hours": 9.5 }
   ]
 }
 .
@@ -58,7 +58,7 @@ root
   "b": "",
   "c": ["x"],
   "d": [],
-  "e": [null, "y", { "z": "1" }],
+  "e": [null, "y", { "z": 1 }],
   "f": { "primary": "anna" },
   "g": { "_label": "Acme", "owner": "anna" },
   "h": [["a", "b"], []],
@@ -98,9 +98,9 @@ root
 ```example from-json J8 J10
 {
   "tags": ["a", "b; c"],
-  "one": ["x", { "p": "1" }],
-  "rows": ["x", { "a": "1", "n": { "b": "2" } }, { "a": "3" }],
-  "deep": [{ "n": { "b": "2" } }, { "a": "3" }]
+  "one": ["x", { "p": 1 }],
+  "rows": ["x", { "a": 1, "n": { "b": 2 } }, { "a": 3 }],
+  "deep": [{ "n": { "b": 2 } }, { "a": 3 }]
 }
 .
 root
@@ -159,6 +159,38 @@ root
 ! J1.2 1:30
 ```
 
+```example from-json J1a J9
+{
+  "n": 1.5,
+  "b": true,
+  "l": [2, false],
+  "s": "6",
+  "t": "true",
+  "v": "007",
+  "rows": [{ "k": "1" }, { "k": 1 }]
+}
+.
+root
+  field "n"
+    "1.5"
+  field "b"
+    "true"
+  field "l"
+    "2"
+    "false"
+  field "s"
+    quoted "6"
+  field "t"
+    quoted "true"
+  field "v"
+    "007"
+  field "rows"
+    node quoted ""
+      field "k"
+        quoted "1"
+    node "[k:: 1]"
+```
+
 ## 4. Writing JSON
 
 - **J2.** The root node becomes a JSON object.
@@ -174,7 +206,7 @@ root
   - the item itself, if it has one item
   - an array of its items, if it has several
 - **J6.** A text item becomes a string. A node item follows J3 and J4.
-- **J7.** All values are strings.
+- **J7.** An unquoted text item that is a number (L22) becomes a JSON number, and one that is a boolean (L27) `true` or `false`: `n:: 1.50; TRUE` gives `"n": [1.5, true]`. Every other value is a string, quoted text (`"3"`), other value forms such as dates, and labels included.
 - **J7a.** Fields with the same key on one node become one JSON key. Their items are concatenated in file order, and the result is always an array: `tag:: a` and `tag:: b` give `"tag": ["a", "b"]`.
 - **J16.** A field whose key is `_label` or `_children` is written as that JSON key, with a warning, since it reads back as the label or the child nodes (J1).
 
@@ -187,8 +219,8 @@ rows::
 .
 {
   "rows": [
-    { "a": "1", "b": ["x"], "n": "2" },
-    { "a": "3" },
+    { "a": 1, "b": ["x"], "n": 2 },
+    { "a": 3 },
     "plain"
   ]
 }
@@ -241,9 +273,24 @@ Acme
 }
 ```
 
+```example to-json J7
+n:: 1.50; -2; TRUE
+s:: "3"
+d:: 2026-10-15
+v:: 007; 1e3
+.
+{
+  "n": [1.5, -2, true],
+  "s": "3",
+  "d": "2026-10-15",
+  "v": ["007", "1e3"]
+}
+```
+
 ## 5. Known gaps
 
-- Numbers and booleans become strings.
+- A number or boolean that becomes a node line (J11), as in `[null, 5]`, comes back as a string, since labels have no value forms. So does a number written with an exponent (J9).
+- A number comes back in its shortest form (`1.50` as `1.5`), and with no more digits than a 64-bit floating-point number holds.
 - A nested array, and a root array, come back as objects with `_children` (J14, J15).
 - A scalar JSON root comes back as an object (J15).
 - A `_label` on the root object has no form, since the root has no label line (J15).

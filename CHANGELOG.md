@@ -6,6 +6,11 @@ From 0.4.0-draft, the specs in this repository share one version: the [Ord speci
 
 ## Unreleased
 
+### JSON mapping
+
+- J7, J9, J1a: numbers and booleans keep their types. An unquoted number (L22) or boolean (L27) item becomes a JSON number or boolean, and a JSON number or boolean becomes its text, which reads back as that form. A JSON string that reads as a number or boolean is quoted, `hours:: "6"`, so it stays a string; J8 doesn't write one bare in an inline field. Known gaps: the gap "numbers and booleans become strings" is gone, and three narrower ones are listed: a number as a node line, a number with an exponent, and a number's precision.
+- M85: a one-time formula's string result is still written bare.
+
 ### Spec
 
 - L21, L35: `text` is a value form, the fallback: a value that is none of the other forms, quoted or not, is of the form `text`. Nothing reads differently. A dump still writes no name after a text item (D13).
