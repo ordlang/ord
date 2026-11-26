@@ -2,12 +2,13 @@
 
 From 0.4.0-draft, the specs in this repository share one version: the [Ord specification](Ord_Specification.md), [Test format](Test_format.md), [Semantics](Semantics.md), [JSON mapping](JSON_mapping.md), [CSV mapping](CSV_mapping.md), the informative [Grammar](Grammar.md) and, from 0.6.0-draft, the informative [LLM guide](LLM_guide/GUIDE.md). Before that, each spec had its own version, listed under its name below.
 
-**Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35, M38, J1.1, J3a.
+**Retired IDs.** These rule IDs were removed and are never reused: C17, C18, C20, C28, C39, L9, L15, J13, M9, M19.1, M19.2, M20.2, M30.1 to M30.4, M32 to M35, M38, J1.1, J1.3, J3a.
 
 ## Unreleased
 
 ### JSON mapping
 
+- J19: `_json` also takes `number` and `boolean`, for a number or boolean that is an array item written as a node line (J11), and, on the root, `value`, for a scalar root (J15). A JSON key `_json` is an ordinary field with its key quoted, `"_json":: x` (J1); the warning J1.3 is gone. Numbers keep their text both ways (J7, J9): `1.50` stays `1.50` and long numbers keep their digits; one with an exponent is written in plain decimal. Known gaps: JSON read as Ord and written back is now the same value; only Ord's layout is listed.
 - J19: the system field `_json` says what a node is in JSON where the other rules would read it as something else: `_json:: array` for a nested or root array, `_json:: object` for `{}` and an object of a label alone. Writers write it only where needed; everything else maps as before. It replaces the layout tricks: J8 writes an object without `_label` as `::` with its members as field lines, where before it held its first member as an inline field, `[a:: 1]`, or was `""`; J14 writes a nested array as `::` with `_json:: array`, where before it was `""` and came back as `{"_children": …}`; J15 marks a root array the same way. J3a is retired: writing JSON no longer reads lines of inline fields as objects. A JSON key `_json` is left out with the warning J1.3; a misplaced `_json` is the warning J19.1. Known gaps: nested and root arrays, `{}` and `{"_label": "x"}` now round-trip.
 - Semantics M11: `_json` is a system field, with its system field definition `JSON +_field`. M39 and M85 write several objects in a formula's result as `::` lines, after J8.
 - J7, J9, J1a: numbers and booleans keep their types. An unquoted number (L22) or boolean (L27) item becomes a JSON number or boolean, and a JSON number or boolean becomes its text, which reads back as that form. A JSON string that reads as a number or boolean is quoted, `hours:: "6"`, so it stays a string; J8 doesn't write one bare in an inline field. Known gaps: the gap "numbers and booleans become strings" is gone, and three narrower ones are listed: a number as a node line, a number with an exponent, and a number's precision.
