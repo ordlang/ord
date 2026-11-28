@@ -408,13 +408,11 @@ v:: 007; 1e3
 }
 ```
 
-```example to-json J2 J4 J19 J20
-_json:: value
-::
-→0:: 1.50
-→1:: TRUE
-→2:: "7"
-→3:: yes
+```example to-json J2 J7 J20
+0:: 1.50
+1:: TRUE
+2:: "7"
+3:: yes
 .
 [1.50, true, "7", "yes"]
 ```
